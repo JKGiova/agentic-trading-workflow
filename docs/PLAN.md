@@ -16,6 +16,24 @@
 
 Paper profitability alone is insufficient evidence for deployment. Paper fills can omit liquidity constraints, market impact, and latency-related slippage.
 
+## Concrete work packages
+
+The [ordered backlog](implementation-backlog.md) maps this roadmap into implementable deliverables:
+
+| Roadmap milestone | Work packages |
+| --- | --- |
+| 0. Scope/upstream spike | T0 source-access proof, pinned upstream comparison, and dependency lock |
+| 1. Research/coverage | T1 contracts/storage, T2 connectors, T3 jobs and mandatory coverage |
+| 2. Analyst team | T4 independent reports and internal lead synthesis |
+| 3. Existing holdings | T6 Allocator holding review and position cases |
+| 4. Direct debate | T5 fair queue, bounded rounds, Orchestrator judgment |
+| 5. Paper execution | T6 sizing preview, T7 reservations/intents/monitor |
+| 6. Evaluation | T8 forecast settlement and prospective comparisons |
+| 7. Dashboard/operations | T9 API/UI, supervision, and recovery |
+| 8. Live readiness | Separate later decision; prototype live mode remains unsupported |
+
+The proposed route is [Python/LangGraph and PostgreSQL](implementation-stack.md), with [explicit connectors](connector-implementation.md), [typed tool boundaries](agent-runtime.md), and [a transactional business ledger](persistence-and-contracts.md). Compare actual usage with [cost assumptions](deployment-and-costs.md); public prices are not measured project costs.
+
 ## Open decisions
 
 - Initial selected stocks, exchanges, broker, and stock-level eligibility rules.
@@ -28,12 +46,13 @@ Paper profitability alone is insufficient evidence for deployment. Paper fills c
 - Conditional-payoff and tail-scenario methods, uncertainty diagnostics, and stressed-loss budget.
 - Exact exposure, daily-loss, liquidity, freshness, and protection limits.
 - Minimum evaluation evidence required before enabling any calibrated probability.
-- Preferred upstream starting point after the technical spike.
+- Confirm a minimal custom LangGraph build versus selective adaptation of pinned TradingAgents after T0.
 
 Initial design choices already proposed: four analyst roles with an internal lead, a Bull/Bear pair, one Orchestrator, and a separate Portfolio Allocator, mandatory research of all holdings, `HOLD` as an unchanged-exposure option, five-trading-day primary forecasts, and paper-only execution.
 
 ## Related pages
 
+- [Implementation backlog](implementation-backlog.md)
 - [Development status](development-status.md)
 - [Architecture](architecture.md)
 - [Portfolio Allocator](portfolio-allocator.md)

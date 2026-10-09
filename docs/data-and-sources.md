@@ -2,6 +2,8 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
+Concrete provider APIs, access checks, quotas, timestamps, and the whitelist-query template are specified in [connector implementation](connector-implementation.md). The first proposal combines Alpaca/Benzinga, official X, SEC/IR, approved publisher feeds/search, and official macro sources; each still needs an access proof.
+
 ### Financial publications
 
 Use selected financial publications through supported APIs, RSS feeds, or licensed data feeds. Examples to evaluate include Reuters, Financial Times, The Wall Street Journal, and Milano Finanza. Actual coverage depends on available access and compatible rights for retrieval, retention, and model processing.
@@ -54,4 +56,6 @@ Distinguish a newly published event from an old article discovered late. Preserv
 
 - [Mandatory holding research](analysis-team.md)
 - [Forecasts and confidence](forecasts-and-confidence.md)
+- [Connector implementation](connector-implementation.md)
+- [Persistence and contracts](persistence-and-contracts.md)
 - [Source research](research.md)

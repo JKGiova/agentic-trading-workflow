@@ -17,7 +17,7 @@ News collection and order monitoring run independently of AI sessions. Research 
 
 ## Read first
 
-The detailed plan lives in the **[project wiki](docs/README.md)**.
+The detailed plan lives in the **[project wiki](docs/README.md)**. Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
 
 | Document | Purpose |
 | --- | --- |
@@ -33,6 +33,8 @@ The detailed plan lives in the **[project wiki](docs/README.md)**.
 | [Development status](docs/development-status.md) | Completed documentation and pending implementation |
 | [Source research](docs/research.md) | Recommended upstream repositories and verified references |
 
+Implementation details cover [connectors](docs/connector-implementation.md), [agent runtime](docs/agent-runtime.md), [storage/contracts](docs/persistence-and-contracts.md), and [deployment/cost estimates](docs/deployment-and-costs.md).
+
 The wiki also covers [session scheduling](docs/session-workflow.md), [data and memory](docs/data-and-sources.md), [risk and execution](docs/risk-and-execution.md), and [validation](docs/validation.md).
 
 ## Repository layout
@@ -43,6 +45,6 @@ The wiki also covers [session scheduling](docs/session-workflow.md), [data and m
 
 ## First milestone
 
-Choose the stock watchlist, forecast horizon, evidence sources, debate budget and queue policy, portfolio/model budgets, and broker candidate. Evaluate one upstream in a reproducible paper-only spike before implementing the workflow.
+Start [T0 in the backlog](docs/implementation-backlog.md): prove authorized news, X, SEC/IR, publisher, and quote/calendar access; evaluate pinned TradingAgents against a minimal custom graph; record actual latency, usage, and coverage before paper execution.
 
 See [source research](docs/research.md) for TradingAgents, TradingCrew, TradeAgent, and AI Hedge Fund. No upstream code is adopted by this plan; review its specific license before reuse.

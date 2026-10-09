@@ -50,23 +50,21 @@ One of the four analysts also serves as Analyst Lead for team synthesis; propose
 
 The AI Orchestrator coordinates the research workflow. A code-controlled workflow runtime handles durable jobs, locks, coverage checks, fair debate queues, reservations, policy enforcement, sizing tools, and execution. Only deterministic services can authorize and submit orders. Credentials and configuration stay outside model-controlled content.
 
-## Proposed technology stack
+## Concrete proposed stack
 
-| Component | Initial proposal |
-| --- | --- |
-| Core services | Python |
-| Persistent storage | PostgreSQL |
-| News collection | Provider API and RSS adapters |
-| Scheduling | Durable session jobs |
-| AI | Four analysts, Bull/Bear researchers, Orchestrator, and Portfolio Allocator; provider-independent clients with structured output |
-| Retrieval | Instrument/event/time queries; optional semantic retrieval |
-| Budget and risk | Deterministic tools exposing caps, available cash, permitted quantities, and reservations |
-| Execution | Paper broker adapter first |
-| Monitoring | Independent order-update and reconciliation worker |
-| Interface | Dashboard for evidence, both confidence stages, decisions, investments, budgets, and costs |
-| Verification | Temporal integrity, confidence routing, risk gates, execution, and recovery checks |
+Use Python 3.13 with LangGraph and a PostgreSQL checkpointer, Pydantic contracts, OpenRouter through HTTPX, PostgreSQL/SQLAlchemy/Alembic for business state, APScheduler 3.x feeding durable jobs, and Alpaca paper execution. Separate collectors, session worker, execution worker, and order monitor. FastAPI plus Streamlit is the first dashboard proposal.
 
-Alpaca remains a candidate for a US-equities prototype. Broker, exchange, data entitlement, and live eligibility decisions remain open. Track separate operating budgets for news, X API, LLMs, market data, and hosting.
+The [stack comparison](implementation-stack.md) also covers adapting existing repos, TypeScript/Mastra, and a later Temporal upgrade. Exact dependency versions and source access must be proven in T0; no runtime or connector is installed by this plan.
+
+News proposals combine Alpaca/Benzinga, authorized publisher feeds/search, SEC/IR, official macro sources, and the official X API with approved-author filtering. Alpaca is a proposed US-equities paper target, not a claim of account eligibility, source entitlement, or full market coverage.
+
+Implementation specifications:
+
+- [Connector APIs and coverage proofs](connector-implementation.md)
+- [Agent tools and graph stages](agent-runtime.md)
+- [Tables, contracts, and concurrency](persistence-and-contracts.md)
+- [Deployment and operating-cost estimates](deployment-and-costs.md)
+- [Ordered implementation backlog](implementation-backlog.md)
 
 ## Related pages
 
@@ -75,4 +73,5 @@ Alpaca remains a candidate for a US-equities prototype. Broker, exchange, data e
 - [Opportunity analysis](opportunity-analysis.md)
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Session workflow](session-workflow.md)
+- [Implementation stack](implementation-stack.md)
 - [Implementation plan](PLAN.md)

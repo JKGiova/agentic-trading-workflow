@@ -104,6 +104,8 @@ Store the policy version, NAV, both confidence record IDs and values, debate/res
 - Recompute headroom after fills, price changes, deposits, withdrawals, and confirmed order changes. Reject or defer stale proposals before submission.
 - Keep trading capital separate from news, X API, LLM, market-data, and hosting budgets. Reserve research capacity for required holding reviews before optional debates; operating-budget exhaustion blocks new exposure without disabling reconciliation and risk monitoring.
 
+Portfolio capital and operating spend have different ledgers. See [deployment and costs](deployment-and-costs.md) for model/source pricing, workload assumptions, and cost reservations; see [storage contracts](persistence-and-contracts.md) for atomic cash/risk reservations.
+
 ## Related pages
 
 - [Forecasts and confidence](forecasts-and-confidence.md)

@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-News collection, decision sessions, and execution monitoring run independently.
+News collection, decision sessions, and execution monitoring run independently. Implement the triggers with one APScheduler 3.x process feeding unique PostgreSQL jobs; the session worker runs the explicit LangGraph workflow. See [runtime](agent-runtime.md), [concurrency contracts](persistence-and-contracts.md), and [deployment](deployment-and-costs.md).
 
 | Process | Proposed starting frequency | Responsibility |
 | --- | --- | --- |
@@ -68,4 +68,6 @@ A proposal is not a confirmed fill. A successful debate does not authorize chang
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Opportunity analysis](opportunity-analysis.md)
 - [Budget management](budget-management.md)
+- [Agent runtime](agent-runtime.md)
+- [Deployment and costs](deployment-and-costs.md)
 - [Risk and execution](risk-and-execution.md)

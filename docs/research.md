@@ -20,6 +20,27 @@ The following projects are candidates for reuse or architectural study. The comp
 
 Select one starting point after a small paper-only technical spike. Compare maintainability, licensing, test coverage, provider costs, temporal correctness, and the effort required to meet the exact source requirements. Check the license and notices of the specific revision before importing code. No upstream code is adopted by this plan.
 
+## Pinned upstream inspection and reuse approach
+
+The source/metadata review below used exact commits on **2026-10-09**, not moving branch names. README claims and selected source paths were checked; no dependency install, provider call, broker call, or full test suite was run.
+
+| Project | Reviewed commit | License file | Inspected implementation | Adaptation required |
+| --- | --- | --- | --- | --- |
+| TradingAgents | [1394a3f](https://github.com/TauricResearch/TradingAgents/tree/1394a3f72aa4393e1a98f51b382434c4b4c2d972) | Apache-2.0 | `pyproject.toml`, `tradingagents/graph/setup.py`, README and LICENSE | Remap market/social/news/fundamentals into our four categories; add approved X adapter/holding matrix; replace extra risk-agent stages with our Orchestrator/Allocator and deterministic ledger |
+| TradingCrew | [f76e744](https://github.com/rminchev1/TradingCrew/tree/f76e744720ff24de17638f4f9b3097fdb4c6885c) | Apache-2.0 | README and LICENSE; repository tree | Evaluate advertised Alpaca/UI/scheduler components individually; enforce our role, queue, timestamp, and source contracts |
+| TradeAgent | [f5023d1](https://github.com/enving/TradeAgent/tree/f5023d1a932bdecfe4d8ccdfaae871b14c4d0fe0) | MIT | `run_scheduled_trading.py`, README and LICENSE | Inspected script runs a scan per invocation; assess the separate deployment triggers and execution/risk modules before reuse |
+| AI Hedge Fund | [78b779c](https://github.com/virattt/ai-hedge-fund/tree/78b779c1389e2d1452dc29606d2c4126d859b964) | MIT | README, `ROADMAP.md`, LICENSE | Study paper-ledger/idempotent-tick concepts; its file ledger and approval flow are not our broker-backed transactional runtime |
+
+Recommended implementation is a minimal custom LangGraph application, with TradingAgents as the first source-level reference. Its inspected graph contains Bull/Bear, Research Manager, Trader, three risk roles, and Portfolio Manager; it is not already our eight-role flow. Its dependency list requires Python >=3.11 and includes LangGraph; validate the chosen lock before importing modules.
+
+T0 compares selective reuse with the smaller custom graph on identical evidence. Preserve upstream licenses/notices for any imported code and record the adopted revision and modified files. No upstream code or license change is introduced by this documentation update.
+
+## Concrete tool research
+
+The [implementation stack](implementation-stack.md) and [connector specification](connector-implementation.md) link official documentation for the proposed tools. [Runtime/storage](agent-runtime.md), [data contracts](persistence-and-contracts.md), [deployment/costs](deployment-and-costs.md), and [the backlog](implementation-backlog.md) turn that research into implementation choices.
+
+Primary API access, endpoint capability, model latency, source completeness, and actual bills still require the operational T0 spike. Public documentation verification must not be presented as successful signed-in API testing.
+
 ## Documentation and source links
 
 - [X Recent Search](https://docs.x.com/x-api/posts/search/quickstart/recent-search)

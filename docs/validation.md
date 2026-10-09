@@ -22,6 +22,8 @@ Budget checks must cover final confidence/downside sizing rather than initial or
 
 Operational tests must cover missing feeds, empty results versus failed searches, forged coverage claims, watchlist removals with remaining holdings, duplicate events, unsupported confidence, debate convergence without new evidence, unresolved objections, exceeded budgets, malformed proposals, unauthorized instruments, stale quotes, simultaneous sessions, rejected orders, partial fills, timeout-after-submit, unavailable exit proceeds, and restart recovery.
 
+Implementation checks are assigned to T0-T9 in the [concrete backlog](implementation-backlog.md). Use fixtures for routine CI and a test PostgreSQL instance for concurrency; separately enabled source/paper integrations record actual access and cost. No implementation tests or paper sessions have run as part of this documentation research.
+
 ## Related pages
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
@@ -29,4 +31,5 @@ Operational tests must cover missing feeds, empty results versus failed searches
 - [New-entry debate](new-entry-debate.md)
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
+- [Implementation backlog](implementation-backlog.md)
 - [Implementation plan](PLAN.md)

@@ -6,6 +6,19 @@ This is the versioned project wiki. Each page covers one part of the design; imp
 
 **Status: design and planning.** No trading service or agent implementation is claimed.
 
+## Implementation specifications
+
+The proposed build is Python/LangGraph with PostgreSQL, OpenRouter model calls, explicit source adapters, and an Alpaca paper pilot. Alternatives and unverified access requirements are documented rather than silently selected.
+
+| Page | Purpose |
+| --- | --- |
+| [Implementation stack](implementation-stack.md) | Concrete packages, framework alternatives, model candidates, and planned modules |
+| [Connector implementation](connector-implementation.md) | News, approved X authors, SEC/IR, publisher search, quotes, and capability proofs |
+| [Agent runtime](agent-runtime.md) | Graph stages, typed tools, structured output, budgets, and side-effect recovery |
+| [Persistence and contracts](persistence-and-contracts.md) | Logical tables, contracts, indexes, leases, transactions, and idempotency |
+| [Deployment and costs](deployment-and-costs.md) | Worker topology, configuration, reference pricing, and workload-derived costs |
+| [Implementation backlog](implementation-backlog.md) | Ordered T0-T9 deliverables and acceptance results |
+
 ## Start here
 
 Read the architecture, analyst team, forecasts, opportunity analysis, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.

@@ -19,13 +19,19 @@ Reviewed: **2026-10-09**.
 - Persistent evidence, source permissions, scheduling, risk, and paper-execution design.
 - Reference-project comparison, validation strategy, and implementation milestones.
 
+- Concrete package/framework comparison and proposed Python/LangGraph build.
+- Connector/API/access specifications for news, approved X accounts, SEC/IR, search, quotes, and calendar.
+- Graph/tool boundaries, logical data model, contracts, concurrency and recovery specifications.
+- Worker deployment, configuration requirements, model/source cost scenarios, and ordered T0-T9 backlog.
+- Four upstream revisions and license files inspected; no upstream code imported.
+
 ## Implementation status
 
 The repository currently contains documentation and a license. No collectors, LLM agents, broker adapters, dashboard, runtime configuration, trading tests, or measured performance are implemented by this documentation change.
 
 ## Next milestone
 
-Start Milestone 0 in the implementation plan: define the stock watchlist, forecast horizon, sources, model budget, debate budget/queue policy and stressed-loss assumptions, Analyst Lead, portfolio budget policy, and broker candidate, then evaluate one upstream in a reproducible paper-only technical spike.
+Start [T0](implementation-backlog.md): prove authorized source/quote access and compare pinned TradingAgents with a minimal custom graph on the same evidence. Owner-supplied watchlist, X authors, provider credentials/entitlements, and financial limits are still needed for an operational spike.
 
 ## Checks for this update
 
@@ -35,12 +41,16 @@ Start Milestone 0 in the implementation plan: define the stock watchlist, foreca
 - Confidence/payoff comparison, direct debate handoff, final confidence/downside sizing, reinforcement, and compounding arithmetic checked.
 - Eight-role ownership, direct debate handoff, fair queue behavior, final confidence/downside sizing, and holding-risk exceptions checked across pages.
 - Forecast, opportunity, debate, Allocator, budget, execution, validation, and milestone pages aligned.
+- Official tool/provider documentation and upstream license/source files reviewed.
+- Token/call/credit arithmetic and documentation links checked.
 - Published content checked after the commit.
 
 These are documentation checks. They do not qualify a trading implementation.
 
 ## Related pages
 
+- [Implementation backlog](implementation-backlog.md)
+- [Implementation stack](implementation-stack.md)
 - [Implementation plan](PLAN.md)
 - [Source research](research.md)
 - [Portfolio Allocator](portfolio-allocator.md)

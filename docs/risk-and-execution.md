@@ -4,6 +4,8 @@
 
 Bull/Bear directly assess confidence, net payoff, uncertainty, and stressed downside in [opportunity analysis](opportunity-analysis.md); the runtime does not impose numerical research-screening gates. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
 
+The concrete prototype uses an Alpaca paper adapter, a durable reservation/order-intent ledger, a separate dispatcher, and an independent monitor. [Persistence and contracts](persistence-and-contracts.md) defines atomic reservations and stable client IDs; [the backlog](implementation-backlog.md) makes recovery checks a prerequisite for paper submission.
+
 Configure risk rules independently of the model:
 
 - Approved instruments and permitted actions.
@@ -15,7 +17,7 @@ Configure risk rules independently of the model:
 - Protective-order requirements and maximum holding or review periods.
 - A manual kill switch and defined recovery procedures.
 
-For the first prototype, propose long-only paper trading without leverage. Numeric thresholds are configuration decisions to settle before implementing execution. Neither analyst confidence nor a debate approval can bypass these limits. Source-coverage failures prohibit opening or reinforcing affected stocks.
+For the first prototype, propose long-only paper trading without leverage. Numeric risk limits are configuration decisions to settle before implementing execution. Neither analyst confidence nor a debate approval can bypass these limits. Source-coverage failures prohibit opening or reinforcing affected stocks.
 
 If a critical feed is missing or stale, stop new risk-taking and continue reconciliation and protection monitoring. Define failure responses before development; a kill switch must not implicitly mean liquidating every holding.
 
