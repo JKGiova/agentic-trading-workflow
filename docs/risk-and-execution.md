@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The runtime enforces the analysis team's first confidence gate before debate and the Orchestrator's revised confidence gate afterward. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) size the ceiling from `p_final` and intersect it with independent risk and broker limits. Passing confidence alone cannot authorize an order.
+The runtime enforces initial and revised [opportunity gates](opportunity-screening.md), combining confidence with net payoff, uncertainty, and stressed downside before and after debate. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
 
 Configure risk rules independently of the model:
 

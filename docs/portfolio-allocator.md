@@ -16,7 +16,7 @@ The Allocator checks:
 - Confidence revisions address actual challenges or verified facts; a large unexplained increase is deferred for clarification.
 - Expected net payoff, downside, concentration, timing, and cash availability support the proposed position.
 
-It may reject a confident proposal that lacks portfolio fit, select a smaller investment, or defer unresolved evidence. It cannot overrule a failed confidence gate, modify policy, rewrite probabilities, or repeatedly request revisions until a proposal passes. Clarification is bounded and must preserve prior records.
+It may reject a confident proposal that lacks portfolio fit, select a smaller investment, or defer unresolved evidence. It cannot overrule a failed opportunity gate, modify policy, rewrite probabilities, or repeatedly request revisions until a proposal passes. Clarification is bounded and must preserve prior records.
 
 ## Position choices
 
@@ -32,16 +32,16 @@ The prototype is long-only. The agent chooses the eligible stock, action, and ta
 
 ## Investment selection and tools
 
-Use the Orchestrator's policy-eligible `p_final` to compute the confidence-based total-position ceiling in [budget management](budget-management.md). Never size an addition from `p_initial` after debate.
+Use the Orchestrator's policy-eligible `p_final` and revised opportunity/downside record in [budget management](budget-management.md). Final confidence scales the position ceiling; a separate stressed-loss budget caps volatile exposure. Never substitute `p_initial` after debate. A favorable expected payoff can support a lower-confidence trade without implying a larger safe investment.
 
-The deterministic sizing tool returns confidence ceiling, current/pending exposure, cash/risk headroom, and maximum executable quantity. The agent proposes a positive amount at or below this limit, explaining any smaller amount using scenario downside, uncertainty, or portfolio fit. Under identical constraints, higher final confidence raises the ceiling; it does not guarantee a larger chosen investment.
+The deterministic sizing tool returns confidence ceiling, stressed-loss ceiling, current/pending exposure, cash/risk headroom, and maximum executable quantity. The agent proposes a positive amount at or below this limit, explaining any smaller amount using scenario downside, uncertainty, or portfolio fit. Under identical constraints, higher final confidence raises the ceiling; it does not guarantee a larger chosen investment.
 
 Rank supported additions under the configured policy and build one coherent portfolio plan with existing-position changes. A structured plan contains:
 
 | Field | Required value |
 | --- | --- |
 | Confidence lineage | Initial/final record IDs, values, calibration status, outcome ID, and gate results |
-| Confidence assessment | Why the final estimate is usable, meaningful revision reasons, and residual uncertainty |
+| Confidence and opportunity assessment | Why final probability/payoffs are usable, robust edge/score, stressed loss, revision reasons, and residual uncertainty |
 | Decision | Action plus `ACCEPT`, `REJECT`, or `DEFER` for the proposal |
 | Investment | Desired total position, incremental notional/quantity, maximum permitted amount, and reason for sizing |
 | Portfolio effects | Cash remaining, concentration, estimated downside, pending commitments, and applied constraints |
@@ -51,7 +51,7 @@ An agent's `ACCEPT` is a recommendation. Deterministic validators recompute quan
 
 ## Existing-position priority
 
-Review all holdings before optional entry debates. The Allocator may decide a researched hold, reduction, or close directly using the holding case and available initial forecast; those actions do not require a successful entry-confidence gate or debate. Candidate reinforcements remain unapproved until they complete both gates and debate.
+Review all holdings before optional entry debates. The Allocator may decide a researched hold, reduction, or close directly using the holding case and available initial forecast; those actions do not require a successful opportunity gate or debate. Candidate reinforcements remain unapproved until they complete both gates and debate.
 
 After debate, run a final allocation pass across eligible additions and existing-position decisions. Preserve one action per stock and do not spend hypothetical exit proceeds. If an earlier holding action was already submitted, reconcile it and exclude incompatible later actions.
 
@@ -60,5 +60,6 @@ After debate, run a final allocation pass across eligible additions and existing
 - [Architecture](architecture.md)
 - [Forecasts and confidence](forecasts-and-confidence.md)
 - [Existing-position management](position-management.md)
+- [Opportunity screening](opportunity-screening.md)
 - [Budget management](budget-management.md)
 - [Session workflow](session-workflow.md)

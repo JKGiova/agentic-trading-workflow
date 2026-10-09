@@ -1,4 +1,4 @@
-# Stock forecasts and two-stage confidence
+# Stock forecasts, confidence, and payoff scenarios
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
@@ -8,11 +8,11 @@ The analysis team produces the first stock forecast and confidence. The Orchestr
 
 | Stage | Owner | Output | Consequence |
 | --- | --- | --- | --- |
-| Initial analysis | Analyst Lead synthesizing four independent reports | `p_initial`, evidence, scenarios, uncertainty, and calibration status | Valid `p_initial <= p_initial_min` directly rejects added exposure; no debate |
-| Debate review | Orchestrator reviewing Bull/Bear cases and verified rebuttals | `p_final`, research verdict, revision reasons, unresolved objections, and calibration status | Valid `p_final <= p_final_min` rejects added exposure |
+| Initial analysis | Analyst Lead synthesizing four independent reports | `p_initial`, evidence, scenarios, uncertainty, and calibration status | Combine initial confidence and payoffs in the opportunity gate; inadequate robust edge/score rejects added exposure before debate |
+| Debate review | Orchestrator reviewing Bull/Bear cases and verified rebuttals | `p_final`, revised scenarios/edge/score, verdict, revision reasons, objections, and calibration status | Recompute the opportunity gate from revised confidence and payoffs; inadequate final edge/score rejects added exposure |
 | Investment decision | Separate Portfolio Allocator agent | Confidence assessment, position action, desired exposure, and investment proposal | Use `p_final` for eligible additions, within deterministic budget/risk limits |
 
-Missing, expired, malformed, or unsupported confidence defers new exposure. A research `REJECT` or `DEFER` cannot be overridden by a high number. Passing the first gate guarantees neither debate approval nor investment.
+Missing, expired, malformed, or unsupported confidence defers new exposure. A research `REJECT` or `DEFER` cannot be overridden by a high number. Passing the first gate guarantees neither debate approval nor investment. Confidence is combined with potential positive/negative payoff and stressed downside in [opportunity screening](opportunity-screening.md); it is not a standalone percentage cutoff.
 
 ## Measurable outcome
 
@@ -33,10 +33,10 @@ Maintain a separate benchmark-outperformance forecast: total return exceeds the 
 | Revised confidence | Optional `p_final`, Orchestrator record, and calibration label; absent when debate was skipped |
 | Revision explanation | Specific challenges and verified facts that changed or preserved confidence |
 | Evidence quality | Strong, mixed, weak, or incomplete, with source coverage |
-| Scenarios and expected net payoff | Upside/central/downside mechanisms, payoffs, assumptions, and invalidators |
+| Scenarios and opportunity metrics | Probabilities, average net payoffs, stressed loss, uncertainty haircut, robust edge/score, mechanisms, and invalidators at both stages |
 | Supporting/opposing sources | Evidence IDs, URLs, publication and acquisition times |
 | Disagreement and missing data | Analyst conflicts, unresolved debate objections, and failed searches |
-| Expiry and gate results | Refresh deadline, policy version, both thresholds, and routing reason |
+| Expiry and gate results | Refresh deadline, policy version, stage-specific edge/score thresholds, and routing reason |
 
 Agreement and debate persuasiveness do not establish probability. Neither the lead nor Orchestrator may average agent votes, count repeated headlines, or increase confidence to unlock funding. The Allocator evaluates support and consistency but cannot invent a third probability or rewrite either estimate.
 
@@ -44,7 +44,7 @@ Agreement and debate persuasiveness do not establish probability. Neither the le
 
 Initially label each estimate **model estimate — uncalibrated**, permit `INSUFFICIENT_EVIDENCE`, and use estimates only in explicit paper experiments. Predictive confidence and evidence quality remain separate.
 
-Evaluate `p_initial` and `p_final` separately with prospective outcomes, held-out chronological calibration, Brier scores, reliability curves, sample counts, and baselines. The final estimate exists only for first-gate survivors; compare confidence revisions on that same subset and report screening coverage to avoid selection bias.
+Evaluate `p_initial` and `p_final` separately with prospective outcomes, held-out chronological calibration, Brier scores, reliability curves, sample counts, and baselines. The final estimate exists only for initial-opportunity-gate survivors; compare confidence revisions on that same subset and report screening coverage to avoid selection bias.
 
 If calibration is enabled, retain raw and calibrated values separately. The policy fixes which policy-eligible value each gate and sizing tool consumes; agents cannot choose the more favorable one. Live eligibility requires approved validation for each stage's model, prompt, horizon, and data regime. Revalidate after material changes.
 
@@ -52,11 +52,12 @@ Settle all available forecasts, including rejected/untraded proposals, independe
 
 ## Dashboard summary
 
-Show news recap, horizon, initial confidence and first-gate result, debate status, revised confidence and revision explanation, second-gate result, Allocator action, target/final investment, calibration labels, disagreement, and expiry. Show skipped debate and missing final confidence explicitly.
+Show news recap, horizon, initial confidence and initial opportunity score/gate result, debate status, revised confidence and revision explanation, revised opportunity score/gate result, Allocator action, target/final investment, calibration labels, disagreement, and expiry. Show skipped debate and missing final confidence explicitly.
 
 ## Related pages
 
 - [Analysis team](analysis-team.md)
+- [Opportunity screening](opportunity-screening.md)
 - [Bull/Bear debate](new-entry-debate.md)
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)

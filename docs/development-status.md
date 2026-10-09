@@ -8,11 +8,11 @@ Reviewed: **2026-10-09**.
 
 - English project overview and linked wiki index.
 - Four specialist analyst roles and a mandatory holding-research coverage matrix.
-- Analyst-team initial confidence and direct rejection gate before debate.
-- Orchestrator revised confidence, second gate, and immutable confidence lineage.
+- Analyst-team initial confidence/payoff scenarios and risk-adjusted opportunity gate before debate.
+- Orchestrator revised confidence/payoffs, second opportunity gate, and immutable forecast lineage.
 - Separate Portfolio Allocator agent analyzing confidence and choosing actions/investments.
 - Stock forecast contracts with separate benchmark and positive-net-return outcomes.
-- Confidence-based acceptance and investment sizing, shared portfolio budget, cash reserves, and order-reservation lifecycle.
+- Opportunity-based acceptance, confidence/downside investment sizing, shared budget, cash reserves, and order reservations.
 - Existing-position review actions, including hold and incomplete-review handling.
 - Bounded Bull/Bear debate for openings and reinforcements, with Orchestrator verdicts.
 - Persistent evidence, source permissions, scheduling, risk, and paper-execution design.
@@ -24,16 +24,16 @@ The repository currently contains documentation and a license. No collectors, LL
 
 ## Next milestone
 
-Start Milestone 0 in the implementation plan: define the stock watchlist, forecast horizon, sources, model budget, initial/final confidence thresholds, Analyst Lead, portfolio budget policy, and broker candidate, then evaluate one upstream in a reproducible paper-only technical spike.
+Start Milestone 0 in the implementation plan: define the stock watchlist, forecast horizon, sources, model budget, initial/final opportunity thresholds and stressed-loss assumptions, Analyst Lead, portfolio budget policy, and broker candidate, then evaluate one upstream in a reproducible paper-only technical spike.
 
 ## Checks for this update
 
 - Required design sections distributed across topic pages.
 - Internal Markdown file links checked against the proposed repository tree.
 - Root README kept as a short navigation page.
-- Both gate boundaries, before/after-debate examples, final-confidence sizing, and reinforcement arithmetic checked for consistency.
-- Eight-role ownership, both confidence gates, skipped-debate behavior, final-confidence sizing, and holding-risk exceptions checked across pages.
-- Forecast, debate, Allocator, budget, execution, validation, and milestone pages aligned.
+- Confidence/payoff comparison, opportunity boundaries, final confidence/downside sizing, reinforcement, and compounding arithmetic checked.
+- Eight-role ownership, both opportunity gates, skipped-debate behavior, final confidence/downside sizing, and holding-risk exceptions checked across pages.
+- Forecast, opportunity, debate, Allocator, budget, execution, validation, and milestone pages aligned.
 - Published content checked after the commit.
 
 These are documentation checks. They do not qualify a trading implementation.

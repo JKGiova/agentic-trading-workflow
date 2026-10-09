@@ -8,7 +8,7 @@ This is the versioned project wiki. Each page covers one part of the design; imp
 
 ## Start here
 
-Read the architecture, analyst team, forecasts, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
+Read the architecture, analyst team, forecasts, opportunity screening, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
 
 ## Pages
 
@@ -17,6 +17,7 @@ Read the architecture, analyst team, forecasts, position management, debate, Por
 | [Architecture and scope](architecture.md) | Stock universe, eight agent roles, component ownership, and proposed stack |
 | [Analyst team and mandatory research](analysis-team.md) | Market, financial, company, and social analysts; held-stock coverage requirements |
 | [Forecasts and confidence](forecasts-and-confidence.md) | Initial and revised confidence, screening gates, outcome definitions, and calibration |
+| [Opportunity screening](opportunity-screening.md) | Confidence plus payoff, robust expected return, downside, and debate priority |
 | [Existing-position management](position-management.md) | Reinforce, reduce, close, hold, and thesis comparison |
 | [Entry and reinforcement debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and revised confidence |
 | [Portfolio Allocator](portfolio-allocator.md) | Agent assessment of confidence, position choice, investment, and tool boundaries |
@@ -35,10 +36,10 @@ Read the architecture, analyst team, forecasts, position management, debate, Por
 - Every open position requires fresh, recorded searches and an explicit coverage status.
 - Stock forecasts have an explicit horizon and outcome; model confidence is labeled uncalibrated until validated.
 - Existing positions can be reinforced, reduced, closed, or held unchanged.
-- The analyst team owns initial confidence; low-confidence additions are rejected before debate.
-- Two researchers debate passed additions; the Orchestrator judges evidence and defines revised confidence.
+- The analyst team owns initial confidence and payoff scenarios; a risk-adjusted opportunity screen decides whether an addition deserves debate.
+- Two researchers debate passed additions; the Orchestrator revises confidence and payoffs for another opportunity screen.
 - A separate Portfolio Allocator analyzes the revised confidence and chooses the action and investment.
-- Trade confidence gates new exposure and scales investment; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
+- Confidence and net payoff jointly gate new exposure; final confidence scales investment within a stressed-loss budget; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
 - Risk limits and execution are deterministic services, with paper trading as the first target.
 
 ## Documentation layout

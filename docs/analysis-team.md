@@ -21,7 +21,7 @@ After all independent reports are complete, the designated Analyst Lead synthesi
 
 The team emits `p_initial`: its initial probability of a positive forward net return over the defined horizon. Include the outcome definition, reference price, cost assumptions, evidence quality, opposing scenarios, calibration status, and expiry. Preserve each specialist's view and any disagreement. Return `INSUFFICIENT_EVIDENCE` when the estimate cannot be supported.
 
-The deterministic first gate rejects an `OPEN` or `REINFORCE` proposal immediately when a valid `p_initial <= p_initial_min`. No Bull/Bear debate or investment selection runs for that rejected addition. Missing or invalid confidence defers it. Reconsideration requires a new versioned review after material new evidence or the next scheduled session, not retries until the threshold is crossed.
+The team also publishes average positive/negative net payoffs, supported scenario probabilities, stressed downside, and estimate uncertainty. The deterministic first [opportunity gate](opportunity-screening.md) combines `p_initial` with these payoffs: reject additions whose robust expected net return or return-to-stressed-loss score fails policy, or whose hard risk constraints fail. A valid low confidence alone does not reject a favorable setup. Missing/unsupported inputs defer it. Reconsideration requires a new versioned review after material new evidence or the next session, not retries until a score passes.
 
 Every holding still receives its mandatory research and risk-reduction review, regardless of the first gate. The team supplies a holding case comparing news with the entry thesis; the [Portfolio Allocator](portfolio-allocator.md) owns the actual action.
 
@@ -49,6 +49,7 @@ Prioritize research and review of holdings over optional new-entry debates when 
 ## Related pages
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
+- [Opportunity screening](opportunity-screening.md)
 - [Position management](position-management.md)
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Data and sources](data-and-sources.md)

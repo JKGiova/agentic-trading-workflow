@@ -36,8 +36,17 @@ Select one starting point after a small paper-only technical spike. Compare main
 - [TradingAgents research paper: specialist analysts and Bull/Bear research](https://arxiv.org/abs/2412.20138)
 - [Teaching Models to Express Their Uncertainty in Words: calibration research](https://arxiv.org/abs/2205.14334)
 
+## Opportunity and risk references
+
+The opportunity-score and sizing formulas are proposed paper policies to validate, not claims made by these sources.
+
+- [Investor.gov: microcap liquidity and volatility risks](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/investor-2)
+- [FINRA: liquidity, concentration, and investment risk](https://www.finra.org/investors/investing/investing-basics/risk)
+- [MIT OpenCourseWare: law of large numbers and independent repeated trials](https://ocw.mit.edu/courses/6-0002-introduction-to-computational-thinking-and-data-science-fall-2016/5af20311b02eaab959fcdb7ffb5694d3_MIT6_0002F16_lec6.pdf)
+
 ## Related pages
 
 - [Architecture](architecture.md)
+- [Opportunity screening](opportunity-screening.md)
 - [New-entry debate](new-entry-debate.md)
 - [Implementation plan](PLAN.md)
