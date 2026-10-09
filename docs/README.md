@@ -8,7 +8,7 @@ This is the versioned project wiki. Each page covers one part of the design; imp
 
 ## Start here
 
-Read the architecture, analyst team, forecasts, position management, and debate pages in that order. Use the implementation plan to choose the first development milestone.
+Read the architecture, analyst team, forecasts, position management, debate, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
 
 ## Pages
 
@@ -19,6 +19,7 @@ Read the architecture, analyst team, forecasts, position management, and debate 
 | [Forecasts and confidence](forecasts-and-confidence.md) | Stock recaps, forecast horizons, outcome definitions, and calibration |
 | [Existing-position management](position-management.md) | Reinforce, reduce, close, hold, and thesis comparison |
 | [New-entry debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and judge verdicts |
+| [Budget management](budget-management.md) | Confidence-based acceptance and investment, shared capital limits, and cash reservations |
 | [Session workflow](session-workflow.md) | Scheduling, portfolio reconciliation, action sequencing, and proposal contracts |
 | [Data and sources](data-and-sources.md) | Approved publications and X accounts, timestamps, deduplication, and memory |
 | [Risk and execution](risk-and-execution.md) | Deterministic limits, protective orders, idempotency, and paper execution |
@@ -34,6 +35,7 @@ Read the architecture, analyst team, forecasts, position management, and debate 
 - Stock forecasts have an explicit horizon and outcome; model confidence is labeled uncalibrated until validated.
 - Existing positions can be reinforced, reduced, closed, or held unchanged.
 - Two researchers debate new entries; one Decision Manager judges the evidence.
+- Trade confidence gates new exposure and scales investment; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
 - Risk limits and execution are deterministic services, with paper trading as the first target.
 
 ## Documentation layout

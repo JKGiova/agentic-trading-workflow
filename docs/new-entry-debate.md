@@ -4,7 +4,7 @@
 
 After existing-position reviews, the Decision Manager nominates a bounded shortlist of new-entry candidates from eligible watchlist stocks. Propose a maximum of three debates per session as an initial cost budget, configurable before testing.
 
-Candidates need sufficient evidence coverage, a fresh stock forecast, a causal thesis, a horizon, invalidators, and an initial feasibility check. The shortlist is research output, not an order.
+Candidates need sufficient evidence coverage, a fresh stock forecast including `p_trade`, a causal thesis, a horizon, invalidators, and an initial confidence/budget feasibility check. The shortlist is research output, not an order.
 
 ### Participants
 
@@ -35,16 +35,19 @@ Assess source traceability, causal validity, novelty, timing, remaining opportun
 
 - `APPROVE`: the proposal is sufficiently supported, its conditions remain valid, and it can proceed to deterministic risk checks.
 - `DEFER`: specific missing evidence, timing, or unresolved material conflict prevents a decision. Record what would permit reconsideration.
-- `REJECT`: verified evidence undermines the thesis or the setup fails explicit eligibility criteria.
+- `REJECT`: verified evidence undermines the thesis or the setup fails explicit eligibility criteria, including the configured trade-confidence threshold.
 
 The judge must state which challenges were resolved, which remain, and why the evidence supports its verdict. Do not pick the more persuasive writing style, automatically split the two probability estimates, or require consensus.
 
 A Bear victory means rejecting or deferring the proposed long entry; it does not automatically create a short trade.
 
-Rank approved proposals against the same portfolio budget. Count pending orders and do not assume that cash from proposed exits is available before fills. Approval expires if price, liquidity, evidence, or portfolio state changes materially.
+The judge records the final `p_trade`, its calibration status, scenario payoffs, and the reason for any confidence revision. Research `APPROVE` then passes to [budget management](budget-management.md): low confidence rejects added exposure; eligible confidence sets the position ceiling; cash and risk constraints determine final `ACCEPT`, `REJECT`, or `DEFER`. Preserve both verdicts separately.
+
+Rank approved proposals alongside eligible reinforcements against the same portfolio budget. Count pending orders and do not assume that cash from proposed exits is available before fills. Approval expires if price, liquidity, evidence, or portfolio state changes materially.
 
 ## Related pages
 
 - [Stock forecasts](forecasts-and-confidence.md)
 - [Position management](position-management.md)
+- [Budget management](budget-management.md)
 - [Validation](validation.md)

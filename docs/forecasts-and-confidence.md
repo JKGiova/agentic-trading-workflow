@@ -13,7 +13,7 @@ A stock forecast contains:
 | Direction | Bullish, neutral, bearish, or insufficient evidence over the declared horizon |
 | Forecast horizon | Explicit start and settlement times using the exchange calendar |
 | Outcome definition | Exact measurable event being forecast |
-| Probability estimate | Optional model estimate for that event, clearly labeled uncalibrated initially |
+| Probability estimates | Benchmark-outperformance probability and, for investment proposals, separate positive-net-return probability `p_trade`; each labeled with calibration status |
 | Evidence quality | Strong, mixed, weak, or incomplete, with an explanation |
 | Scenarios | Upside, central, and downside mechanisms, catalysts, and invalidators |
 | Market reaction | Price movement since the event, spread, liquidity, and possible prior pricing-in |
@@ -25,15 +25,17 @@ Proposed initial probability target: the stock's total return over the fixed hor
 
 Keep predictive confidence separate from evidence quality. A well-sourced event can still have uncertain price implications. Four agents agreeing is not four statistically independent forecasts.
 
-Initially display a qualitative outlook and, when elicited, a percentage labeled **model estimate — uncalibrated**. Permit `INSUFFICIENT_EVIDENCE` instead of forcing a number. Probability alone must not approve a trade or determine its size.
+Initially display a qualitative outlook and, when elicited, a percentage labeled **model estimate — uncalibrated**. Permit `INSUFFICIENT_EVIDENCE` instead of forcing a number. For investment proposals, also estimate `p_trade`: the probability of a positive forward total return after estimated round-trip fees and slippage, from the current executable reference price over the declared horizon. Benchmark outperformance is not a substitute for this event. Missing or unsupported trade confidence defers new exposure.
+
+The final `p_trade` controls the entry threshold and confidence-based position ceiling in [budget management](budget-management.md). Research quality, positive expected net payoff, and deterministic risk checks remain required. Uncalibrated estimates can drive labeled paper experiments only; eventual live use requires an approved validation policy.
 
 As prospective paper outcomes accumulate, evaluate Brier score and reliability curves on held-out chronological periods, including sample sizes and baseline comparisons. Validate any calibrator out of sample; use calibrated probabilities only when the relevant model, prompt, horizon, and data regime support them. Revalidate after material changes.
 
-Evaluate forecast outcomes independently of trade exits so closing a position does not erase or redefine the original forecasting target.
+Settle benchmark and trade-success forecasts separately, including proposals that receive no allocation. Evaluate forecast outcomes independently of trade exits so closing a position does not erase or redefine the original forecasting target.
 
 ## Dashboard summary
 
-The stock summary shows the stock, research coverage, latest news recap, outlook, forecast horizon, estimated probability and calibration label, evidence quality, important disagreement, invalidation conditions, and next review. Link each summary to the underlying analyst reports and evidence.
+The stock summary shows the stock, research coverage, latest news recap, outlook, forecast horizon, both probability estimates and calibration labels, confidence-based target and final allocation, evidence quality, important disagreement, invalidation conditions, and next review. Link each summary to the underlying analyst reports and evidence.
 
 Missing evidence must be visible. Show a deferred forecast separately from a neutral view.
 
@@ -41,4 +43,5 @@ Missing evidence must be visible. Show a deferred forecast separately from a neu
 
 - [Analysis team](analysis-team.md)
 - [New-entry debate](new-entry-debate.md)
+- [Budget management](budget-management.md)
 - [Validation](validation.md)

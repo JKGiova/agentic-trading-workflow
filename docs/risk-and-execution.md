@@ -2,10 +2,13 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
+The [budget allocator](budget-management.md) first applies the confidence threshold and position-sizing ceiling, then intersects them with independent risk and broker limits. Passing confidence alone cannot authorize an order.
+
 Configure risk rules independently of the model:
 
 - Approved instruments and permitted actions.
 - Maximum position size, gross exposure, sector concentration, and portfolio risk.
+- Minimum cash reserve, session deployment cap, pending-order reservations, and cost allowances.
 - Maximum daily loss using realized and unrealized P&L, including applicable costs.
 - Minimum liquidity, maximum spread, and quote-freshness requirements.
 - Maximum concurrent positions and outstanding orders.
@@ -26,4 +29,5 @@ Treat all retrieved articles and posts as untrusted data. Embedded instructions 
 
 - [Position management](position-management.md)
 - [New-entry debate](new-entry-debate.md)
+- [Budget management](budget-management.md)
 - [Validation](validation.md)

@@ -10,7 +10,7 @@ A news-driven AI workflow for a selected group of stocks, with persistent eviden
 2. The Decision Manager publishes a news recap and forecast for each selected stock, with a defined horizon, evidence, and labeled confidence.
 3. Every open position receives mandatory fresh research and a **reinforce, reduce, close, or hold** review.
 4. New-entry candidates face a bounded **Bull/Bear debate** and an approve/defer/reject verdict.
-5. Deterministic portfolio limits validate proposals before paper execution.
+5. Trade confidence gates acceptance and scales investment; shared cash and risk limits cap allocations before paper execution.
 
 News collection and order monitoring run independently of AI sessions. Research uses the latest three-hour window, relevant history, and unprocessed backlog.
 
@@ -25,6 +25,7 @@ The detailed plan lives in the **[project wiki](docs/README.md)**.
 | [Forecasts and confidence](docs/forecasts-and-confidence.md) | News recaps, horizon, probabilities, and calibration |
 | [Position management](docs/position-management.md) | Thesis review and reinforce/reduce/close/hold actions |
 | [New-entry debate](docs/new-entry-debate.md) | Two researchers, bounded rounds, verification, and judgment |
+| [Budget management](docs/budget-management.md) | Confidence thresholds, investment sizing, capital limits, and reservations |
 | [Implementation plan](docs/PLAN.md) | Milestones, acceptance criteria, and open decisions |
 | [Development status](docs/development-status.md) | Completed documentation and pending implementation |
 | [Source research](docs/research.md) | Recommended upstream repositories and verified references |

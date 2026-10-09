@@ -6,7 +6,7 @@
 
 Every configurable X hours, a four-agent analysis team researches a selected group of stocks, produces evidence-backed forecasts, and reassesses every open position. New-entry proposals are challenged by a Bull Researcher and a Bear Researcher before a Decision Manager makes a judgment.
 
-The required sequence is: collect and actively research evidence, publish stock forecasts, review current holdings, debate shortlisted new entries, validate portfolio-level risk, and execute permitted paper orders.
+The required sequence is: collect and actively research evidence, publish stock forecasts, review current holdings, debate shortlisted new entries, apply confidence-based capital allocation and portfolio-level risk, and execute permitted paper orders.
 
 The first implementation target is long-only paper trading. Every capability described here is a planned design unless explicitly marked complete.
 
@@ -41,14 +41,14 @@ flowchart TD
     P --> L["New-entry shortlist"]
     L --> B["Bull and Bear debate"]
     B --> J["Decision Manager: entry verdict"]
-    P --> R["Deterministic portfolio risk gate"]
+    P --> R["Confidence allocation and portfolio risk gate"]
     J --> R
     R --> E["Paper execution and independent monitor"]
 ```
 
 There are seven AI roles: four analysts, two debate participants, and one Decision Manager. The same Decision Manager role synthesizes forecasts, reviews positions, nominates candidates, and judges debates in separate structured stages.
 
-Scheduling, source permissions, coverage validation, portfolio limits, order sizing, and execution are code-controlled services. Credentials and policy configuration remain outside model-controlled content.
+Scheduling, source permissions, coverage validation, confidence thresholds, budget reservations, portfolio limits, order sizing, and execution are code-controlled services. Confidence governs eligibility for new exposure and scales the total-position investment ceiling within those limits. Credentials and policy configuration remain outside model-controlled content.
 
 Analysts run independently against the same evidence cutoff and reconciled portfolio snapshot. They do not see one another's conclusions until their reports are complete. Shared evidence is attributed and deduplicated.
 
@@ -75,4 +75,5 @@ Track separate budgets for news feeds, X API usage, LLM calls, market data, and 
 
 - [Analysis team](analysis-team.md)
 - [Session workflow](session-workflow.md)
+- [Budget management](budget-management.md)
 - [Implementation plan](PLAN.md)

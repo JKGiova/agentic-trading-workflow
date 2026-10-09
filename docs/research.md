@@ -28,7 +28,8 @@ Select one starting point after a small paper-only technical spike. Compare main
 - [X API pricing](https://docs.x.com/x-api/getting-started/pricing)
 - [X Developer Policy](https://docs.x.com/developer-terms/policy)
 - [Alpaca paper trading](https://docs.alpaca.markets/us/docs/paper-trading)
-- [Alpaca order handling](https://docs.alpaca.markets/us/docs/orders-at-alpaca)
+- [Alpaca order handling and buying-power reservations](https://docs.alpaca.markets/us/docs/orders-at-alpaca)
+- [scikit-learn probability calibration: reliability and scoring](https://scikit-learn.org/stable/modules/calibration.html)
 - [TradeAgent scheduled-scan source](https://github.com/enving/TradeAgent/blob/main/run_scheduled_trading.py)
 - [AI Hedge Fund implementation roadmap](https://github.com/virattt/ai-hedge-fund/blob/main/ROADMAP.md)
 

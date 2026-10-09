@@ -27,7 +27,7 @@ If sessions are more than three hours apart, process the unhandled backlog since
 8. Nominate eligible new-entry candidates and perform the bounded Bull/Bear debate.
 9. Judge candidates as `APPROVE`, `DEFER`, or `REJECT`; retain both final cases.
 10. Build one coherent portfolio proposal from existing-position changes and approved entries. Net by stock and prohibit contradictory same-session orders.
-11. Apply deterministic risk, cash reservation, liquidity, and protective-order checks.
+11. Apply the confidence threshold, compute confidence-based total-position ceilings, and allocate one shared budget across openings and reinforcements. Apply cash-reserve, pending-order, risk, liquidity, and protective-order checks; record final `ACCEPT`, `REJECT`, or `DEFER` and reserve permitted capital atomically.
 12. Reconcile and refresh quotes before submission; expire proposals that no longer satisfy their conditions.
 13. Submit permitted paper orders, monitor fills, and record broker-confirmed state.
 14. Persist analyst reports, forecasts, search coverage, decisions, debates, order states, costs, and checkpoints; release the lock.
@@ -48,7 +48,10 @@ Complete required position reviews before optional debates. Research and executi
 | Evidence IDs and URLs | Supporting and contradictory sources |
 | Information cutoff | Latest time included in the analysis |
 | Debate record | Bull/Bear final cases, unresolved objections, and judge verdict for new entries |
+| Budget and confidence policy | Policy version, final `p_trade`, calibration status, entry threshold, and confidence-based target |
+| Allocation and reservations | Current/pending exposure, applied caps, final quantity/notional, costs, reservation IDs, and limiting constraint |
 | Desired exposure and protections | Inputs to deterministic sizing and risk checks |
+| Budget verdict | `ACCEPT`, `REJECT`, or `DEFER`, with reasons distinct from the research verdict |
 | Invalidation, review, and expiry | Conditions and deadlines for reassessment |
 | Execution status | Proposed, rejected by risk, submitted, partially filled, filled, canceled, or failed |
 
@@ -60,4 +63,5 @@ A proposal is not a confirmed fill. A successful debate does not authorize chang
 
 - [Architecture](architecture.md)
 - [Analysis team](analysis-team.md)
+- [Budget management](budget-management.md)
 - [Risk and execution](risk-and-execution.md)
