@@ -20,21 +20,22 @@ If sessions are more than three hours apart, process the unhandled backlog since
 1. Acquire a portfolio lock, create a session ID, and establish an evidence cutoff.
 2. Reconcile broker holdings, cash, fills, and pending orders; build the union of watchlist and held stocks.
 3. Collect new evidence and relevant history, including unprocessed backlog.
-4. Run the four analysts independently, prioritizing all mandatory holding-specific searches.
-5. Validate research coverage; retry bounded missing tasks and mark unresolved gaps.
-6. Have the Decision Manager publish a per-stock news recap, forecast, and labeled confidence.
-7. Review every existing holding and propose `REINFORCE`, `REDUCE`, `CLOSE`, or `HOLD`; distinguish incomplete reviews.
-8. Nominate eligible new-entry candidates and perform the bounded Bull/Bear debate.
-9. Judge candidates as `APPROVE`, `DEFER`, or `REJECT`; retain both final cases.
-10. Build one coherent portfolio proposal from existing-position changes and approved entries. Net by stock and prohibit contradictory same-session orders.
-11. Apply the confidence threshold, compute confidence-based total-position ceilings, and allocate one shared budget across openings and reinforcements. Apply cash-reserve, pending-order, risk, liquidity, and protective-order checks; record final `ACCEPT`, `REJECT`, or `DEFER` and reserve permitted capital atomically.
-12. Reconcile and refresh quotes before submission; expire proposals that no longer satisfy their conditions.
-13. Submit permitted paper orders, monitor fills, and record broker-confirmed state.
-14. Persist analyst reports, forecasts, search coverage, decisions, debates, order states, costs, and checkpoints; release the lock.
+4. Run the four analysts independently, prioritizing mandatory holding-specific searches.
+5. Validate coverage; retry bounded missing tasks and mark unresolved gaps.
+6. Have the Analyst Lead synthesize the team's stock recaps, forecasts, and labeled `p_initial`; retain the independent reports.
+7. Send every mandatory holding case to the Portfolio Allocator for hold/reduce/close review and identification of possible reinforcements. Preserve incomplete-review status.
+8. Apply the initial confidence gate to all proposed openings and reinforcements. Valid `p_initial <= p_initial_min` directly rejects the addition with no debate; invalid/missing confidence defers it.
+9. Select a bounded shortlist only from passed additions and run the Bull/Bear protocol. Defer candidates that exceed the debate budget.
+10. Have the Orchestrator publish `p_final`, confidence-revision reasons, and `APPROVE`/`DEFER`/`REJECT`. Retain both final debate cases and the original estimate.
+11. Apply the final confidence gate. Reject valid `p_final <= p_final_min`; defer missing/invalid confidence or research gaps. Only supported `APPROVE` proposals passing both gates reach investment selection.
+12. Have the Portfolio Allocator independently assess final confidence and portfolio fit, choose position actions and investments using sizing tools, and produce one coherent plan. Net by stock and prohibit contradictory orders.
+13. Recompute deterministic confidence ceilings, cash-reserve, pending-order, risk, liquidity, and protection constraints; reserve validated capital atomically. Record the agent's decision separately from the validator's final authorization.
+14. Reconcile and refresh quotes before submission; expire materially changed proposals. Submit permitted paper orders, monitor fills, and record broker-confirmed state.
+15. Persist analyst reports, both confidence records and gates, revisions, coverage, holding reviews, debates, allocation assessments, validator outcomes, order states, costs, and checkpoints; release the lock.
 
-Session states: `COLLECTING`, `ANALYZING`, `REVIEWING_POSITIONS`, `DEBATING`, `VALIDATING`, `EXECUTING`, then `COMPLETED`, `PARTIAL`, or `FAILED`.
+Session states: `COLLECTING`, `ANALYZING`, `REVIEWING_POSITIONS`, `INITIAL_GATE`, `DEBATING`, `FINAL_GATE`, `ALLOCATING`, `VALIDATING`, `EXECUTING`, then `COMPLETED`, `PARTIAL`, or `FAILED`.
 
-Complete required position reviews before optional debates. Research and execution use distinct checkpoints, so recovery cannot repeat submissions. Proposed exit proceeds remain unavailable until broker state confirms otherwise.
+Complete required holding reviews before optional entry debates. Rejection of added exposure never skips an existing holding's research or blocks a justified reduction/close. Research and execution have distinct checkpoints; recovery must not repeat submissions. Proposed exit proceeds remain unavailable until broker confirmation and applicable account rules permit their use.
 
 ### Proposal contract
 
@@ -43,15 +44,16 @@ Complete required position reviews before optional debates. Research and executi
 | Session, proposal, and stock IDs | Traceability and duplicate prevention |
 | Path and action | Existing-position change or new-entry decision |
 | Thesis and changes | Forward-looking justification and comparison with the entry thesis |
-| Forecast and confidence status | Horizon, exact outcome, estimate, calibration status, and uncertainty |
+| Forecast and confidence lineage | Outcome ID, horizon, reference-price basis, `p_initial` and `p_final` record IDs/values, calibration statuses, and revision reasons |
 | Research coverage | Required tasks, actual retrieval records, and unresolved gaps |
 | Evidence IDs and URLs | Supporting and contradictory sources |
 | Information cutoff | Latest time included in the analysis |
-| Debate record | Bull/Bear final cases, unresolved objections, and judge verdict for new entries |
-| Budget and confidence policy | Policy version, final `p_trade`, calibration status, entry threshold, and confidence-based target |
+| Debate record | Completed or skipped, Bull/Bear final cases, unresolved objections, and Orchestrator verdict for any addition |
+| Budget and confidence policy | Policy version, `p_initial_min`, `p_final_min`, both gate results, and confidence-based target from `p_final` |
 | Allocation and reservations | Current/pending exposure, applied caps, final quantity/notional, costs, reservation IDs, and limiting constraint |
 | Desired exposure and protections | Inputs to deterministic sizing and risk checks |
-| Budget verdict | `ACCEPT`, `REJECT`, or `DEFER`, with reasons distinct from the research verdict |
+| Allocator assessment and decision | Confidence support, portfolio fit, action, investment rationale, and `ACCEPT`/`REJECT`/`DEFER` |
+| Validator authorization | Deterministic `ACCEPT`/`REJECT`/`DEFER`, reservation and reasons, separate from agent/research verdicts |
 | Invalidation, review, and expiry | Conditions and deadlines for reassessment |
 | Execution status | Proposed, rejected by risk, submitted, partially filled, filled, canceled, or failed |
 
@@ -63,5 +65,6 @@ A proposal is not a confirmed fill. A successful debate does not authorize chang
 
 - [Architecture](architecture.md)
 - [Analysis team](analysis-team.md)
+- [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Risk and execution](risk-and-execution.md)

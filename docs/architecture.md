@@ -4,53 +4,54 @@
 
 ## Project goal
 
-Every configurable X hours, a four-agent analysis team researches a selected group of stocks, produces evidence-backed forecasts, and reassesses every open position. New-entry proposals are challenged by a Bull Researcher and a Bear Researcher before a Decision Manager makes a judgment.
+Every configurable X hours, four analysts research selected stocks and every existing holding. The team publishes initial confidence; weak proposals are rejected before debate. Bull and Bear then challenge eligible additions, the Orchestrator defines revised confidence, and a separate Portfolio Allocator agent chooses position actions and investment amounts.
 
-The required sequence is: collect and actively research evidence, publish stock forecasts, review current holdings, debate shortlisted new entries, apply confidence-based capital allocation and portfolio-level risk, and execute permitted paper orders.
-
-The first implementation target is long-only paper trading. Every capability described here is a planned design unless explicitly marked complete.
-
-The initial research objective is to measure whether specialist analysis and debate improve decisions after trading and operating costs.
+The first implementation target is long-only paper trading. Every capability described here is a planned design unless explicitly marked complete. The research objective is to measure whether specialist analysis, debate, and confidence-based allocation improve decisions after trading and operating costs.
 
 ### Stock universe and time horizons
 
-- `selected_stocks` is a user-configured watchlist; the system must not expand the new-entry universe by itself.
-- `analysis_universe = selected_stocks union broker-held stocks`. Held stocks remain mandatory research targets even after removal from the watchlist.
-- Existing holdings removed from the watchlist remain eligible for review and risk reduction, but cannot be reinforced without explicit eligibility.
-- The recent-news window defaults to three hours, supplemented by relevant historical evidence and any unprocessed backlog.
-- The decision interval defaults to three hours. It is independent of the forecast horizon.
-- Propose a five-trading-day primary forecast horizon for the first experiment, configurable before evaluation. Each position also carries its own thesis review deadline.
-- New candidates are stocks in the watchlist with no current holding or pending opening order. Reinforcements follow the existing-position path.
-
-A session may leave exposure unchanged and reject every new entry. Each action must cite its evidence and the conditions that would invalidate its thesis.
+- `selected_stocks` is a user-configured watchlist; agents cannot expand new-entry eligibility.
+- `analysis_universe = selected_stocks union broker-held stocks`. Removed watchlist stocks remain mandatory holding-research targets and may be reduced or closed, but cannot be reinforced without explicit eligibility.
+- The recent-news window and decision interval each default to three hours, independently configurable. Research includes relevant history and unprocessed backlog.
+- Propose a five-trading-day primary forecast horizon, frozen before evaluation. Each position also has a thesis-review deadline.
+- New candidates have no current holding or pending opening order. Reinforcements are existing-position additions and require the same two confidence gates and debate as openings.
+- A session may leave exposure unchanged and reject every addition. Actions must cite evidence and thesis-invalidating conditions.
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-    S["Scheduled session and broker snapshot"] --> C["Evidence collection and coverage checks"]
-    C --> M["Market Analyst"]
-    C --> F["Financial Analyst"]
-    C --> N["Company Analyst"]
-    C --> X["Social Analyst"]
-    M --> D["Decision Manager: stock forecasts"]
-    F --> D
-    N --> D
-    X --> D
-    D --> P["Existing-position review"]
-    P --> L["New-entry shortlist"]
-    L --> B["Bull and Bear debate"]
-    B --> J["Decision Manager: entry verdict"]
-    P --> R["Confidence allocation and portfolio risk gate"]
-    J --> R
+    A["Four analysts: research and initial confidence"] --> H["Mandatory holding review"]
+    A --> G{"Initial confidence gate"}
+    G -->|Reject| X["Reject added exposure"]
+    G -->|Defer| W["Defer added exposure"]
+    G -->|Pass| B["Bull and Bear debate"]
+    B --> O["Orchestrator: revised confidence and verdict"]
+    O --> F{"Final confidence and evidence gate"}
+    F -->|Reject| X
+    F -->|Defer| W
+    F -->|Pass| P["Portfolio Allocator: action and investment"]
+    H -->|Hold or reduce risk| P
+    P --> R["Deterministic budget and risk validation"]
     R --> E["Paper execution and independent monitor"]
 ```
 
-There are seven AI roles: four analysts, two debate participants, and one Decision Manager. The same Decision Manager role synthesizes forecasts, reviews positions, nominates candidates, and judges debates in separate structured stages.
+Missing or invalid confidence defers added exposure instead of fabricating a percentage. Rejected additions do not remove a held stock from research or block risk-reducing decisions.
 
-Scheduling, source permissions, coverage validation, confidence thresholds, budget reservations, portfolio limits, order sizing, and execution are code-controlled services. Confidence governs eligibility for new exposure and scales the total-position investment ceiling within those limits. Credentials and policy configuration remain outside model-controlled content.
+### Role ownership
 
-Analysts run independently against the same evidence cutoff and reconciled portfolio snapshot. They do not see one another's conclusions until their reports are complete. Shared evidence is attributed and deduplicated.
+There are **eight AI roles**:
+
+| Role | Owns | Does not own |
+| --- | --- | --- |
+| Four specialist analysts | Market, financial, company, and social research; stock forecasts and initial `p_initial` | Orders or final capital allocation |
+| Bull and Bear researchers | Competing evidence-backed cases for eligible `OPEN` and `REINFORCE` proposals | Policy changes or allocation |
+| Orchestrator | Coordinates research/debate, judges the debate, publishes revised `p_final` and reasons | Position action or investment amount |
+| Portfolio Allocator | Independently analyzes the confidence record and portfolio; chooses `OPEN`, `REINFORCE`, `HOLD`, `REDUCE`, `CLOSE`, or `NO_ACTION`, and proposes investment | Rewriting confidence, bypassing thresholds, or direct broker submission |
+
+One of the four analysts also serves as Analyst Lead for team synthesis; propose the Financial Analyst initially. It is a responsibility within the analysis team, not a ninth role. Independent specialist reports are completed before the lead synthesizes them.
+
+The AI Orchestrator coordinates the research workflow. A code-controlled workflow runtime handles durable jobs, locks, coverage checks, thresholds, reservations, policy enforcement, sizing tools, and execution. Only deterministic services can authorize and submit orders. Credentials and configuration stay outside model-controlled content.
 
 ## Proposed technology stack
 
@@ -58,22 +59,22 @@ Analysts run independently against the same evidence cutoff and reconciled portf
 | --- | --- |
 | Core services | Python |
 | Persistent storage | PostgreSQL |
-| News collection | Provider-specific API and RSS adapters |
-| Scheduling | A scheduler triggering durable session jobs |
-| AI | Four analyst roles, Bull/Bear researchers, and a Decision Manager; provider-independent clients with validated structured output |
-| Historical retrieval | Instrument/event/time queries; optional semantic retrieval |
-| Execution | Broker adapter with a paper environment first |
-| Monitoring | Independent worker consuming order updates and reconciling state |
-| Interface | Dashboard for positions, evidence, decisions, costs, and system status |
-| Verification | Focused tests for temporal integrity, risk gates, execution, and recovery |
+| News collection | Provider API and RSS adapters |
+| Scheduling | Durable session jobs |
+| AI | Four analysts, Bull/Bear researchers, Orchestrator, and Portfolio Allocator; provider-independent clients with structured output |
+| Retrieval | Instrument/event/time queries; optional semantic retrieval |
+| Budget and risk | Deterministic tools exposing caps, available cash, permitted quantities, and reservations |
+| Execution | Paper broker adapter first |
+| Monitoring | Independent order-update and reconciliation worker |
+| Interface | Dashboard for evidence, both confidence stages, decisions, investments, budgets, and costs |
+| Verification | Temporal integrity, confidence routing, risk gates, execution, and recovery checks |
 
-Alpaca is a candidate for a US-equities paper prototype. Market, broker, exchange support, data entitlements, and eventual live-account eligibility remain open decisions.
-
-Track separate budgets for news feeds, X API usage, LLM calls, market data, and hosting. Cache reusable analysis without bypassing freshness checks or source-retention rules.
+Alpaca remains a candidate for a US-equities prototype. Broker, exchange, data entitlement, and live eligibility decisions remain open. Track separate operating budgets for news, X API, LLMs, market data, and hosting.
 
 ## Related pages
 
 - [Analysis team](analysis-team.md)
+- [Forecasts and confidence](forecasts-and-confidence.md)
+- [Portfolio Allocator](portfolio-allocator.md)
 - [Session workflow](session-workflow.md)
-- [Budget management](budget-management.md)
 - [Implementation plan](PLAN.md)

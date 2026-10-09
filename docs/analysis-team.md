@@ -15,11 +15,21 @@ Every analyst publishes a short shared-context briefing and a per-stock report w
 
 Social-only rumors cannot justify opening or reinforcing a position in the initial design.
 
+## Team synthesis and initial confidence
+
+After all independent reports are complete, the designated Analyst Lead synthesizes one stock forecast on behalf of the analysis team. Propose the Financial Analyst as lead initially; this adds a stage, not another agent. It reconciles conflicting evidence without averaging votes or treating duplicate news as independent confirmation.
+
+The team emits `p_initial`: its initial probability of a positive forward net return over the defined horizon. Include the outcome definition, reference price, cost assumptions, evidence quality, opposing scenarios, calibration status, and expiry. Preserve each specialist's view and any disagreement. Return `INSUFFICIENT_EVIDENCE` when the estimate cannot be supported.
+
+The deterministic first gate rejects an `OPEN` or `REINFORCE` proposal immediately when a valid `p_initial <= p_initial_min`. No Bull/Bear debate or investment selection runs for that rejected addition. Missing or invalid confidence defers it. Reconsideration requires a new versioned review after material new evidence or the next scheduled session, not retries until the threshold is crossed.
+
+Every holding still receives its mandatory research and risk-reduction review, regardless of the first gate. The team supplies a holding case comparing news with the entry thesis; the [Portfolio Allocator](portfolio-allocator.md) owns the actual action.
+
 ## Mandatory research for existing holdings
 
 Active research of held stocks is an enforced workflow requirement. An analyst cannot satisfy it by claiming that it searched or by reusing an old summary.
 
-At session start, the orchestrator creates a coverage matrix for every held stock:
+At session start, the workflow runtime creates a coverage matrix for every held stock:
 
 | Research task | Requirement |
 | --- | --- |
@@ -32,7 +42,7 @@ The retrieval service records the executed query or provider request, stock, cat
 
 Valid coverage states are `COMPLETE_WITH_RESULTS`, `COMPLETE_NO_NEW_RESULTS`, `DEGRADED`, and `FAILED`. A successful empty search means no matching items were found; it does not imply that the stock has no risk.
 
-The orchestrator validates the matrix before permitting ordinary position decisions. Retry missing tasks within a bounded source-call budget. Unresolved gaps block new exposure for affected instruments and mark the session incomplete. Independent protective orders and deterministic risk reduction remain active. Do not close a holding merely because a news connector failed.
+The workflow runtime validates the matrix before permitting ordinary position decisions. Retry missing tasks within a bounded source-call budget. Unresolved gaps block new exposure for affected instruments and mark the session incomplete. Independent protective orders and deterministic risk reduction remain active. Do not close a holding merely because a news connector failed.
 
 Prioritize research and review of holdings over optional new-entry debates when the session budget is exhausted. All selected stocks still require a coverage status; incomplete forecasts are explicitly deferred.
 
@@ -40,4 +50,5 @@ Prioritize research and review of holdings over optional new-entry debates when 
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
 - [Position management](position-management.md)
+- [Portfolio Allocator](portfolio-allocator.md)
 - [Data and sources](data-and-sources.md)

@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The [budget allocator](budget-management.md) first applies the confidence threshold and position-sizing ceiling, then intersects them with independent risk and broker limits. Passing confidence alone cannot authorize an order.
+The runtime enforces the analysis team's first confidence gate before debate and the Orchestrator's revised confidence gate afterward. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) size the ceiling from `p_final` and intersect it with independent risk and broker limits. Passing confidence alone cannot authorize an order.
 
 Configure risk rules independently of the model:
 
@@ -29,5 +29,6 @@ Treat all retrieved articles and posts as untrusted data. Embedded instructions 
 
 - [Position management](position-management.md)
 - [New-entry debate](new-entry-debate.md)
+- [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Validation](validation.md)

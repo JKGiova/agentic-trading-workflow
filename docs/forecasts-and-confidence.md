@@ -1,47 +1,63 @@
-# Stock forecasts and confidence
+# Stock forecasts and two-stage confidence
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The Decision Manager synthesizes the four completed analyst reports into one forecast per stock. It reconciles conflicting evidence and preserves material disagreement; it does not average analyst votes or count repeated headlines.
+The analysis team produces the first stock forecast and confidence. The Orchestrator produces a separate revised confidence after Bull/Bear debate. Both records are immutable, evidence-backed estimates; the revised estimate may be lower, unchanged, or higher.
 
-A stock forecast contains:
+## Confidence ownership and gates
+
+| Stage | Owner | Output | Consequence |
+| --- | --- | --- | --- |
+| Initial analysis | Analyst Lead synthesizing four independent reports | `p_initial`, evidence, scenarios, uncertainty, and calibration status | Valid `p_initial <= p_initial_min` directly rejects added exposure; no debate |
+| Debate review | Orchestrator reviewing Bull/Bear cases and verified rebuttals | `p_final`, research verdict, revision reasons, unresolved objections, and calibration status | Valid `p_final <= p_final_min` rejects added exposure |
+| Investment decision | Separate Portfolio Allocator agent | Confidence assessment, position action, desired exposure, and investment proposal | Use `p_final` for eligible additions, within deterministic budget/risk limits |
+
+Missing, expired, malformed, or unsupported confidence defers new exposure. A research `REJECT` or `DEFER` cannot be overridden by a high number. Passing the first gate guarantees neither debate approval nor investment.
+
+## Measurable outcome
+
+Both `p_initial` and `p_final` estimate the same event: a long position entered at the recorded executable reference price achieves a positive total return after estimated round-trip fees and slippage over the declared horizon. Reinforcement evaluates forward return from today's price, not the original entry price.
+
+Freeze stock, price snapshot, start/settlement times, exchange calendar, cost assumptions, evidence cutoff, and outcome ID for the comparison. If verified research changes the outcome definition or materially changes the reference-price basis, invalidate the proposal and start a new versioned analysis and gate; do not present incomparable estimates as a confidence revision. Later news queues a new review.
+
+Maintain a separate benchmark-outperformance forecast: total return exceeds the configured benchmark return by a predeclared cost hurdle. Outperforming a falling benchmark can still lose money; this probability cannot replace trade confidence.
+
+## Forecast contract
 
 | Field | Meaning |
 | --- | --- |
-| Stock and as-of time | Instrument, evidence cutoff, and fresh reference price |
-| News summary | Brief recap across market, financial, company, and social evidence |
-| Direction | Bullish, neutral, bearish, or insufficient evidence over the declared horizon |
-| Forecast horizon | Explicit start and settlement times using the exchange calendar |
-| Outcome definition | Exact measurable event being forecast |
-| Probability estimates | Benchmark-outperformance probability and, for investment proposals, separate positive-net-return probability `p_trade`; each labeled with calibration status |
-| Evidence quality | Strong, mixed, weak, or incomplete, with an explanation |
-| Scenarios | Upside, central, and downside mechanisms, catalysts, and invalidators |
-| Market reaction | Price movement since the event, spread, liquidity, and possible prior pricing-in |
-| Supporting and opposing sources | Evidence IDs, URLs, publication times, and first-seen times |
-| Disagreement and missing data | Material analyst conflicts and unresolved searches |
-| Expiry | When the forecast must be refreshed before use |
+| Stock, as-of time, and outcome ID | Instrument, evidence cutoff, price, horizon, costs, and settlement rule |
+| News summary | Recap of market, financial, company, and authorized social evidence |
+| Direction | Bullish, neutral, bearish, or insufficient evidence |
+| Initial confidence | `p_initial`, analyst-team record, evidence, and calibration label |
+| Revised confidence | Optional `p_final`, Orchestrator record, and calibration label; absent when debate was skipped |
+| Revision explanation | Specific challenges and verified facts that changed or preserved confidence |
+| Evidence quality | Strong, mixed, weak, or incomplete, with source coverage |
+| Scenarios and expected net payoff | Upside/central/downside mechanisms, payoffs, assumptions, and invalidators |
+| Supporting/opposing sources | Evidence IDs, URLs, publication and acquisition times |
+| Disagreement and missing data | Analyst conflicts, unresolved debate objections, and failed searches |
+| Expiry and gate results | Refresh deadline, policy version, both thresholds, and routing reason |
 
-Proposed initial probability target: the stock's total return over the fixed horizon exceeds its configured benchmark's total return by a predeclared round-trip cost hurdle. The target, reference price, benchmark, horizon, cost assumption, and settlement rule must be recorded before the result is known. Reforecasting creates a new record rather than overwriting the original.
+Agreement and debate persuasiveness do not establish probability. Neither the lead nor Orchestrator may average agent votes, count repeated headlines, or increase confidence to unlock funding. The Allocator evaluates support and consistency but cannot invent a third probability or rewrite either estimate.
 
-Keep predictive confidence separate from evidence quality. A well-sourced event can still have uncertain price implications. Four agents agreeing is not four statistically independent forecasts.
+## Calibration and evaluation
 
-Initially display a qualitative outlook and, when elicited, a percentage labeled **model estimate — uncalibrated**. Permit `INSUFFICIENT_EVIDENCE` instead of forcing a number. For investment proposals, also estimate `p_trade`: the probability of a positive forward total return after estimated round-trip fees and slippage, from the current executable reference price over the declared horizon. Benchmark outperformance is not a substitute for this event. Missing or unsupported trade confidence defers new exposure.
+Initially label each estimate **model estimate — uncalibrated**, permit `INSUFFICIENT_EVIDENCE`, and use estimates only in explicit paper experiments. Predictive confidence and evidence quality remain separate.
 
-The final `p_trade` controls the entry threshold and confidence-based position ceiling in [budget management](budget-management.md). Research quality, positive expected net payoff, and deterministic risk checks remain required. Uncalibrated estimates can drive labeled paper experiments only; eventual live use requires an approved validation policy.
+Evaluate `p_initial` and `p_final` separately with prospective outcomes, held-out chronological calibration, Brier scores, reliability curves, sample counts, and baselines. The final estimate exists only for first-gate survivors; compare confidence revisions on that same subset and report screening coverage to avoid selection bias.
 
-As prospective paper outcomes accumulate, evaluate Brier score and reliability curves on held-out chronological periods, including sample sizes and baseline comparisons. Validate any calibrator out of sample; use calibrated probabilities only when the relevant model, prompt, horizon, and data regime support them. Revalidate after material changes.
+If calibration is enabled, retain raw and calibrated values separately. The policy fixes which policy-eligible value each gate and sizing tool consumes; agents cannot choose the more favorable one. Live eligibility requires approved validation for each stage's model, prompt, horizon, and data regime. Revalidate after material changes.
 
-Settle benchmark and trade-success forecasts separately, including proposals that receive no allocation. Evaluate forecast outcomes independently of trade exits so closing a position does not erase or redefine the original forecasting target.
+Settle all available forecasts, including rejected/untraded proposals, independently of actual exits. Closing a trade does not erase or redefine the original forecast.
 
 ## Dashboard summary
 
-The stock summary shows the stock, research coverage, latest news recap, outlook, forecast horizon, both probability estimates and calibration labels, confidence-based target and final allocation, evidence quality, important disagreement, invalidation conditions, and next review. Link each summary to the underlying analyst reports and evidence.
-
-Missing evidence must be visible. Show a deferred forecast separately from a neutral view.
+Show news recap, horizon, initial confidence and first-gate result, debate status, revised confidence and revision explanation, second-gate result, Allocator action, target/final investment, calibration labels, disagreement, and expiry. Show skipped debate and missing final confidence explicitly.
 
 ## Related pages
 
 - [Analysis team](analysis-team.md)
-- [New-entry debate](new-entry-debate.md)
+- [Bull/Bear debate](new-entry-debate.md)
+- [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Validation](validation.md)

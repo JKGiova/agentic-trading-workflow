@@ -12,9 +12,13 @@ Compare the full workflow against the same analyst inputs without debate, and ag
 
 Compare confidence-based allocations with fixed-size allocations under identical cash and risk limits. Freeze confidence thresholds and sizing parameters before held-out evaluation; report sensitivity across predeclared values without tuning on evaluation results. Assess net performance and losses by both probability band and invested capital, not just the frequency of winning trades.
 
+Evaluate `p_initial` and `p_final` calibration separately. Compare pre/post-debate accuracy on identical first-gate survivors, report all initially analyzed candidates and rejection rates, and measure whether large confidence increases have evidence support and predictive value. Do not assume debate improves calibration.
+
 Settle both benchmark-outperformance and positive-net-return forecasts separately. Settle all recorded forecasts, including untraded and rejected stocks, where data permits. Measure Brier score, reliability by confidence band with sample counts, abstention/coverage, direction accuracy, cost-adjusted outcomes, and drawdown. Overlapping forecasts and repeated evidence are dependent observations; use suitable chronological validation and do not report them as independent trials.
 
-Budget checks must cover the exact threshold boundary, missing/expired confidence, monotonic sizing with other inputs fixed, reinforcement against existing and pending exposure, simultaneous reservations, cash-reserve preservation, capital/sector/risk/session caps, rounding and broker minimums, cost allowances, partial-fill reservation conversion, confirmed cancellation release, and prevention of double-counting broker reservations. Lower confidence must not block a justified risk-reducing exit.
+Routing checks must cover low valid initial confidence causing zero debate calls and no addition allocation, missing initial confidence causing deferral, passing initial but failing final confidence causing no addition, unchanged/decreased/increased final estimates, preserved initial records, skipped final estimates, mismatched outcome definitions, and attempts by the Allocator to override probability, gates, or limits. Verify that holdings are still reviewed and risk-reducing actions remain available.
+
+Budget checks must cover both exact threshold boundaries, sizing from `p_final` rather than initial or maximum confidence, missing/expired confidence, monotonic sizing with other inputs fixed, reinforcement against existing and pending exposure, simultaneous reservations, cash-reserve preservation, capital/sector/risk/session caps, rounding and broker minimums, cost allowances, partial-fill reservation conversion, confirmed cancellation release, and prevention of double-counting broker reservations. Lower confidence must not block a justified risk-reducing exit.
 
 Operational tests must cover missing feeds, empty results versus failed searches, forged coverage claims, watchlist removals with remaining holdings, duplicate events, unsupported confidence, debate convergence without new evidence, unresolved objections, exceeded budgets, malformed proposals, unauthorized instruments, stale quotes, simultaneous sessions, rejected orders, partial fills, timeout-after-submit, unavailable exit proceeds, and restart recovery.
 
@@ -22,5 +26,6 @@ Operational tests must cover missing feeds, empty results versus failed searches
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
 - [New-entry debate](new-entry-debate.md)
+- [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Implementation plan](PLAN.md)

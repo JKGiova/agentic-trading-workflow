@@ -8,17 +8,18 @@ This is the versioned project wiki. Each page covers one part of the design; imp
 
 ## Start here
 
-Read the architecture, analyst team, forecasts, position management, debate, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
+Read the architecture, analyst team, forecasts, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
 
 ## Pages
 
 | Page | Purpose |
 | --- | --- |
-| [Architecture and scope](architecture.md) | Stock universe, seven agent roles, component ownership, and proposed stack |
+| [Architecture and scope](architecture.md) | Stock universe, eight agent roles, component ownership, and proposed stack |
 | [Analyst team and mandatory research](analysis-team.md) | Market, financial, company, and social analysts; held-stock coverage requirements |
-| [Forecasts and confidence](forecasts-and-confidence.md) | Stock recaps, forecast horizons, outcome definitions, and calibration |
+| [Forecasts and confidence](forecasts-and-confidence.md) | Initial and revised confidence, screening gates, outcome definitions, and calibration |
 | [Existing-position management](position-management.md) | Reinforce, reduce, close, hold, and thesis comparison |
-| [New-entry debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and judge verdicts |
+| [Entry and reinforcement debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and revised confidence |
+| [Portfolio Allocator](portfolio-allocator.md) | Agent assessment of confidence, position choice, investment, and tool boundaries |
 | [Budget management](budget-management.md) | Confidence-based acceptance and investment, shared capital limits, and cash reservations |
 | [Session workflow](session-workflow.md) | Scheduling, portfolio reconciliation, action sequencing, and proposal contracts |
 | [Data and sources](data-and-sources.md) | Approved publications and X accounts, timestamps, deduplication, and memory |
@@ -34,7 +35,9 @@ Read the architecture, analyst team, forecasts, position management, debate, and
 - Every open position requires fresh, recorded searches and an explicit coverage status.
 - Stock forecasts have an explicit horizon and outcome; model confidence is labeled uncalibrated until validated.
 - Existing positions can be reinforced, reduced, closed, or held unchanged.
-- Two researchers debate new entries; one Decision Manager judges the evidence.
+- The analyst team owns initial confidence; low-confidence additions are rejected before debate.
+- Two researchers debate passed additions; the Orchestrator judges evidence and defines revised confidence.
+- A separate Portfolio Allocator analyzes the revised confidence and chooses the action and investment.
 - Trade confidence gates new exposure and scales investment; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
 - Risk limits and execution are deterministic services, with paper trading as the first target.
 
