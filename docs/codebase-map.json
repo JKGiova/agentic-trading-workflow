@@ -1,6 +1,6 @@
 {
   "generator": "Python AST; not Graphify",
-  "source_digest": "3c10df3ca8fbfae6b179740450d7e04c6817b1d5e136a268e38775a704edfe32",
+  "source_digest": "ebcbb82d525443d861abac050679c7605a8b732773e1ce13a41d07e3a9bcf02a",
   "source_hashes": {
     "src/tradebot/__init__.py": "acc1eda1686153e76013a9e6c5f45e3c073ff48846bebeea80cdd02d5c0b3cb0",
     "src/tradebot/broker.py": "6cee758208bf6dce8110055b57a29f3f33f7ab1d01fe44bb451378db9a67747c",
@@ -12,7 +12,7 @@
     "src/tradebot/service.py": "f0818631529a76fab56d922d788b582f1553fecaf0d82945355995f1a05f980e",
     "src/tradebot/settings.py": "0dd6f1c7911893c1e2b1d0cac2b4d0ddafedd7179ef14509ce22aecddd4fbeab",
     "src/tradebot/storage.py": "9f52fa16c1d7b19e869154d3a9f551c967d2e8a585c71780b6eea6e871031f5b",
-    "src/tradebot/terminal.py": "ebdcef3bb69db4319ecc4957d140fe4a09b5913b2c678dfa721b3079002fbda8",
+    "src/tradebot/terminal.py": "88514c0c12a295415e7d8c95e50cfc237ffa9bdd47d0f95be9f7a977e57978a9",
     "src/tradebot/workflow.py": "d42b9642a6953fe4061be2cd6217f18972a46a20612003500f04666074ff270b"
   },
   "nodes": [
@@ -836,121 +836,121 @@
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal",
-      "line": 14,
+      "line": 12,
       "kind": "class"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.__init__",
-      "line": 40,
+      "line": 38,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.compose",
-      "line": 46,
+      "line": 44,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.on_mount",
-      "line": 63,
+      "line": 61,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.on_unmount",
-      "line": 85,
+      "line": 83,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.set_status",
-      "line": 88,
+      "line": 86,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.log_message",
-      "line": 93,
+      "line": 91,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.refresh_data",
-      "line": 97,
+      "line": 95,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.render_portfolio",
-      "line": 105,
+      "line": 103,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.on_data_table_row_highlighted",
-      "line": 144,
+      "line": 142,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.render_detail",
-      "line": 150,
+      "line": 148,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.action_refresh_data",
-      "line": 196,
+      "line": 198,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.action_research",
-      "line": 199,
+      "line": 201,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.research_session",
-      "line": 206,
+      "line": 208,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.on_input_submitted",
-      "line": 216,
+      "line": 223,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.answer_question",
-      "line": 225,
+      "line": 232,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.action_focus_positions",
-      "line": 237,
+      "line": 244,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.action_focus_detail",
-      "line": 240,
+      "line": 247,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.action_focus_chat",
-      "line": 243,
+      "line": 250,
       "kind": "method"
     },
     {
       "module": "tradebot.terminal",
       "name": "TradingTerminal.action_focus_portfolio",
-      "line": 246,
+      "line": 253,
       "kind": "method"
     },
     {

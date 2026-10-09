@@ -1,7 +1,5 @@
 """Single-window, four-pane Textual application with nonblocking research and chat."""
 
-import json
-
 from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
@@ -52,7 +50,7 @@ class TradingTerminal(App):
             with VerticalScroll(classes="pane", id="detail-pane", can_focus=True):
                 yield Static("Select a position", id="detail-text", markup=False)
             with Vertical(classes="pane", id="chat-pane"):
-                yield RichLog(id="chat-log", wrap=True, markup=False, max_lines=500)
+                yield RichLog(id="chat-log", wrap=True, min_width=1, markup=False, max_lines=500)
                 yield Input(
                     placeholder="Ask about the selected holding or portfolio…", id="question"
                 )
@@ -166,10 +164,14 @@ class TradingTerminal(App):
         verdict = stages.get("effective_verdict", {})
         research = stages.get("research", {})
         if initial:
-            text += f"\nInitial confidence: {initial.get('probability')} (uncalibrated)\n"
+            value = initial.get("probability")
+            confidence = f"{value:.1%}" if value is not None else "unknown"
+            text += f"\nInitial confidence: {confidence} (uncalibrated)\n"
         if verdict:
+            value = verdict["forecast"]["probability"]
+            confidence = f"{value:.1%}" if value is not None else "unknown"
             text += (
-                f"Final confidence: {verdict['forecast']['probability']} (uncalibrated)\n"
+                f"Final confidence: {confidence} (uncalibrated)\n"
                 f"Research verdict: {verdict['decision']}\n{verdict['rationale']}\n"
             )
         if research:
@@ -206,7 +208,12 @@ class TradingTerminal(App):
     async def research_session(self):
         try:
             result = await self.service.run_session(self.set_status)
-            self.log_message("Research completed: " + json.dumps(result))
+            reviewed = ", ".join(result["debated"]) or "none"
+            pending = ", ".join(result["pending"]) or "none"
+            self.log_message(
+                f"Research {result['status'].lower()}. Debate reviews: {reviewed}. "
+                f"Pending: {pending}. Select a holding or ask about a configured stock."
+            )
         except (ValueError, RuntimeError, TimeoutError) as exc:
             self.set_status("Research deferred: " + str(exc))
             self.log_message("Research deferred: " + str(exc))

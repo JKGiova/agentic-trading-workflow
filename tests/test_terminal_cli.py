@@ -2,7 +2,7 @@ import asyncio
 import json
 
 import pytest
-from textual.widgets import DataTable, Input, Static
+from textual.widgets import DataTable, Input, RichLog, Static
 
 from tradebot.cli import main
 from tradebot.service import TradeService
@@ -55,10 +55,14 @@ async def test_chat_and_research_keyboard_interactions(store, policy):
         await app.workers.wait_for_complete()
         assert field.value == "" and not field.disabled
         assert len(store.chat_history()) == 2
+        log = app.query_one("#chat-log", RichLog)
+        assert log.virtual_size.width <= log.content_size.width
         await pilot.press("ctrl+r")
         await app.workers.wait_for_complete()
         await pilot.pause()
         assert "Final confidence" in str(app.query_one("#detail-text", Static).content)
+        assert "60.0%" in str(app.query_one("#detail-text", Static).content)
+        assert log.virtual_size.width <= log.content_size.width
         assert "COMPLETE" in app.last_status
         assert store.snapshot().cash == 9000
 

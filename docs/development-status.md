@@ -25,11 +25,11 @@ Reviewed **2026-10-09**. The full plan is retained; **v0.1 is the first runnable
 
 ## Verification
 
-**68 local tests passed, 94.78% line coverage.** One PostgreSQL integration test was skipped locally because no test URL was available; attempts to start local PostgreSQL were blocked by OS-user restrictions. Ruff and generated-map checks passed.
+**68 local tests passed, over 94% line coverage.** One PostgreSQL integration test was skipped locally because no test URL was available; attempts to start local PostgreSQL were blocked by OS-user restrictions. Ruff and generated-map checks passed.
 
 Tests cover scenario consistency, weak/missing initial confidence reaching debate, removed-watchlist holdings, source failure, forged citations, fair queue rotation, holding priority, concurrency, immutable stages, timeouts, safe chat and layouts at 80×24, 120×36 and 160×48.
 
-[GitHub CI](https://github.com/JKGiova/agentic-trading-workflow/actions) is configured for Python 3.12/3.13 with isolated PostgreSQL 16 and a 90% coverage minimum. Its result must be read from the workflow run; configuration is not proof that it passed.
+[The first implementation CI run](https://github.com/JKGiova/agentic-trading-workflow/actions/runs/37987725147) passed on both Python 3.12 and 3.13 with isolated PostgreSQL 16: **69 tests passed, none skipped, 95.01% coverage**. The jobs also passed lint/format, map freshness, doctor and demo-session checks. [Subsequent runs](https://github.com/JKGiova/agentic-trading-workflow/actions) enforce the same 90% coverage minimum.
 
 No actual paid-provider access, entitlements, measured predictive performance or broker submissions were verified in this implementation session. HTTP fixtures validate expected adapter behavior; real-account access still requires T0.
 
