@@ -24,16 +24,16 @@ If sessions are more than three hours apart, process the unhandled backlog since
 5. Validate coverage; retry bounded missing tasks and mark unresolved gaps.
 6. Have the Analyst Lead synthesize the team's stock recaps, forecasts, labeled `p_initial`, scenario payoffs, stressed downside, robust edge, and opportunity score; retain the independent reports.
 7. Send every mandatory holding case to the Portfolio Allocator for hold/reduce/close review and identification of possible reinforcements. Preserve incomplete-review status.
-8. Apply the initial opportunity gate to proposed openings and reinforcements. Reject inadequate robust edge/score or hard-risk failure before debate; defer missing/invalid inputs. Lower confidence alone does not reject a supported favorable payoff distribution.
-9. Select a bounded shortlist only from passed additions and run the Bull/Bear protocol. Defer candidates that exceed the debate budget.
-10. Have the Orchestrator publish `p_final`, revised payoff/downside assumptions, robust edge/score, revision reasons, and `APPROVE`/`DEFER`/`REJECT`. Retain both final debate cases and the original estimate.
-11. Apply the final opportunity gate to revised confidence/payoffs. Reject inadequate robust edge/score or hard-risk failure; defer invalid inputs or research gaps. Only supported `APPROVE` proposals passing both gates reach investment selection.
+8. Queue all admissible openings and reinforcements for debate without a confidence, edge, or score filter.
+9. Run the bounded Bull/Bear protocol in least-recently-debated order, then stock ID. Proposals beyond the session budget remain queued; initial estimate gaps are investigated within the verification budget.
+10. Have the Orchestrator publish revised `p_final` when supported, payoff/downside assumptions, diagnostics, revision reasons, and `APPROVE`/`DEFER`/`REJECT`. Retain the initial records and both final cases.
+11. Send approved, current, supportable research cases to the Allocator. Record rejected/deferred cases and unresolved gaps; no numerical opportunity gate is applied.
 12. Have the Portfolio Allocator independently assess final confidence and portfolio fit, choose position actions and investments using sizing tools, and produce one coherent plan. Net by stock and prohibit contradictory orders.
 13. Recompute deterministic confidence and stressed-loss ceilings, cash-reserve, pending-order, risk, liquidity, and protection constraints; reserve validated capital atomically. Record the agent's decision separately from the validator's final authorization.
 14. Reconcile and refresh quotes before submission; expire materially changed proposals. Submit permitted paper orders, monitor fills, and record broker-confirmed state.
-15. Persist analyst reports, both confidence/payoff records and opportunity gates, revisions, coverage, holding reviews, debates, allocation assessments, validator outcomes, order states, costs, and checkpoints; release the lock.
+15. Persist analyst reports, both confidence/payoff records, debate queue and research verdicts, revisions, coverage, holding reviews, debates, allocation assessments, validator outcomes, order states, costs, and checkpoints; release the lock.
 
-Session states: `COLLECTING`, `ANALYZING`, `REVIEWING_POSITIONS`, `INITIAL_GATE`, `DEBATING`, `FINAL_GATE`, `ALLOCATING`, `VALIDATING`, `EXECUTING`, then `COMPLETED`, `PARTIAL`, or `FAILED`.
+Session states: `COLLECTING`, `ANALYZING`, `REVIEWING_POSITIONS`, `QUEUED_FOR_DEBATE`, `DEBATING`, `JUDGING`, `ALLOCATING`, `VALIDATING`, `EXECUTING`, then `COMPLETED`, `PARTIAL`, or `FAILED`.
 
 Complete required holding reviews before optional entry debates. Rejection of added exposure never skips an existing holding's research or blocks a justified reduction/close. Research and execution have distinct checkpoints; recovery must not repeat submissions. Proposed exit proceeds remain unavailable until broker confirmation and applicable account rules permit their use.
 
@@ -49,7 +49,7 @@ Complete required holding reviews before optional entry debates. Rejection of ad
 | Evidence IDs and URLs | Supporting and contradictory sources |
 | Information cutoff | Latest time included in the analysis |
 | Debate record | Completed or skipped, Bull/Bear final cases, unresolved objections, and Orchestrator verdict for any addition |
-| Opportunity and budget policy | Stage-specific edge/score minima, uncertainty policy, stressed-loss limits, both gate results, final confidence target, and loss-risk ceiling |
+| Debate and budget policy | Queue order, research budget, uncertainty policy, stressed-loss limits, final confidence target, and loss-risk ceiling |
 | Allocation and reservations | Current/pending exposure, applied caps, final quantity/notional, costs, reservation IDs, and limiting constraint |
 | Desired exposure and protections | Inputs to deterministic sizing and risk checks |
 | Allocator assessment and decision | Confidence/payoff support, final opportunity score, portfolio fit, action, investment rationale, and `ACCEPT`/`REJECT`/`DEFER` |
@@ -66,6 +66,6 @@ A proposal is not a confirmed fill. A successful debate does not authorize chang
 - [Architecture](architecture.md)
 - [Analysis team](analysis-team.md)
 - [Portfolio Allocator](portfolio-allocator.md)
-- [Opportunity screening](opportunity-screening.md)
+- [Opportunity analysis](opportunity-analysis.md)
 - [Budget management](budget-management.md)
 - [Risk and execution](risk-and-execution.md)

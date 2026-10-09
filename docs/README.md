@@ -8,7 +8,7 @@ This is the versioned project wiki. Each page covers one part of the design; imp
 
 ## Start here
 
-Read the architecture, analyst team, forecasts, opportunity screening, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
+Read the architecture, analyst team, forecasts, opportunity analysis, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
 
 ## Pages
 
@@ -16,12 +16,12 @@ Read the architecture, analyst team, forecasts, opportunity screening, position 
 | --- | --- |
 | [Architecture and scope](architecture.md) | Stock universe, eight agent roles, component ownership, and proposed stack |
 | [Analyst team and mandatory research](analysis-team.md) | Market, financial, company, and social analysts; held-stock coverage requirements |
-| [Forecasts and confidence](forecasts-and-confidence.md) | Initial and revised confidence, screening gates, outcome definitions, and calibration |
-| [Opportunity screening](opportunity-screening.md) | Confidence plus payoff, robust expected return, downside, and debate priority |
+| [Forecasts and confidence](forecasts-and-confidence.md) | Initial/revised confidence, outcome definitions, research decisions, and calibration |
+| [Opportunity analysis](opportunity-analysis.md) | Confidence, payoff, costs, uncertainty, and downside examined inside debate |
 | [Existing-position management](position-management.md) | Reinforce, reduce, close, hold, and thesis comparison |
 | [Entry and reinforcement debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and revised confidence |
 | [Portfolio Allocator](portfolio-allocator.md) | Agent assessment of confidence, position choice, investment, and tool boundaries |
-| [Budget management](budget-management.md) | Confidence-based acceptance and investment, shared capital limits, and cash reservations |
+| [Budget management](budget-management.md) | Agent decisions, confidence/downside investment sizing, shared capital limits, and reservations |
 | [Session workflow](session-workflow.md) | Scheduling, portfolio reconciliation, action sequencing, and proposal contracts |
 | [Data and sources](data-and-sources.md) | Approved publications and X accounts, timestamps, deduplication, and memory |
 | [Risk and execution](risk-and-execution.md) | Deterministic limits, protective orders, idempotency, and paper execution |
@@ -36,10 +36,10 @@ Read the architecture, analyst team, forecasts, opportunity screening, position 
 - Every open position requires fresh, recorded searches and an explicit coverage status.
 - Stock forecasts have an explicit horizon and outcome; model confidence is labeled uncalibrated until validated.
 - Existing positions can be reinforced, reduced, closed, or held unchanged.
-- The analyst team owns initial confidence and payoff scenarios; a risk-adjusted opportunity screen decides whether an addition deserves debate.
-- Two researchers debate passed additions; the Orchestrator revises confidence and payoffs for another opportunity screen.
+- The analyst team supplies initial confidence, payoff scenarios, and gaps directly to debate; no numerical prefilter selects proposals.
+- Bull/Bear directly assess the probability/payoff trade-off; the Orchestrator records revised confidence, scenarios, and a research verdict.
 - A separate Portfolio Allocator analyzes the revised confidence and chooses the action and investment.
-- Confidence and net payoff jointly gate new exposure; final confidence scales investment within a stressed-loss budget; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
+- Debate and Allocator judgments decide whether exposure is justified; final confidence scales investment within a stressed-loss budget; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
 - Risk limits and execution are deterministic services, with paper trading as the first target.
 
 ## Documentation layout

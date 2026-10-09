@@ -2,13 +2,13 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The analysis team's confidence and payoff estimates determine whether an addition deserves debate. The Orchestrator's revised estimates determine whether it merits investment review. A separate [Portfolio Allocator](portfolio-allocator.md) chooses the action and amount; deterministic tools enforce confidence-based sizing, downside budgets, cash reservations, and risk limits.
+The analysis team's confidence/payoff estimates go directly to debate as inputs, without screening proposals. Bull/Bear analyze them, and the Orchestrator's revised estimates and research verdict inform investment review. A separate [Portfolio Allocator](portfolio-allocator.md) chooses the action and amount; deterministic tools enforce confidence-based sizing, downside budgets, cash reservations, and risk limits.
 
 ## Acceptance depends on opportunity, not probability alone
 
 Both stages estimate the probability of positive net total return over the same frozen horizon and reference-price basis: `p_initial` before debate, `p_final` afterward. The team/Orchestrator also publish net payoff scenarios, stressed downside, uncertainty, and opportunity scores. Keep benchmark-outperformance probability separate.
 
-The [opportunity screen](opportunity-screening.md) combines probability with payoff magnitude:
+[Opportunity analysis inside the debate](opportunity-analysis.md) combines probability with payoff magnitude:
 
 ```text
 expected_net_return = p * U - (1 - p) * D
@@ -18,19 +18,23 @@ opportunity_score = robust_edge / stressed_loss_fraction
 
 `U` and `D` are conditional average gain/loss magnitudes already net of trading costs. Prefer a full scenario distribution in implementation. Unsupported payoffs, invalid probabilities, or missing risk estimates defer exposure. Uncalibrated estimates remain limited to explicit paper experiments; live eligibility requires approved validation.
 
+These metrics support debate and investment reasoning; they have no minimum-score or minimum-confidence pass/fail thresholds.
+
 | Condition | Decision |
 | --- | --- |
-| Initial robust edge/score fails configured minima, or hard eligibility/risk fails | Reject addition before debate; record the limiting metric |
-| Initial inputs are missing, invalid, stale, or unsupported | Defer; obtain a usable opportunity record |
-| Initial opportunity gate passes | Eligible for bounded debate, not investment yet |
-| Revised edge/score or hard-risk constraints fail after debate | Reject added investment, even if final confidence is high |
-| Both opportunity gates pass and Orchestrator verdict is `APPROVE` | Allocator independently assesses portfolio fit and chooses action/investment |
-| No free capital, unresolved reconciliation, or subminimum quantity | Defer and record the constraint |
+| Admissible opening or reinforcement proposal | Queue for debate regardless of initial confidence/edge/score |
+| Session debate budget exhausted | Keep pending with a visible reason; refresh inputs when resumed |
+| Initial estimates missing or uncertain | Debate may request bounded verification; disclose gaps |
+| Orchestrator research `REJECT` or `DEFER` | No addition proceeds to investment selection |
+| Orchestrator `APPROVE` with supported/current final inputs | Allocator assesses portfolio fit and chooses action/amount |
+| Final sizing/evidence inputs unsupported | Defer added investment |
+| Hard eligibility or risk constraints fail at validation | Reject execution regardless of agent approval |
+| No capital, unresolved reconciliation, or subminimum quantity | Defer and record the constraint |
 | Executable proposal passes independent validation and cash is reserved | Accept for submission; acceptance is not a fill |
 
 There is no automatic rejection at 60% or any other universal probability threshold. Lower confidence can be justified by better supported gains relative to losses. High volatility, nominally cheap shares, and optimistic maximum targets do not establish favorable opportunity.
 
-`REDUCE` and `CLOSE` remain available without passing addition gates; missing news alone does not require liquidation.
+`REDUCE` and `CLOSE` remain available independently of entry debate; missing news alone does not require liquidation.
 
 ## Confidence-based sizing with a downside budget
 
@@ -53,7 +57,7 @@ Require finite valid inputs, `0 <= p_final <= 1`, and `L_stress_final > 0`. NAV 
 
 Confidence still influences investment: with the same downside and constraints, higher final confidence raises the confidence ceiling. A volatile opportunity may deserve debate but receive a smaller amount because its stressed-loss ceiling is tighter. The Allocator may choose less than the permitted ceiling, with reasons.
 
-For illustration, NAV **$10,000** and maximum position weight **10%**, assuming both opportunity gates and all other checks pass:
+For illustration, NAV **$10,000** and maximum position weight **10%**, assuming debate approval, Allocator acceptance, and all independent checks pass:
 
 | Final confidence | Confidence-based total-position ceiling before other caps |
 | --- | --- |
@@ -82,7 +86,7 @@ Configure and version:
 
 Reconcile holdings and pending orders before computing headroom. Prioritize approved reductions and closes, but do not finance buys with expected sale proceeds. Refresh available cash only after broker confirmation, subject to settlement and account restrictions.
 
-Pool eligible openings and reinforcements in one allocation pass. Rank by descending final opportunity score, then robust edge, evidence-quality tier, and stock ID; do not rank solely by probability. This is a proposed deterministic paper heuristic to evaluate, not a claim of optimal portfolio construction.
+Pool eligible openings and reinforcements in one allocation pass. The Allocator assesses final confidence, payoffs, downside, diversification, and portfolio fit together and records why it funds each chosen position. No score alone compels acceptance or investment. Deterministic constraints limit every proposed amount. This is a proposed deterministic paper heuristic to evaluate, not a claim of optimal portfolio construction.
 
 For each proposal, the deterministic sizing tool computes the largest executable quantity satisfying **all** confidence-based sizing, stressed-loss, cash-reserve, gross-exposure, position, sector, loss-risk, session, liquidity, and broker constraints, including pending commitments and costs. The Allocator chooses an amount at or below that ceiling with a sizing rationale. Round down to supported quantities and recheck independently. Reserve the validated amount atomically before considering the next proposal. Unused capital stays in cash; rejection of one candidate does not enlarge another candidate's confidence ceiling.
 
@@ -90,7 +94,7 @@ Loss-risk estimates must include downside scenarios and gap/slippage assumptions
 
 ## Budget ledger and order lifecycle
 
-Store the policy version, NAV, both confidence record IDs and values, both gate results and calibration statuses, initial/revised scenario payoffs, robust edges/scores, stressed-loss assumptions, uncertainty penalties, revision rationale, Allocator assessment/action, confidence and loss-risk targets, current/pending exposure, every applied cap, final quantity/notional, cost reserve, decision reason, and reservation/order IDs.
+Store the policy version, NAV, both confidence record IDs and values, debate/research verdicts and calibration statuses, initial/revised scenario payoffs, robust edges/scores, stressed-loss assumptions, uncertainty penalties, revision rationale, Allocator assessment/action, confidence and loss-risk targets, current/pending exposure, every applied cap, final quantity/notional, cost reserve, decision reason, and reservation/order IDs.
 
 - Reserve cash and risk headroom atomically before submission. Only one deterministic allocation transaction may modify a portfolio budget at a time.
 - A submission timeout retains the reservation until order status is reconciled; retrying must not reserve or submit twice.

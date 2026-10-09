@@ -6,25 +6,25 @@ The Portfolio Allocator is a separate AI agent that makes the position and inves
 
 ## Inputs and confidence assessment
 
-For each eligible addition, provide both confidence records, gate results, research coverage, Bull/Bear cases, Orchestrator verdict and revision reasons, scenario payoffs, invalidators, expiry, holdings, pending orders, free cash, and versioned policy.
+For each eligible addition, provide both available confidence records, debate status and verdict, research coverage, Bull/Bear cases, Orchestrator verdict and revision reasons, scenario payoffs, invalidators, expiry, holdings, pending orders, free cash, and versioned policy.
 
 The Allocator checks:
 
-- Both estimates refer to the same measurable outcome and reference-price basis.
-- The initial and final gates passed, required debate completed, and the Orchestrator verdict is `APPROVE`.
+- Available initial/final estimates refer to the same measurable outcome and reference-price basis; an initially missing estimate is recorded explicitly.
+- The required debate completed, final estimates are supportable/current, and the Orchestrator verdict is `APPROVE`.
 - Final confidence is supported by traceable evidence, with uncertainty and calibration status disclosed.
 - Confidence revisions address actual challenges or verified facts; a large unexplained increase is deferred for clarification.
 - Expected net payoff, downside, concentration, timing, and cash availability support the proposed position.
 
-It may reject a confident proposal that lacks portfolio fit, select a smaller investment, or defer unresolved evidence. It cannot overrule a failed opportunity gate, modify policy, rewrite probabilities, or repeatedly request revisions until a proposal passes. Clarification is bounded and must preserve prior records.
+It may reject a confident proposal that lacks portfolio fit, select a smaller investment, or defer unresolved evidence. It cannot overrule a research `REJECT` or `DEFER`, modify policy, rewrite probabilities, or repeatedly request revisions until a proposal passes. Clarification is bounded and must preserve prior records.
 
 ## Position choices
 
 | Portfolio state | Available choices |
 | --- | --- |
-| Eligible stock without a holding | `OPEN` or `NO_ACTION`; `OPEN` requires both gates and debate approval |
+| Eligible stock without a holding | `OPEN` or `NO_ACTION`; `OPEN` requires debate approval and investment/risk validation |
 | Existing holding | `REINFORCE`, `HOLD`, `REDUCE`, or `CLOSE` |
-| Reinforcement proposal | Both gates and the same bounded debate are mandatory before adding capital |
+| Reinforcement proposal | The same bounded debate, investment review, and risk validation are mandatory before adding capital |
 | Valid holding whose addition was rejected | Choose `HOLD`, `REDUCE`, or `CLOSE` from its researched thesis; rejection alone does not force an exit |
 | Incomplete ordinary holding review | Mark review deferred; no added exposure; independent protection and deterministic risk reduction remain active |
 
@@ -40,7 +40,7 @@ Rank supported additions under the configured policy and build one coherent port
 
 | Field | Required value |
 | --- | --- |
-| Confidence lineage | Initial/final record IDs, values, calibration status, outcome ID, and gate results |
+| Confidence lineage | Available initial/final record IDs, values, calibration status, outcome ID, and debate/research verdict |
 | Confidence and opportunity assessment | Why final probability/payoffs are usable, robust edge/score, stressed loss, revision reasons, and residual uncertainty |
 | Decision | Action plus `ACCEPT`, `REJECT`, or `DEFER` for the proposal |
 | Investment | Desired total position, incremental notional/quantity, maximum permitted amount, and reason for sizing |
@@ -51,7 +51,7 @@ An agent's `ACCEPT` is a recommendation. Deterministic validators recompute quan
 
 ## Existing-position priority
 
-Review all holdings before optional entry debates. The Allocator may decide a researched hold, reduction, or close directly using the holding case and available initial forecast; those actions do not require a successful opportunity gate or debate. Candidate reinforcements remain unapproved until they complete both gates and debate.
+Review all holdings before optional entry debates. The Allocator may decide a researched hold, reduction, or close directly using the holding case and available initial forecast; those actions do not require an entry debate. Candidate reinforcements remain unapproved until their debate and investment review complete.
 
 After debate, run a final allocation pass across eligible additions and existing-position decisions. Preserve one action per stock and do not spend hypothetical exit proceeds. If an earlier holding action was already submitted, reconcile it and exclude incompatible later actions.
 
@@ -60,6 +60,6 @@ After debate, run a final allocation pass across eligible additions and existing
 - [Architecture](architecture.md)
 - [Forecasts and confidence](forecasts-and-confidence.md)
 - [Existing-position management](position-management.md)
-- [Opportunity screening](opportunity-screening.md)
+- [Opportunity analysis](opportunity-analysis.md)
 - [Budget management](budget-management.md)
 - [Session workflow](session-workflow.md)

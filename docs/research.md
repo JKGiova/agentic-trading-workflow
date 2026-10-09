@@ -47,6 +47,6 @@ The opportunity-score and sizing formulas are proposed paper policies to validat
 ## Related pages
 
 - [Architecture](architecture.md)
-- [Opportunity screening](opportunity-screening.md)
+- [Opportunity analysis](opportunity-analysis.md)
 - [New-entry debate](new-entry-debate.md)
 - [Implementation plan](PLAN.md)

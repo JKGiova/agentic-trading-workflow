@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The runtime enforces initial and revised [opportunity gates](opportunity-screening.md), combining confidence with net payoff, uncertainty, and stressed downside before and after debate. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
+Bull/Bear directly assess confidence, net payoff, uncertainty, and stressed downside in [opportunity analysis](opportunity-analysis.md); the runtime does not impose numerical research-screening gates. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
 
 Configure risk rules independently of the model:
 

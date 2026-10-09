@@ -1,12 +1,12 @@
-# Opportunity screening: confidence, potential, and downside
+# Opportunity analysis inside the debate
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-Deciding whether to spend research/debate time on a stock must combine the probability of success with the size of potential gains and losses. Confidence alone is neither an opportunity score nor an expected return. All selected stocks receive initial research and all holdings receive mandatory review; this screen routes proposed additions to debate.
+Bull and Bear directly analyze confidence, potential gains, possible losses, costs, uncertainty, and liquidity. Initial confidence, expected return, and opportunity score do not filter or rank proposals before debate. All selected stocks receive initial research; every holding receives mandatory review.
 
-## Required estimates
+## Estimates to investigate
 
-The analysis team publishes an initial scenario distribution and `p_initial`. After debate, the Orchestrator publishes a revised distribution and `p_final`. For each stage record:
+The analysis team supplies initial scenarios and `p_initial` when supportable; mark missing inputs explicitly. After debate, the Orchestrator publishes a revised distribution and `p_final`. For each stage record:
 
 | Input | Definition |
 | --- | --- |
@@ -33,16 +33,10 @@ opportunity_score = robust_edge / L_stress
 
 `U` and `D` already include estimated trading costs; do not subtract those costs again. The probability must refer to the same net-return event. In the implementation, prefer `expected_net_return = sum(q_i * net_return_i)` over an explicit scenario distribution, with nonnegative probabilities summing to one. The sum of probabilities of positive-return cases must agree with the confidence record.
 
-Require `L_stress > 0`; missing/zero denominators or unsupported payoffs defer the proposal rather than creating an infinite score. The uncertainty haircut is a policy assumption, not a statistical confidence interval. Stressed loss is not a guaranteed maximum loss.
+A computed score requires `L_stress > 0`; missing/zero denominators or unsupported payoffs are flagged as unavailable, not converted into an infinite score. These gaps may be investigated during debate, but unresolved gaps prevent investment approval. The uncertainty haircut is a policy assumption, not a statistical confidence interval. Stressed loss is not a guaranteed maximum loss.
 
-At both stages, pass only if:
 
-- Evidence, confidence, payoff estimates, and costs are complete and policy-eligible.
-- `robust_edge > min_edge_stage`, with a nonnegative configured minimum.
-- `opportunity_score > min_score_stage`, with a nonnegative configured minimum.
-- Stressed downside, liquidity, and other hard eligibility/risk constraints pass.
-
-There is no universal 60% or similar probability-only rejection rule. Lower confidence can pass with sufficiently favorable supported payoffs; higher confidence can fail when losses outweigh gains. Invalid probabilities still defer exposure. Passing is permission for the next review stage, not a prediction of profit or an order.
+These calculations are supporting diagnostics for the debate and Allocator, not automatic pass/fail thresholds. There are no configured minimum confidence, edge, or score gates. The Orchestrator must explain the research verdict using the whole case; the Allocator makes the investment decision, subject to hard budget and risk limits.
 
 ## Illustrative comparison
 
@@ -54,24 +48,28 @@ These are invented net-of-cost assumptions over the same horizon, with `h = 0` f
 | B: higher confidence, smaller potential | 80% | 3% | 7% | 1.0% | 10% | 0.100 |
 | C: high confidence, unfavorable downside | 90% | 1% | 20% | -1.1% | 30% | -0.037 |
 
-Candidate A can rank above B despite lower confidence. C fails a positive-edge requirement despite high confidence. Real routing also applies uncertainty haircuts, threshold policy, source quality, liquidity, and tail-risk limits; these examples are not estimates for NVIDIA or any named stock.
 
-## Debate routing and revised review
+These examples show why probability alone is insufficient. Bull/Bear should challenge average payoffs, costs, adverse scenarios, and uncertainty rather than accept optimistic targets. The figures are invented, not estimates for NVIDIA or any named stock, and do not automatically decide the verdict.
 
-1. The analyst team computes the initial distribution, confidence, edge, and score.
-2. The deterministic initial opportunity gate rejects additions with valid but inadequate edge/score or hard-risk failure. Missing inputs defer them.
-3. Rank passing candidates by descending initial opportunity score, then robust edge, evidence-quality tier, and stock ID. Respect the bounded debate budget; excess candidates defer.
-4. Bull/Bear challenge probability, average payoffs, assumed downside, novelty, costs, and uncertainty. Inflated upside targets do not count as evidence.
-5. The Orchestrator records revised probabilities and scenario payoffs, explains changes, and recomputes final edge/score. A final opportunity gate prevents a probability-only decision from contradicting the initial screen.
-6. The Portfolio Allocator analyzes the revised record and chooses the position and investment within [budget constraints](budget-management.md). Initial and final records remain immutable.
+## Debate routing and ownership
 
-Do not automatically debate every volatile stock, expand the watchlist, or treat repeated sessions as independent opportunities. Forecasts of different horizons cannot be ranked by raw expected return; the prototype uses one horizon and defers incompatible comparisons.
+1. The analyst team supplies its initial forecast, confidence when supportable, scenarios, and known gaps.
+2. Every admissible opening or reinforcement proposal enters the debate queue without a numerical opportunity filter. Stock eligibility and watchlist rules still apply.
+3. Schedule within the configured session research budget using least-recently-debated priority, then stock ID. Confidence and opportunity score do not determine queue order. Pending proposals are visibly queued, not financially rejected.
+4. Bull/Bear examine the probability/payoff trade-off, costs, downside, timing, uncertainty, and portfolio relevance. Bounded verification can fill initial gaps.
+5. The Orchestrator records revised confidence, scenarios, calculations when supported, dissent, and an explained `APPROVE`, `DEFER`, or `REJECT` research verdict.
+6. The Portfolio Allocator assesses an approved case and chooses the action and amount. It may still reject, defer, or choose a smaller investment; deterministic tools validate risk, reserve cash, and authorize execution.
+
+A missing initial probability does not by itself skip debate; report it honestly. If final confidence, payoff evidence, coverage, or required sizing inputs remain unsupported, defer added investment. Debate completion is not permission to trade.
+
+Do not expand the authorized stock universe or treat repeated sessions as independent opportunities. Compare forecasts on the same horizon and reference-price basis; refresh materially changed proposals.
 
 ## Expected return is not guaranteed long-run revenue
 
 The law of large numbers concerns averages under specified probabilistic assumptions, not guaranteed earnings from a finite trading account. Model estimates can be wrong, market regimes change, trades can be correlated, and large losses can exhaust capital before an average stabilizes.
 
 Equal arithmetic expected returns do not imply equal compound growth or drawdown. For example, +50% followed by -50% leaves 75% of the starting capital. Evaluate net compounding, tail losses, portfolio dependence, and risk of ruin prospectively; do not justify unlimited size or repeated bets by the law of large numbers.
+
 
 ## Related pages
 
