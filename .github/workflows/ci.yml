@@ -1,0 +1,42 @@
+name: Test research terminal
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13']
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: tradebot_test
+          POSTGRES_PASSWORD: test_only_local_ci
+          POSTGRES_DB: tradebot_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tradebot_test -d tradebot_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TRADEBOT_TEST_DATABASE_URL: postgresql+psycopg://tradebot_test:test_only_local_ci@localhost:5432/tradebot_test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check src tests tools
+      - run: uv run ruff format --check src tests tools
+      - run: uv run pytest --cov=tradebot --cov-fail-under=90 --cov-report=term-missing
+      - run: uv run python tools/export_code_map.py --check
+      - run: uv run tradebot --demo --doctor
+      - run: uv run tradebot --demo --once
+

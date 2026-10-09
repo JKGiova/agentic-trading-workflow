@@ -1,0 +1,1035 @@
+{
+  "generator": "Python AST; not Graphify",
+  "source_digest": "3c10df3ca8fbfae6b179740450d7e04c6817b1d5e136a268e38775a704edfe32",
+  "source_hashes": {
+    "src/tradebot/__init__.py": "acc1eda1686153e76013a9e6c5f45e3c073ff48846bebeea80cdd02d5c0b3cb0",
+    "src/tradebot/broker.py": "6cee758208bf6dce8110055b57a29f3f33f7ab1d01fe44bb451378db9a67747c",
+    "src/tradebot/cli.py": "1e3fefc8f92ad5bb72e848871a04b325b22f44a640baf56d2b6ce2aed35de963",
+    "src/tradebot/contracts.py": "a6dbd64b316389ebbbbe88837dc13a19d2af9ebf34ff22dea677d723b38a161e",
+    "src/tradebot/models.py": "503cb3e5083054f739c763656f15fada561ef8a868dbb83515f0c355ae843af4",
+    "src/tradebot/research.py": "a5fd2a198a609865d47d92587e08f773c50088cf046aed9f1e7ace19581d7982",
+    "src/tradebot/risk.py": "e62910028747dcbd3700b074b818a88a06a17a6f5f7224a92780ec8b471d5122",
+    "src/tradebot/service.py": "f0818631529a76fab56d922d788b582f1553fecaf0d82945355995f1a05f980e",
+    "src/tradebot/settings.py": "0dd6f1c7911893c1e2b1d0cac2b4d0ddafedd7179ef14509ce22aecddd4fbeab",
+    "src/tradebot/storage.py": "9f52fa16c1d7b19e869154d3a9f551c967d2e8a585c71780b6eea6e871031f5b",
+    "src/tradebot/terminal.py": "ebdcef3bb69db4319ecc4957d140fe4a09b5913b2c678dfa721b3079002fbda8",
+    "src/tradebot/workflow.py": "d42b9642a6953fe4061be2cd6217f18972a46a20612003500f04666074ff270b"
+  },
+  "nodes": [
+    {
+      "id": "tradebot.__init__",
+      "path": "src/tradebot/__init__.py"
+    },
+    {
+      "id": "tradebot.broker",
+      "path": "src/tradebot/broker.py"
+    },
+    {
+      "id": "tradebot.cli",
+      "path": "src/tradebot/cli.py"
+    },
+    {
+      "id": "tradebot.contracts",
+      "path": "src/tradebot/contracts.py"
+    },
+    {
+      "id": "tradebot.models",
+      "path": "src/tradebot/models.py"
+    },
+    {
+      "id": "tradebot.research",
+      "path": "src/tradebot/research.py"
+    },
+    {
+      "id": "tradebot.risk",
+      "path": "src/tradebot/risk.py"
+    },
+    {
+      "id": "tradebot.service",
+      "path": "src/tradebot/service.py"
+    },
+    {
+      "id": "tradebot.settings",
+      "path": "src/tradebot/settings.py"
+    },
+    {
+      "id": "tradebot.storage",
+      "path": "src/tradebot/storage.py"
+    },
+    {
+      "id": "tradebot.terminal",
+      "path": "src/tradebot/terminal.py"
+    },
+    {
+      "id": "tradebot.workflow",
+      "path": "src/tradebot/workflow.py"
+    }
+  ],
+  "links": [
+    {
+      "source": "tradebot.broker",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.broker",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.cli",
+      "target": "tradebot.service",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.cli",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.cli",
+      "target": "tradebot.storage",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.cli",
+      "target": "tradebot.terminal",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.models",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.models",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.models",
+      "target": "tradebot.storage",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.research",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.research",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.risk",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.risk",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.broker",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.models",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.research",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.storage",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.service",
+      "target": "tradebot.workflow",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.settings",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.storage",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.terminal",
+      "target": "tradebot.service",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.workflow",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.workflow",
+      "target": "tradebot.risk",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.workflow",
+      "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.workflow",
+      "target": "tradebot.storage",
+      "kind": "import"
+    }
+  ],
+  "definitions": [
+    {
+      "module": "tradebot.broker",
+      "name": "BrokerError",
+      "line": 11,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.broker",
+      "name": "AlpacaReadOnly",
+      "line": 15,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.broker",
+      "name": "AlpacaReadOnly.__init__",
+      "line": 18,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.broker",
+      "name": "AlpacaReadOnly.close",
+      "line": 29,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.broker",
+      "name": "AlpacaReadOnly.get",
+      "line": 33,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.broker",
+      "name": "AlpacaReadOnly.snapshot",
+      "line": 43,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.broker",
+      "name": "AlpacaReadOnly.quote",
+      "line": 94,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.cli",
+      "name": "parser",
+      "line": 14,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.cli",
+      "name": "main",
+      "line": 34,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "utcnow",
+      "line": 15,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Contract",
+      "line": 19,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Category",
+      "line": 23,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Coverage",
+      "line": 30,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Action",
+      "line": 37,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Evidence",
+      "line": 46,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Evidence.aware",
+      "line": 60,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "SearchAttempt",
+      "line": 66,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Report",
+      "line": 79,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Scenario",
+      "line": 87,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Forecast",
+      "line": 93,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Forecast.coherent",
+      "line": 103,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Case",
+      "line": 114,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Verdict",
+      "line": 122,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Allocation",
+      "line": 129,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Position",
+      "line": 135,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Position.value",
+      "line": 144,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Position.unrealized",
+      "line": 148,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Snapshot",
+      "line": 152,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Snapshot.equity",
+      "line": 165,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Snapshot.reserved",
+      "line": 169,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.contracts",
+      "name": "Snapshot.position",
+      "line": 172,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "ModelError",
+      "line": 15,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "strict_schema",
+      "line": 19,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "OpenRouter",
+      "line": 38,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "OpenRouter.__init__",
+      "line": 39,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "OpenRouter.close",
+      "line": 52,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "OpenRouter._request",
+      "line": 56,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "OpenRouter.structured",
+      "line": 127,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "OpenRouter.answer",
+      "line": 163,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "DemoModel",
+      "line": 183,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "DemoModel.__init__",
+      "line": 186,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "DemoModel.close",
+      "line": 189,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "DemoModel.structured",
+      "line": 192,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.models",
+      "name": "DemoModel.answer",
+      "line": 245,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "make_evidence",
+      "line": 16,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research",
+      "line": 42,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research.__init__",
+      "line": 43,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research.close",
+      "line": 52,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research._news",
+      "line": 56,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research._social",
+      "line": 98,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research._market",
+      "line": 153,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research._sec",
+      "line": 197,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research._rss",
+      "line": 240,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "Research.collect",
+      "line": 268,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "DemoResearch",
+      "line": 354,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "DemoResearch.close",
+      "line": 355,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.research",
+      "name": "DemoResearch.collect",
+      "line": 358,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.risk",
+      "name": "Preview",
+      "line": 10,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.risk",
+      "name": "decimal",
+      "line": 19,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.risk",
+      "name": "preview",
+      "line": 23,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "demo_policy",
+      "line": 16,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "demo_snapshot",
+      "line": 27,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService",
+      "line": 56,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.__init__",
+      "line": 57,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.close",
+      "line": 71,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.refresh",
+      "line": 82,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.run_session",
+      "line": 91,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.chat_context",
+      "line": 98,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.ask",
+      "line": 121,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.service",
+      "name": "TradeService.performance",
+      "line": 148,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Instrument",
+      "line": 15,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Instrument.valid_symbol",
+      "line": 25,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "RiskPolicy",
+      "line": 31,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Policy",
+      "line": 44,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Policy.unique",
+      "line": 67,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Policy.approved",
+      "line": 74,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Policy.read",
+      "line": 81,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Credentials",
+      "line": 85,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.settings",
+      "name": "Credentials.missing",
+      "line": 94,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store",
+      "line": 106,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.__init__",
+      "line": 107,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store._ensure",
+      "line": 128,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.transaction",
+      "line": 137,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.close",
+      "line": 152,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.save_snapshot",
+      "line": 155,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.snapshot",
+      "line": 163,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.acquire",
+      "line": 168,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.release",
+      "line": 181,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.start_session",
+      "line": 189,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.finish_session",
+      "line": 199,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.save_stage",
+      "line": 207,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.stage",
+      "line": 221,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.latest",
+      "line": 227,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.record_research",
+      "line": 245,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.history",
+      "line": 267,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.enqueue",
+      "line": 279,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.fair_candidates",
+      "line": 285,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.debated",
+      "line": 296,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.queue_status",
+      "line": 304,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.reserve_model",
+      "line": 308,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.settle_model",
+      "line": 332,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.model_spend",
+      "line": 344,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.append_chat",
+      "line": 352,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.chat_history",
+      "line": 360,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.storage",
+      "name": "Store.purge_chat",
+      "line": 367,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal",
+      "line": 14,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.__init__",
+      "line": 40,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.compose",
+      "line": 46,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.on_mount",
+      "line": 63,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.on_unmount",
+      "line": 85,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.set_status",
+      "line": 88,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.log_message",
+      "line": 93,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.refresh_data",
+      "line": 97,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.render_portfolio",
+      "line": 105,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.on_data_table_row_highlighted",
+      "line": 144,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.render_detail",
+      "line": 150,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.action_refresh_data",
+      "line": 196,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.action_research",
+      "line": 199,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.research_session",
+      "line": 206,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.on_input_submitted",
+      "line": 216,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.answer_question",
+      "line": 225,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.action_focus_positions",
+      "line": 237,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.action_focus_detail",
+      "line": 240,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.action_focus_chat",
+      "line": 243,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.terminal",
+      "name": "TradingTerminal.action_focus_portfolio",
+      "line": 246,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "StockState",
+      "line": 31,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "complete_coverage",
+      "line": 45,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "gathered",
+      "line": 53,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow",
+      "line": 62,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow.__init__",
+      "line": 63,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow.context",
+      "line": 81,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow.invoke",
+      "line": 107,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow._analysts",
+      "line": 144,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow._lead",
+      "line": 157,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow._debate",
+      "line": 167,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow._judge",
+      "line": 203,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow._allocate",
+      "line": 244,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.workflow",
+      "name": "Workflow.run",
+      "line": 297,
+      "kind": "method"
+    }
+  ]
+}

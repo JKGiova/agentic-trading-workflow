@@ -4,7 +4,9 @@
 
 This is the versioned project wiki. Each page covers one part of the design; implementation milestones and current progress are tracked separately. All content is in English.
 
-**Status: design and planning.** No trading service or agent implementation is claimed.
+**Status: v0.1 research-only terminal.** Start with the [CLI guide](cli.md),
+[development status](development-status.md) and [codebase map](codebase-map.md).
+The topic pages retain the full target; execution and prospective validation remain pending.
 
 ## Implementation specifications
 
@@ -58,3 +60,4 @@ Read the architecture, analyst team, forecasts, opportunity analysis, position m
 ## Documentation layout
 
 The root README is the entry point. Design pages live under `docs/`, with `PLAN.md` for milestones and `development-status.md` for actual progress, following the structure of the Moonlight tvOS PyroWave workspace.
+

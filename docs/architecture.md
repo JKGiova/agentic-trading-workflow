@@ -52,7 +52,7 @@ The AI Orchestrator coordinates the research workflow. A code-controlled workflo
 
 ## Concrete proposed stack
 
-Use Python 3.13 with LangGraph and a PostgreSQL checkpointer, Pydantic contracts, OpenRouter through HTTPX, PostgreSQL/SQLAlchemy/Alembic for business state, APScheduler 3.x feeding durable jobs, and Alpaca paper execution. Separate collectors, session worker, execution worker, and order monitor. FastAPI plus Streamlit is the first dashboard proposal.
+Target Python 3.12/3.13 with LangGraph, Pydantic contracts, OpenRouter through HTTPX, PostgreSQL/SQLAlchemy/Alembic for business state, durable scheduled jobs and Alpaca paper execution. Owner interaction is a single Textual terminal with four panes: open positions, selected position, research chatbot and portfolio/performance. Separate collectors, session worker, execution worker and order monitor in the full target. The initial [v0.1 CLI](cli.md) has local SQLite/PostgreSQL research persistence and read-only broker access; distributed jobs, persistent graph checkpoints and execution are not yet implemented.
 
 The [stack comparison](implementation-stack.md) also covers adapting existing repos, TypeScript/Mastra, and a later Temporal upgrade. Exact dependency versions and source access must be proven in T0; no runtime or connector is installed by this plan.
 
@@ -75,3 +75,4 @@ Implementation specifications:
 - [Session workflow](session-workflow.md)
 - [Implementation stack](implementation-stack.md)
 - [Implementation plan](PLAN.md)
+

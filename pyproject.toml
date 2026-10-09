@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentic-trading-workflow"
+version = "0.1.0"
+description = "Auditable stock research with an eight-role workflow and a four-pane terminal"
+requires-python = ">=3.12"
+dependencies = [
+  "textual>=8.2,<9", "httpx[socks]>=0.28,<0.29", "pydantic>=2.14,<3",
+  "pydantic-settings>=2.15,<3", "langgraph>=1.2.14,<2",
+  "sqlalchemy>=2.0,<3", "psycopg[binary]>=3.3,<4", "feedparser>=6.0,<7",
+]
+
+[project.scripts]
+tradebot = "tradebot.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=9,<10", "pytest-asyncio>=1.4,<2", "pytest-cov>=7,<8", "ruff>=0.17,<1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tradebot"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--strict-markers"
+markers = ["postgres: integration tests requiring TRADEBOT_TEST_DATABASE_URL"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+

@@ -2,7 +2,16 @@
 
 A news-driven AI workflow for a selected group of stocks, with persistent evidence, mandatory position reviews, direct Bull/Bear debate, and a separate investment agent.
 
-**Status: design and planning.** The initial target is long-only paper trading. Agent services, data connectors, broker execution, and performance evaluation remain planned.
+**Status: v0.1 research terminal.** A runnable four-pane CLI, explicit offline demo, research agents, source adapters and deterministic allocation previews are implemented. Network order submission and prospective performance validation remain later milestones.
+
+## Run the terminal
+
+```bash
+uv sync --locked
+uv run tradebot --demo
+```
+
+One window: open positions, selected-position focus, research chatbot, portfolio/performance. `F1`–`F4` focus panes, `Ctrl+R` researches, `Ctrl+U` refreshes and `Ctrl+Q` exits. The demo is explicitly synthetic; provider mode requires private credentials and configuration. See the [CLI guide](docs/cli.md) and [codebase map](docs/codebase-map.md).
 
 ## Workflow
 
@@ -41,10 +50,14 @@ The wiki also covers [session scheduling](docs/session-workflow.md), [data and m
 
 - `README.md`: project overview and navigation.
 - `docs/`: versioned design wiki, research, roadmap, and development status.
+- `src/tradebot/`: terminal, services, research workflow, adapters, contracts, risk and persistence.
+- `tests/`: offline workflow/provider fixtures, terminal interaction and isolated PostgreSQL tests.
+- `tools/`: deterministic code map export; Graphify provenance is recorded separately.
 - `LICENSE`: repository license.
 
 ## First milestone
 
-Start [T0 in the backlog](docs/implementation-backlog.md): prove authorized news, X, SEC/IR, publisher, and quote/calendar access; evaluate pinned TradingAgents against a minimal custom graph; record actual latency, usage, and coverage before paper execution.
+Continue [T0 and the backlog](docs/implementation-backlog.md): prove actual authorized source/model/account access, then implement independent collectors, durable execution/recovery and prospective validation. The initial custom graph is runnable; all current allocations are nonexecutable research previews.
 
 See [source research](docs/research.md) for TradingAgents, TradingCrew, TradeAgent, and AI Hedge Fund. No upstream code is adopted by this plan; review its specific license before reuse.
+

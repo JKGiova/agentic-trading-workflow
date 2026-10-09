@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.env
+.env.*
+!.env.example
+.tradebot/
+*.db
+*.db-shm
+*.db-wal
+config.local.json
+dist/
+

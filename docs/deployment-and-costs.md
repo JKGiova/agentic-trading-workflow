@@ -16,7 +16,7 @@ flowchart TD
     E --> B["Paper broker"]
     B --> M["Independent order monitor"]
     M --> D
-    D --> U["FastAPI and dashboard"]
+    D --> U["Four-pane Textual CLI"]
 ```
 
 Start locally with a virtual environment and PostgreSQL; containers are optional. The first development run is `research_only`: broker account/quote reads are permitted, orders are not. Enable `paper` only after deterministic reservations and recovery checks pass. Live mode is unsupported in the prototype.
@@ -30,7 +30,7 @@ For an always-on paper pilot, deploy supervised processes on one small Linux hos
 | Session worker | Coverage, analyst calls, fair debates, judgment, and Allocator proposals |
 | Execution worker | Validate/reserve, dispatch durable paper intents, and reconcile unknown submissions |
 | Order monitor | Broker updates, reconnect backfill, partial fills, protections, cash and daily-loss state |
-| API/dashboard | Read-only first UI; authenticated owner operations remain separate from model tools |
+| Terminal | One Textual window for positions, detail, read-only chatbot and portfolio/performance; services stay separate from model tools |
 
 Market-closed sessions may research/report, but submission checks broker clock, quotes, and permitted trading hours. A source/model failure never disables the order monitor.
 
@@ -111,3 +111,4 @@ Report dollars/tokens by role/session/stock, source calls/credits, remaining bud
 - [Connector implementation](connector-implementation.md)
 - [Budget management](budget-management.md)
 - [Implementation backlog](implementation-backlog.md)
+

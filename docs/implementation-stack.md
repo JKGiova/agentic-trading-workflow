@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-Reviewed **2026-10-09**. These are concrete implementation proposals, not installed services. Preserve the eight AI roles, direct debate without a numerical prefilter, independent Allocator, mandatory holding research, and paper-first execution.
+Reviewed **2026-10-09**. The [v0.1 CLI](cli.md) implements a first subset with a dependency lock. This page retains the full implementation target; see [status](development-status.md) for differences. Preserve the eight AI roles, direct debate without a numerical prefilter, independent Allocator and mandatory holding research.
 
 ## Recommended first implementation
 
@@ -10,7 +10,7 @@ Build a small Python application with an explicit LangGraph workflow and Postgre
 
 | Responsibility | Proposed tool/package | How we use it |
 | --- | --- | --- |
-| Runtime | Python 3.13, virtual environment | One language for agents, data, risk, and evaluation; verify the dependency lock on the target OS |
+| Runtime | Python 3.12/3.13, virtual environment | One language for agents, data, risk, and evaluation; locked dependencies and CI |
 | Agent workflow | `langgraph`, `langgraph-checkpoint-postgres` | Explicit nodes/branches, shared frozen evidence, and persistent session checkpoints |
 | Model gateway | OpenRouter through a thin `httpx` client | Provider-independent paid model calls, bounded tool loops, JSON Schema output, usage logging |
 | Contracts | `pydantic`, `pydantic-settings` | Validate reports, scenarios, forecasts, allocation proposals, and configuration |
@@ -18,8 +18,7 @@ Build a small Python application with an explicit LangGraph workflow and Postgre
 | Periodic triggers | APScheduler 3.x | One scheduler enqueues collection/session/settlement jobs; database deduplication controls execution |
 | APIs and feeds | `httpx`, `feedparser`, `beautifulsoup4` | Bounded API/RSS retrieval and parsing of authorized accessible content |
 | Broker/data | `alpaca-py`; direct news REST adapter | Paper account, holdings, calendar, quotes, orders, and order updates |
-| Service API | `fastapi`, `uvicorn` | Typed status, evidence, session, portfolio, and policy endpoints |
-| First dashboard | `streamlit` | Read the API and show research, confidence, verdicts, allocations, coverage, and costs |
+| Owner interface | `textual` | One four-pane terminal for positions, selection focus, research chat and portfolio/performance |
 | Evaluation | `pandas`, `numpy`, `scikit-learn` | Prospective forecast settlement, return/drawdown summaries, and calibration |
 | Verification | `pytest`, `pytest-asyncio`, `ruff` | Contract, temporal, recovery, reservation, and execution checks |
 
@@ -58,10 +57,10 @@ These are available research candidates, not a claim that either predicts stocks
 | `src/tradebot/portfolio/` | Position cases, deterministic sizing, cash/risk ledger, and policy enforcement |
 | `src/tradebot/execution/` | Paper adapter, durable order intents, submission reconciliation, and protections |
 | `src/tradebot/storage/` and `migrations/` | Database repositories and migrations |
-| `src/tradebot/api/`, `dashboard/` | API and initial UI |
+| `src/tradebot/terminal.py`, `service.py`, `cli.py` | Single-window terminal and internal application services |
 | `tests/` | Offline fixtures and separately enabled provider/paper integration checks |
 
-These paths are planned and do not yet contain implementation.
+The initial implementation currently uses flat modules; planned package splits, Alembic, distributed jobs and execution/checkpointer services remain later work.
 
 ## Primary references
 
@@ -73,7 +72,7 @@ These paths are planned and do not yet contain implementation.
 - [APScheduler 3.x](https://apscheduler.readthedocs.io/en/3.x/userguide.html)
 - [Mastra workflows](https://mastra.ai/docs/workflows/overview), [Temporal activities](https://docs.temporal.io/activities)
 - [Alpaca Python SDK](https://alpaca.markets/sdks/python/api_reference/trading/trading-client.html)
-- [FastAPI](https://fastapi.tiangolo.com/) and [Streamlit](https://docs.streamlit.io/)
+- [Textual](https://textual.textualize.io/) and [terminal interaction testing](https://textual.textualize.io/guide/testing/)
 
 ## Related pages
 
@@ -82,3 +81,4 @@ These paths are planned and do not yet contain implementation.
 - [Persistence and contracts](persistence-and-contracts.md)
 - [Deployment and costs](deployment-and-costs.md)
 - [Implementation backlog](implementation-backlog.md)
+

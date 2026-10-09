@@ -2,6 +2,10 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
+The first [v0.1 CLI](cli.md) implements a research-only subset. All owner interaction
+uses a single four-pane terminal. See [development status](development-status.md)
+before interpreting a milestone below as completed.
+
 | Milestone | Deliverable | Acceptance criteria |
 | --- | --- | --- |
 | 0. Scope and upstream spike | Select watchlist, primary forecast horizon, benchmark/cost hurdle, trade-success target, debate budget and fair queue policy, Analyst Lead, investment/risk budgets, sources, model budgets, and starting architecture | Run a paper-only spike; document source access and gaps; no live execution |
@@ -29,7 +33,7 @@ The [ordered backlog](implementation-backlog.md) maps this roadmap into implemen
 | 4. Direct debate | T5 fair queue, bounded rounds, Orchestrator judgment |
 | 5. Paper execution | T6 sizing preview, T7 reservations/intents/monitor |
 | 6. Evaluation | T8 forecast settlement and prospective comparisons |
-| 7. Dashboard/operations | T9 API/UI, supervision, and recovery |
+| 7. Terminal/operations | T9 four-pane CLI, supervision, and recovery |
 | 8. Live readiness | Separate later decision; prototype live mode remains unsupported |
 
 The proposed route is [Python/LangGraph and PostgreSQL](implementation-stack.md), with [explicit connectors](connector-implementation.md), [typed tool boundaries](agent-runtime.md), and [a transactional business ledger](persistence-and-contracts.md). Compare actual usage with [cost assumptions](deployment-and-costs.md); public prices are not measured project costs.
@@ -58,3 +62,4 @@ Initial design choices already proposed: four analyst roles with an internal lea
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Source research](research.md)
+

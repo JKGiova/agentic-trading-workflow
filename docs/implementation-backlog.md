@@ -23,9 +23,9 @@ Use actual source access where available and marked fixtures for offline verific
 | T6. Allocator/preview | T5 | Holding review and separate portfolio-plan agent; deterministic sizing previews | One action/stock; no reinforcement without debate; confidence/downside cap includes holdings/pending buys |
 | T7. Paper lifecycle | T6 | Reservations, durable intents, Alpaca paper adapter, independent monitor | Simultaneous budgets cannot overspend; timeout/duplicates/partial fills/cancellations/restart reconciled |
 | T8. Prospective evaluation | T5; trading metrics after T7 | Forecast settlement, benchmark/corporate-action handling, calibration and comparisons | Initial/final forecasts settled independently of exits; no future data; losses/costs/coverage reported |
-| T9. Dashboard/operations | T3-T8 as available | FastAPI, Streamlit, source/queue/ledger/cost views, supervision/backups | Research-only versus paper visible; dissent/gaps/unknown orders visible; restore/recovery exercised |
+| T9. Terminal/operations | T3-T8 as available | Textual four-pane CLI, source/queue/ledger/cost views, supervision/backups | Research-only versus paper visible; dissent/gaps/unknown orders visible; restore/recovery exercised |
 
-T0-T6 can run without order submission. T7 requires a verified paper account and tested limits; live mode is outside this prototype. Backend/API and dashboard remain separable.
+T0-T6 can run without order submission. T7 requires a verified paper account and tested limits; live mode is outside this prototype. Internal services remain separate from the owner's single-window terminal. [v0.1 status](development-status.md) records implemented subsets rather than marking these whole milestones complete.
 
 ## Minimum verification by milestone
 
@@ -55,3 +55,4 @@ One recoverable scheduled paper workflow covers all holdings, sends all admissib
 - [Agent runtime](agent-runtime.md)
 - [Persistence and contracts](persistence-and-contracts.md)
 - [Deployment and costs](deployment-and-costs.md)
+
