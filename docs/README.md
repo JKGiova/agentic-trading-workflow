@@ -1,0 +1,41 @@
+# Agentic Trading Workflow Wiki
+
+[Project overview](../README.md)
+
+This is the versioned project wiki. Each page covers one part of the design; implementation milestones and current progress are tracked separately. All content is in English.
+
+**Status: design and planning.** No trading service or agent implementation is claimed.
+
+## Start here
+
+Read the architecture, analyst team, forecasts, position management, and debate pages in that order. Use the implementation plan to choose the first development milestone.
+
+## Pages
+
+| Page | Purpose |
+| --- | --- |
+| [Architecture and scope](architecture.md) | Stock universe, seven agent roles, component ownership, and proposed stack |
+| [Analyst team and mandatory research](analysis-team.md) | Market, financial, company, and social analysts; held-stock coverage requirements |
+| [Forecasts and confidence](forecasts-and-confidence.md) | Stock recaps, forecast horizons, outcome definitions, and calibration |
+| [Existing-position management](position-management.md) | Reinforce, reduce, close, hold, and thesis comparison |
+| [New-entry debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and judge verdicts |
+| [Session workflow](session-workflow.md) | Scheduling, portfolio reconciliation, action sequencing, and proposal contracts |
+| [Data and sources](data-and-sources.md) | Approved publications and X accounts, timestamps, deduplication, and memory |
+| [Risk and execution](risk-and-execution.md) | Deterministic limits, protective orders, idempotency, and paper execution |
+| [Validation](validation.md) | Prospective evaluation, debate comparisons, and operational checks |
+| [Implementation plan](PLAN.md) | Milestones, acceptance criteria, and open decisions |
+| [Development status](development-status.md) | What is documented, what is implemented, and the next milestone |
+| [Source research](research.md) | Recommended repositories, their gaps, and primary documentation |
+
+## Current design decisions
+
+- Four specialist analysts cover market, financial, company, and authorized social news.
+- Every open position requires fresh, recorded searches and an explicit coverage status.
+- Stock forecasts have an explicit horizon and outcome; model confidence is labeled uncalibrated until validated.
+- Existing positions can be reinforced, reduced, closed, or held unchanged.
+- Two researchers debate new entries; one Decision Manager judges the evidence.
+- Risk limits and execution are deterministic services, with paper trading as the first target.
+
+## Documentation layout
+
+The root README is the entry point. Design pages live under `docs/`, with `PLAN.md` for milestones and `development-status.md` for actual progress, following the structure of the Moonlight tvOS PyroWave workspace.
