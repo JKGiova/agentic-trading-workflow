@@ -2,6 +2,9 @@
 
 [Wiki home](README.md) · [Research tools](research-workflow.md) · [Memory](memory-and-retrieval.md)
 
+The [agent control-loop blueprint](agent-control-loop.md) gives the concrete
+per-task role contracts, persistence, and staged implementation.
+
 **Owner update, 2026-10-10; target only.** Analysts work throughout a configurable
 X-hour research cycle, collaborate on findings, and publish one report per analyzed
 stock at its end. Every report enters debate. The Portfolio Manager then assesses

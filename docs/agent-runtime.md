@@ -71,6 +71,10 @@ count from the proposed shared-briefing optimization.
 
 ## Target runtime
 
+The [agent control-loop blueprint](agent-control-loop.md) specifies how to turn
+the bounded specialist calls into on-demand, tool-using, recoverable agents and
+how that differs from TradingAgents' per-case graph.
+
 The [continuous-cycle refinement](continuous-analysis.md) now supersedes the single-pass target: analysts process/cross-review items throughout X hours, freeze report manifests, and create every-stock debate obligations. Research task leases and the portfolio decision lease are separate. The target Portfolio Manager is the current Allocator role, with volatility/portfolio tools. None of this renames or changes the current runtime in this plan update.
 
 Follow the [research workflow](research-workflow.md): analysts can request scoped news/search/page/transcript/social tools and retrieve [persistent event/position context](memory-and-retrieval.md). yfinance supplies leads, AgentReach-selected backends supply research capabilities, and Alpaca supplies broker/market data. Requests are validated and executed by code, with stored attempt IDs and bounded spend.

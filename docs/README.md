@@ -15,6 +15,7 @@ The proposed build is Python/LangGraph with PostgreSQL, OpenRouter model calls, 
 | Page | Purpose |
 | --- | --- |
 | [Continuous analyst cycles](continuous-analysis.md) | X-hour news loops, analyst collaboration, report boundaries, every-stock debates and Portfolio Manager |
+| [Agent control loop](agent-control-loop.md) | TradingAgents comparison, actual agent contracts, durable task loops and implementation slices |
 | [Research workflow](research-workflow.md) | TradingAgents-style analyst tool loops, event follow-up, cutoff revisions and a CES example |
 | [Memory and retrieval](memory-and-retrieval.md) | Persistent checkpoints, evidence/event/thesis memory, SQL retrieval and outcome lessons |
 | [Selected provider plan](provider-plan.md) | Alpaca, yfinance and AgentReach responsibilities, boundaries and access checks |
