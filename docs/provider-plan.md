@@ -4,14 +4,15 @@
 
 **Selected target, 2026-10-10.** The owner chose Alpaca, yfinance and AgentReach.
 This supersedes the earlier Alpaca-news/official-X/Tavily default proposal.
-Existing adapters remain documented as implemented; provider migration is pending.
+The continuous team now implements yfinance discovery and Agent Reach web/X
+retrieval; optional legacy adapters remain explicit. Transcript/Exa expansion is pending.
 
 The selected model service is now **NVIDIA NIM / DeepSeek V4.1 Flash**, replacing
 the OpenRouter baseline in the target. All initial roles and chat use
 `deepseek-ai/deepseek-v4.1-flash`; see [model provider](model-provider.md). The
 default model client is now NVIDIA NIM. The continuous team uses yfinance,
-registered page reads and optional existing X/SEC/IR adapters; AgentReach-backed
-provisioning remains pending. See [continuous runtime](continuous-runtime.md).
+Agent Reach Jina page reads and twitter-cli X search, plus optional SEC/IR adapters.
+Credentials are collected in onboarding; see [connector implementation](agentreach-connectors.md). See [continuous runtime](continuous-runtime.md).
 
 | Component | Selected responsibility | Explicit boundary |
 | --- | --- | --- |
@@ -54,8 +55,9 @@ our AgentReach-backed reading step is an additional capability.
 
 The reviewed upstream describes web reading through Jina Reader, search through Exa,
 Twitter/X through selected CLI backends, and YouTube captions through yt-dlp. These
-are examples from upstream, not verified capabilities in our environment. Pin both
-AgentReach and every enabled backend; do not rely on an auto-changing runtime route.
+are upstream capabilities. Our implemented subset is pinned Jina web reading and
+twitter-cli approved-X search; Exa and transcripts remain pending. Both revisions
+and verified fixture contracts are in the [connector guide](agentreach-connectors.md).
 
 Use AgentReach for provisioning/diagnostics and a capability report. Our Python
 adapter dispatches narrow, typed operations to the selected underlying CLI/MCP/API.

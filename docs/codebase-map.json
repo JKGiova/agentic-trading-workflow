@@ -1,23 +1,25 @@
 {
   "generator": "Python AST; not Graphify",
-  "source_digest": "703484e2e9366fd2e2acbaaab1396ce1c7a3b29bcd355467041ca970d5c07f6d",
+  "source_digest": "889eb8d6e77f90bd447e5a98ac5b97d1b70d027126bd93f59436b657806b67c1",
   "source_hashes": {
-    "src/tradebot/__init__.py": "acc1eda1686153e76013a9e6c5f45e3c073ff48846bebeea80cdd02d5c0b3cb0",
-    "src/tradebot/analysis_memory.py": "30a16443e241faaa3d0808c8255808944a31f3d72429e565e78687c56831d261",
+    "src/tradebot/__init__.py": "5759266986bcd82890e814fe6730304e990fb0a82bf728f9f12197b3e7833039",
+    "src/tradebot/agentreach_sources.py": "74930225fd582b7422319958f2407290af3440dddf69bc33f9323323f60e8900",
+    "src/tradebot/agentreach_worker.py": "b809d7965d0c85b6e7bea450b2d8a0e94cba96ccce845370cbc773e740ae32c2",
+    "src/tradebot/analysis_memory.py": "2195501067b871b6cba423de77ef266dffb1541d14875c32a56fc9302878770f",
     "src/tradebot/analysts.py": "adbed55bd98e0bf6a7ffb020b351c5823508770c5af21f02d593f91e5a5554d7",
     "src/tradebot/broker.py": "fcbe3ec24c5e31e56aa90f477da3e4365ca812ae809e4e827b8e500c63982b4c",
-    "src/tradebot/cli.py": "2e5178c5e98b9eb098c313eb033c13ef11ac5c0f741bed737e4062d68e6be806",
+    "src/tradebot/cli.py": "15e3f5802787bc3e7ea254302e45d2e154e101fca008917edec11a834b1571c5",
     "src/tradebot/contracts.py": "a6dbd64b316389ebbbbe88837dc13a19d2af9ebf34ff22dea677d723b38a161e",
     "src/tradebot/models.py": "2410c996390604305754569d0801f627735b563b5985bea274352c367370f013",
-    "src/tradebot/news_sources.py": "e277b9f92dc5c126b08e712666d3061f8b1430e0cbd0163fde9a741586a0be3d",
-    "src/tradebot/onboarding.py": "97f254aa06feebe76e3317634cfb109bd8ab374b69f48e67c3db373670fe3dbb",
+    "src/tradebot/news_sources.py": "82ae7aa68c8225b0a75fd0a179564206a6f2132b08a0802ac70b6eed95ba9a7d",
+    "src/tradebot/onboarding.py": "449b0c502b09c1d26741f9d645551bc375a45e27033c86069d97b855426a5232",
     "src/tradebot/research.py": "a5fd2a198a609865d47d92587e08f773c50088cf046aed9f1e7ace19581d7982",
     "src/tradebot/risk.py": "e62910028747dcbd3700b074b818a88a06a17a6f5f7224a92780ec8b471d5122",
     "src/tradebot/service.py": "4c35b2c956f452cf5d5d229b05dea2a9b594e2f11463d67f9136be0d6759d3c4",
-    "src/tradebot/settings.py": "632a97f02837a0f1bc9083e93393dd1b26878c9c833f036655c70355bd9a61e7",
-    "src/tradebot/setup_terminal.py": "bb2cdd916c74c8bfb9aecf3a101772cd04b48cac47c4e60108b3921abe067ad7",
+    "src/tradebot/settings.py": "7b56dca979ec71920792a3d4900adffd3703b18a1bad97dcee698471b1931a1f",
+    "src/tradebot/setup_terminal.py": "b0ab6489960b4fd4889363333635bd8042790c3b2448fbad93385da4e537a718",
     "src/tradebot/storage.py": "4142b83710c140177066e80f7d12c79f065cfa3a802c93e1cbb215849c0d070a",
-    "src/tradebot/supervisor.py": "c9e1cc89af656f180a475460c78825de47da1f366e28a177316486bf0a3d9a3b",
+    "src/tradebot/supervisor.py": "f220a20eb11b106e7fad3937f67d1edfe37f77143dc1a1dbaf94b453f11b0485",
     "src/tradebot/telegram.py": "21d7fd6e724218de73673b886d9d2939f2d4df4ed8a8273730de90974e83b563",
     "src/tradebot/terminal.py": "71b6318fa800a9d3c025f7619c80660e7b027504f1490a60ebd7586cdda66dd7",
     "src/tradebot/workflow.py": "d42b9642a6953fe4061be2cd6217f18972a46a20612003500f04666074ff270b"
@@ -26,6 +28,14 @@
     {
       "id": "tradebot.__init__",
       "path": "src/tradebot/__init__.py"
+    },
+    {
+      "id": "tradebot.agentreach_sources",
+      "path": "src/tradebot/agentreach_sources.py"
+    },
+    {
+      "id": "tradebot.agentreach_worker",
+      "path": "src/tradebot/agentreach_worker.py"
     },
     {
       "id": "tradebot.analysis_memory",
@@ -102,6 +112,16 @@
   ],
   "links": [
     {
+      "source": "tradebot.agentreach_sources",
+      "target": "tradebot.contracts",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.agentreach_sources",
+      "target": "tradebot.research",
+      "kind": "import"
+    },
+    {
       "source": "tradebot.analysis_memory",
       "target": "tradebot.contracts",
       "kind": "import"
@@ -129,6 +149,11 @@
     {
       "source": "tradebot.broker",
       "target": "tradebot.settings",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.cli",
+      "target": "tradebot.agentreach_sources",
       "kind": "import"
     },
     {
@@ -189,6 +214,11 @@
     {
       "source": "tradebot.models",
       "target": "tradebot.storage",
+      "kind": "import"
+    },
+    {
+      "source": "tradebot.news_sources",
+      "target": "tradebot.agentreach_sources",
       "kind": "import"
     },
     {
@@ -394,6 +424,54 @@
   ],
   "definitions": [
     {
+      "module": "tradebot.agentreach_sources",
+      "name": "AgentReachSources",
+      "line": 14,
+      "kind": "class"
+    },
+    {
+      "module": "tradebot.agentreach_sources",
+      "name": "AgentReachSources.__init__",
+      "line": 15,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.agentreach_sources",
+      "name": "AgentReachSources.run",
+      "line": 21,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.agentreach_sources",
+      "name": "AgentReachSources.social",
+      "line": 47,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.agentreach_sources",
+      "name": "AgentReachSources.read",
+      "line": 109,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.agentreach_sources",
+      "name": "AgentReachSources.capabilities",
+      "line": 136,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.agentreach_worker",
+      "name": "execute",
+      "line": 10,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.agentreach_worker",
+      "name": "main",
+      "line": 37,
+      "kind": "function"
+    },
+    {
       "module": "tradebot.analysis_memory",
       "name": "digest",
       "line": 66,
@@ -444,109 +522,109 @@
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.cycle",
-      "line": 159,
+      "line": 189,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.remember",
-      "line": 162,
+      "line": 192,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.evidence",
-      "line": 186,
+      "line": 216,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.ingest",
-      "line": 197,
+      "line": 227,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.carry",
-      "line": 255,
+      "line": 285,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.claim",
-      "line": 279,
+      "line": 309,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.checkpoint",
-      "line": 319,
+      "line": 349,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.finish",
-      "line": 335,
+      "line": 365,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.fail",
-      "line": 363,
+      "line": 393,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.peer_tasks",
-      "line": 380,
+      "line": 410,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.findings",
-      "line": 422,
+      "line": 452,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.freeze",
-      "line": 434,
+      "line": 464,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.save_report",
-      "line": 470,
+      "line": 500,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.queue_summary",
-      "line": 481,
+      "line": 511,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.queue_notification",
-      "line": 486,
+      "line": 516,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory._queue_parts",
-      "line": 490,
+      "line": 520,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.delivery_result",
-      "line": 504,
+      "line": 534,
       "kind": "method"
     },
     {
       "module": "tradebot.analysis_memory",
       "name": "AnalysisMemory.claim_delivery",
-      "line": 514,
+      "line": 544,
       "kind": "method"
     },
     {
@@ -660,13 +738,13 @@
     {
       "module": "tradebot.cli",
       "name": "parser",
-      "line": 17,
+      "line": 18,
       "kind": "function"
     },
     {
       "module": "tradebot.cli",
       "name": "main",
-      "line": 52,
+      "line": 55,
       "kind": "function"
     },
     {
@@ -906,43 +984,43 @@
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources",
-      "line": 15,
+      "line": 16,
       "kind": "class"
     },
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources.__init__",
-      "line": 16,
+      "line": 17,
       "kind": "method"
     },
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources.close",
-      "line": 26,
+      "line": 35,
       "kind": "method"
     },
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources.yahoo",
-      "line": 30,
+      "line": 39,
       "kind": "method"
     },
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources.normalize",
-      "line": 36,
+      "line": 45,
       "kind": "method"
     },
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources.collect",
-      "line": 65,
+      "line": 74,
       "kind": "method"
     },
     {
       "module": "tradebot.news_sources",
       "name": "NewsSources.execute",
-      "line": 140,
+      "line": 158,
       "kind": "method"
     },
     {
@@ -959,74 +1037,122 @@
     },
     {
       "module": "tradebot.onboarding",
+      "name": "save_credentials",
+      "line": 35,
+      "kind": "function"
+    },
+    {
+      "module": "tradebot.onboarding",
       "name": "SetupController",
-      "line": 55,
+      "line": 62,
       "kind": "class"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.__init__",
-      "line": 56,
+      "line": 63,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.close",
-      "line": 67,
+      "line": 77,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.connection",
-      "line": 70,
+      "line": 80,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.pending_steps",
-      "line": 76,
+      "line": 86,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.access_status",
+      "line": 106,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.complete_access",
+      "line": 131,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.save_access",
+      "line": 144,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.policy",
+      "line": 203,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.parse_authors",
+      "line": 206,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.save_authors",
+      "line": 233,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.onboarding",
+      "name": "SetupController.save_news_access",
+      "line": 276,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.schedule",
-      "line": 87,
+      "line": 302,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.save_schedule",
-      "line": 90,
+      "line": 305,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.last_test",
-      "line": 112,
+      "line": 327,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.connect",
-      "line": 117,
+      "line": 332,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController.test",
-      "line": 146,
+      "line": 361,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "SetupController._complete",
-      "line": 155,
+      "line": 370,
       "kind": "method"
     },
     {
       "module": "tradebot.onboarding",
       "name": "test_status",
-      "line": 168,
+      "line": 383,
       "kind": "function"
     },
     {
@@ -1242,37 +1368,37 @@
     {
       "module": "tradebot.settings",
       "name": "Policy.unique",
-      "line": 90,
+      "line": 92,
       "kind": "method"
     },
     {
       "module": "tradebot.settings",
       "name": "Policy.approved",
-      "line": 97,
+      "line": 99,
       "kind": "method"
     },
     {
       "module": "tradebot.settings",
       "name": "Policy.read",
-      "line": 104,
+      "line": 106,
       "kind": "method"
     },
     {
       "module": "tradebot.settings",
       "name": "Credentials",
-      "line": 108,
+      "line": 110,
       "kind": "class"
     },
     {
       "module": "tradebot.settings",
       "name": "Credentials.missing",
-      "line": 124,
+      "line": 128,
       "kind": "method"
     },
     {
       "module": "tradebot.settings",
       "name": "Credentials.analysis_missing",
-      "line": 146,
+      "line": 150,
       "kind": "method"
     },
     {
@@ -1296,103 +1422,145 @@
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.__init__",
-      "line": 44,
+      "line": 45,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.compose",
-      "line": 49,
+      "line": 50,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.on_mount",
-      "line": 86,
+      "line": 137,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.status",
-      "line": 92,
+      "line": 143,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.show_form",
-      "line": 95,
+      "line": 146,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.show_home",
-      "line": 106,
+      "line": 159,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.show_schedule",
-      "line": 138,
-      "kind": "method"
-    },
-    {
-      "module": "tradebot.setup_terminal",
-      "name": "SetupTerminal.set_busy",
-      "line": 151,
-      "kind": "method"
-    },
-    {
-      "module": "tradebot.setup_terminal",
-      "name": "SetupTerminal.connect",
-      "line": 168,
-      "kind": "method"
-    },
-    {
-      "module": "tradebot.setup_terminal",
-      "name": "SetupTerminal.connect_bot",
-      "line": 174,
-      "kind": "method"
-    },
-    {
-      "module": "tradebot.setup_terminal",
-      "name": "SetupTerminal.test",
       "line": 200,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.set_busy",
+      "line": 213,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.show_access",
+      "line": 221,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.change_model",
+      "line": 260,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.change_news",
+      "line": 265,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.save_model",
+      "line": 272,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.save_news",
+      "line": 284,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.save_access",
+      "line": 287,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.defer_access",
+      "line": 325,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.connect",
+      "line": 338,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.connect_bot",
+      "line": 344,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
+      "name": "SetupTerminal.test",
+      "line": 370,
+      "kind": "method"
+    },
+    {
+      "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.send_test",
-      "line": 206,
+      "line": 376,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.change",
-      "line": 219,
+      "line": 389,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.change_schedule",
-      "line": 224,
+      "line": 394,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.save_schedule",
-      "line": 230,
+      "line": 400,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.leave",
-      "line": 242,
+      "line": 412,
       "kind": "method"
     },
     {
       "module": "tradebot.setup_terminal",
       "name": "SetupTerminal.on_unmount",
-      "line": 245,
+      "line": 415,
       "kind": "method"
     },
     {
@@ -1584,73 +1752,73 @@
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.rollover",
-      "line": 71,
+      "line": 105,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.collect",
-      "line": 87,
+      "line": 121,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.context",
-      "line": 158,
+      "line": 192,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.work_one",
-      "line": 211,
+      "line": 245,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.report_cycle",
-      "line": 243,
+      "line": 277,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.summarize_role",
-      "line": 361,
+      "line": 395,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.summary",
-      "line": 460,
+      "line": 494,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.close_pending",
-      "line": 509,
+      "line": 543,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.latest_report",
-      "line": 518,
+      "line": 552,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.status",
-      "line": 527,
+      "line": 561,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor._loop",
-      "line": 554,
+      "line": 588,
       "kind": "method"
     },
     {
       "module": "tradebot.supervisor",
       "name": "AnalysisSupervisor.run",
-      "line": 565,
+      "line": 599,
       "kind": "method"
     },
     {

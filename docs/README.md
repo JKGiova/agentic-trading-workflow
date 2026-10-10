@@ -4,7 +4,7 @@
 
 This is the versioned project wiki. Each page covers one part of the design; implementation milestones and current progress are tracked separately. All content is in English.
 
-**Status: v0.3.0 on Python 3.14, with onboarding-scheduled Telegram reports; orders disabled.** Start with [onboarding](onboarding.md), the [CLI guide](cli.md),
+**Status: v0.4.0 on Python 3.14, with onboarding-scheduled Telegram reports; orders disabled.** Start with [onboarding](onboarding.md), the [CLI guide](cli.md),
 [development status](development-status.md) and [codebase map](codebase-map.md).
 The topic pages retain the full target; execution and prospective validation remain pending.
 
@@ -21,6 +21,7 @@ The proposed build is Python/LangGraph with PostgreSQL, NVIDIA NIM / DeepSeek V4
 | [Model provider](model-provider.md) | NVIDIA NIM / DeepSeek V4.1 Flash adapter, connection contract, and capability checks |
 | [Research workflow](research-workflow.md) | TradingAgents-style analyst tool loops, event follow-up, cutoff revisions and a CES example |
 | [Memory and retrieval](memory-and-retrieval.md) | Persistent checkpoints, evidence/event/thesis memory, SQL retrieval and outcome lessons |
+| [Agent Reach connectors](agentreach-connectors.md) | Installed web/X backends, credential setup, bounds and evidence validation |
 | [Selected provider plan](provider-plan.md) | Alpaca, yfinance and AgentReach responsibilities, boundaries and access checks |
 | [Implementation stack](implementation-stack.md) | Concrete packages, framework alternatives, model candidates, and planned modules |
 | [Connector implementation](connector-implementation.md) | News, approved X authors, SEC/IR, publisher search, quotes, and capability proofs |
@@ -56,7 +57,7 @@ Read the architecture, analyst team, forecasts, opportunity analysis, position m
 
 ## Current design decisions
 
-- Selected target: Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed bounded research; existing adapters remain unchanged until migration.
+- Selected target: Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed bounded research; web/X retrieval is integrated; transcript/search expansion remains pending.
 - Next development focuses on evidence/event memory, retrieval, analyst tool loops and recoverable sessions; see the workflow and memory pages.
 
 - Four specialist analysts continuously process market, financial, company and authorized social news within X-hour cycles, preserving original findings, collaboration and dissent.

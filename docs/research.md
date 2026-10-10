@@ -39,7 +39,8 @@ T0 compares selective reuse with the smaller custom graph on identical evidence.
 
 At the pinned TradingAgents revision above, also inspected `agents/analysts/turn.py`, `dataflows/vendors/yahoo/news.py`, and `memory/log.py`. The analyst binds tools with a bounded wrap-up path; Yahoo formats headline/summary/link and uses sampled Search fallback; memory stores decisions plus outcomes/reflections and filters lessons by resolution date. Our target adapts those patterns with exact intraday cutoffs, event knowledge and position-thesis retrieval.
 
-Selected [AgentReach](https://github.com/Panniantong/Agent-Reach) as the capability/setup reference for web search, page reads, approved-X retrieval and available YouTube captions. Its underlying backends require separate pinning and access checks; it is not the graph or persistence layer. See [provider plan](provider-plan.md), [research workflow](research-workflow.md) and [memory design](memory-and-retrieval.md). No upstream package was installed or code copied.
+Selected [AgentReach](https://github.com/Panniantong/Agent-Reach) as the capability/setup reference for web search, page reads, approved-X retrieval and available YouTube captions. Its underlying backends require separate pinning and access checks; it is not the graph or persistence layer. See [provider plan](provider-plan.md), [research workflow](research-workflow.md) and [memory design](memory-and-retrieval.md). Pinned Agent Reach and twitter-cli are now installed dependencies; see the
+[implemented connector guide](agentreach-connectors.md). No upstream source files are vendored.
 
 ## Concrete tool research
 

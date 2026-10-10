@@ -1,6 +1,7 @@
 import asyncio
 from datetime import timedelta
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from sqlalchemy import update
@@ -666,7 +667,9 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
 
     import httpx
 
+    from tradebot.agentreach_sources import AgentReachSources
     from tradebot.models import NvidiaNIM
+    from tradebot.news_sources import NewsSources
     from tradebot.onboarding import TOKEN_NAME, SetupController
     from tradebot.telegram import TelegramNotifier
 
@@ -674,6 +677,10 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
     fixtures = DemoModel()
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv(TOKEN_NAME)
+    monkeypatch.delenv("TRADEBOT_NVIDIA_API_KEY")
+    monkeypatch.delenv("TRADEBOT_X_AUTH_TOKEN")
+    monkeypatch.delenv("TRADEBOT_X_CT0")
+    await asyncio.to_thread(Path("config.local.json").write_text, policy.model_dump_json())
     monkeypatch.setattr("tradebot.telegram.secrets.token_hex", lambda _: "fixture_nonce")
 
     async def handler(request):
@@ -717,7 +724,10 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
             if role.endswith("_cycle_summary")
             else AgentTurn
         )
-        output = await fixtures.structured(role, contract, context)
+        if contract is AgentTurn and role == "company_analyst" and not context.get("tool_results"):
+            output = AgentTurn(action="READ_PAGE", evidence_id=context["evidence"][0]["id"])
+        else:
+            output = await fixtures.structured(role, contract, context)
         return httpx.Response(
             200,
             json={
@@ -741,6 +751,11 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
                 "status"
             ] == "SENT"
             controller.save_schedule("0.5")
+            controller.save_access("model_access", {"nvidia_api_key": "private-nvidia"})
+            controller.save_news_access(
+                "auth_token=private-auth; ct0=private-csrf", "42:approved", {}, "example.com"
+            )
+            policy = controller.policy()
         finally:
             controller.close()
         reopened = SetupController(database, notifier_factory=factory)
@@ -757,7 +772,56 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
         model = NvidiaNIM(creds, policy, store, client)
         memory = AnalysisMemory(store)
         notifier = TelegramNotifier(creds, memory, client)
-        team = AnalysisSupervisor(policy, store, model, Sources(clock), notifier, clock=clock)
+        from types import SimpleNamespace
+
+        backend_calls = []
+
+        async def backend(payload):
+            backend_calls.append(payload["operation"])
+            if payload["operation"] == "web":
+                return {
+                    "text": "URL Source: https://example.com/release\n"
+                    "Markdown Content: Original AAPL NVDA MSFT company announcement"
+                }
+            return {
+                "tweets": [
+                    {
+                        "id": "101",
+                        "text": "AAPL NVDA MSFT company announcement",
+                        "author": {"id": "42", "screenName": "approved"},
+                        "createdAtISO": (clock() - timedelta(minutes=5)).isoformat(),
+                    }
+                ]
+            }
+
+        def yahoo(*args, **kwargs):
+            rows = [
+                {
+                    "id": "lead",
+                    "content": {
+                        "title": "Company announcement",
+                        "summary": "Announcement lead",
+                        "pubDate": (clock() - timedelta(minutes=5)).isoformat(),
+                        "canonicalUrl": {"url": "https://example.com/release"},
+                    },
+                }
+            ]
+            return SimpleNamespace(news=rows, get_news=lambda **kwargs: rows)
+
+        async def addresses(*args):
+            return [(2, 1, 6, "", ("8.8.8.8", 443))]
+
+        monkeypatch.setattr(asyncio.get_running_loop(), "getaddrinfo", addresses)
+        source = NewsSources(
+            creds,
+            policy,
+            memory,
+            client,
+            ticker_factory=yahoo,
+            search_factory=yahoo,
+            agentreach=AgentReachSources(creds, policy, backend),
+        )
+        team = AnalysisSupervisor(policy, store, model, source, notifier, clock=clock)
         first = team.current()
         assert team.status()["report_interval_hours"] == 0.5
         for _ in range(2):
@@ -790,6 +854,9 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
         assert all(symbol in text for symbol in ("AAPL", "NVDA", "MSFT"))
         assert "confidence" in text and "https://example.com/release" in text
         assert "fixture_only" not in text and "private-nvidia" not in text
+        assert "private-auth" not in text and "private-csrf" not in json.dumps(calls)
+        assert {"x", "web"} <= set(backend_calls)
+        assert any(item.source == "agentreach_web" for item in memory.evidence("AAPL", clock()))
         assert team.memory.cycle(first["id"])["payload"]["reports"]
         assert all(row["status"] == "SENT" for row in memory.rows(outbox))
         assert store.model_spend() > 0
@@ -866,3 +933,41 @@ async def test_unexpected_background_failure_stops_and_releases_lease(store, pol
         await asyncio.wait_for(team.run(), 2)
     assert store.acquire("analysis-supervisor", "new", 1)
     store.release("analysis-supervisor", "new")
+
+
+@pytest.mark.parametrize("legacy", [True, False])
+def test_v4_backend_schema_upgrade_resumes_previous_sources_until_next_cycle(
+    store, policy, clock, legacy
+):
+    old = {
+        key: value
+        for key, value in policy.model_dump(mode="json").items()
+        if key not in {"x_backend", "article_backend"}
+    }
+    memory = AnalysisMemory(store)
+    cycle = memory.open_cycle(
+        clock(),
+        policy.session_hours,
+        ["AAPL", "NVDA", "MSFT"],
+        digest(old),
+        policy_payload=None if legacy else old,
+    )
+    team = supervisor(store, policy, clock)
+    restored = team.current()
+    assert restored["id"] == cycle["id"] and restored["end"] == cycle["end"]
+    assert restored["payload"]["legacy_source_backends"]
+    assert (
+        team.research.policy.x_backend == "official"
+        and team.research.policy.article_backend == "direct"
+    )
+    changed = policy.model_copy(update={"cycle_model_budget": Decimal("1")})
+    incompatible = supervisor(store, changed, clock)
+    with pytest.raises(ValueError, match="restore"):
+        incompatible.current()
+    restarted = supervisor(store, policy, clock)
+    assert restarted.current()["id"] == cycle["id"]
+    clock.now += timedelta(hours=policy.session_hours)
+    new = restarted.rollover()
+    assert new["id"] != cycle["id"]
+    assert restarted.research.policy.x_backend == "agentreach"
+    assert restarted.research.policy.article_backend == "agentreach"

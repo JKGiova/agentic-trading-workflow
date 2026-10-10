@@ -108,6 +108,26 @@ class AnalysisMemory:
                         configuration_hash
                         and row["payload"].get("configuration_hash") == configuration_hash
                     )
+                    # v0.4 adds backend selectors. Resume the old schema with its
+                    # original adapters until closure; selectors apply to the next cycle.
+                    legacy_sources = False
+                    if policy_payload is not None:
+                        legacy_policy = {
+                            key: value
+                            for key, value in policy_payload.items()
+                            if key not in {"x_backend", "article_backend"}
+                        }
+                        legacy_configuration = digest(
+                            {
+                                key: value
+                                for key, value in legacy_policy.items()
+                                if key != "session_hours"
+                            }
+                        )
+                        legacy_sources = (
+                            row["payload"].get("configuration_hash") == legacy_configuration
+                        )
+                        compatible = compatible or legacy_sources
                     # v0.2 cycles used the full policy hash; allow only an interval upgrade.
                     if policy_payload is not None and not row["payload"].get("configuration_hash"):
                         duration = (
@@ -121,10 +141,20 @@ class AnalysisMemory:
                             digest({**policy_payload, "session_hours": value})
                             for value in durations
                         }
+                        legacy_sources = row["payload"]["policy_hash"] in {
+                            digest({**legacy_policy, "session_hours": value}) for value in durations
+                        }
+                        compatible = compatible or legacy_sources
                     if not compatible:
                         raise ValueError(
                             "Open research cycle policy changed; restore its configuration"
                         )
+                    if legacy_sources and not row["payload"].get("legacy_source_backends"):
+                        payload = {**row["payload"], "legacy_source_backends": True}
+                        conn.execute(
+                            update(cycles).where(cycles.c.id == row["id"]).values(payload=payload)
+                        )
+                        return {**row, "payload": payload}
                 return dict(row)
             cid = str(uuid.uuid4())
             previous = conn.execute(

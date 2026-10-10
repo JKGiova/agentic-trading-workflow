@@ -2,7 +2,7 @@
 
 A news-driven AI workflow for a selected group of stocks, with persistent evidence, mandatory position reviews, direct Bull/Bear debate, and a separate investment agent.
 
-**Status: v0.3.0 on Python 3.14, with onboarding-configured Telegram reports.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
+**Status: v0.4.0 on Python 3.14, with provider onboarding and Agent Reach web/X research.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
 
 ## Install and run
 
@@ -21,7 +21,9 @@ in Windows PowerShell use `.venv\Scripts\Activate.ps1`.
 
 `tradingworkflow` opens Telegram onboarding on first run. Paste your BotFather token
 in the hidden field, pair your private chat using the displayed `/start` code, and
-receive a test message, then choose the hours between reports. Decimal intervals
+receive a test message, then choose the hours between reports and configure model/news
+credentials. NVIDIA NIM keys and X cookies use masked inputs; X/SEC and read-only
+Alpaca access are optional. You can defer credentials for Telegram-only testing. Decimal intervals
 are supported: `0.5` means every 30 minutes. Later launches reuse saved setup. This entry point runs
 independently of the model/research team. See the [onboarding guide](docs/onboarding.md).
 
@@ -55,7 +57,7 @@ The implemented [continuous runtime](docs/continuous-runtime.md) opens the next 
 
 ## Read first
 
-The detailed plan lives in the **[project wiki](docs/README.md)**. The selected target uses Alpaca for broker/market data, yfinance for news leads, and AgentReach-backed tools for deeper research. Start with the [research workflow](docs/research-workflow.md), [persistent memory](docs/memory-and-retrieval.md), and [provider plan](docs/provider-plan.md); yfinance and the NVIDIA adapter now run in the continuous team; AgentReach provisioning remains pending. Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
+The detailed plan lives in the **[project wiki](docs/README.md)**. The selected target uses Alpaca for broker/market data, yfinance for news leads, and AgentReach-backed tools for deeper research. Start with the [research workflow](docs/research-workflow.md), [persistent memory](docs/memory-and-retrieval.md), and [provider plan](docs/provider-plan.md); yfinance and the NVIDIA adapter now run in the continuous team; Agent Reach page reading and approved-X retrieval now run in the continuous team; see the [connector guide](docs/agentreach-connectors.md). Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
 
 | Document | Purpose |
 | --- | --- |
@@ -86,7 +88,7 @@ The wiki also covers [session scheduling](docs/session-workflow.md), [data and m
 
 ## Next milestone
 
-Configure and verify real NVIDIA/Telegram access, then connect closed-cycle reports to the debate and Portfolio Manager pipeline. Continue the [backlog](docs/implementation-backlog.md) for AgentReach source access, durable execution and prospective validation. Current allocations remain nonexecutable research previews.
+Configure and verify real NVIDIA/Telegram access, then connect closed-cycle reports to the debate and Portfolio Manager pipeline. Continue the [backlog](docs/implementation-backlog.md) for transcript/search expansion, durable execution and prospective validation. Current allocations remain nonexecutable research previews.
 
-See [source research](docs/research.md) for TradingAgents, TradingCrew, TradeAgent, and AI Hedge Fund. No upstream code is adopted by this plan; review its specific license before reuse.
+See [source research](docs/research.md) for TradingAgents, TradingCrew, TradeAgent, and AI Hedge Fund. Pinned Agent Reach (MIT) and twitter-cli (Apache-2.0) are installed dependencies; see the [connector guide](docs/agentreach-connectors.md).
 

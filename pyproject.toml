@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentic-trading-workflow"
-version = "0.3.0"
+version = "0.4.0"
 description = "Auditable stock research with an eight-role workflow and a four-pane terminal"
 requires-python = ">=3.14"
 dependencies = [
@@ -19,6 +19,8 @@ dependencies = [
   "yfinance>=0.2.66,<1",
   "beautifulsoup4>=4.12,<5",
   "python-dotenv>=1.2,<2",
+  "agent-reach @ git+https://github.com/Panniantong/Agent-Reach.git@94f06c1969dfc1834001269d79d3ad0972d9dee6",
+  "twitter-cli @ git+https://github.com/public-clis/twitter-cli.git@7c634e0d396b1e7af9f63315b414925fe4f29ae7",
 ]
 
 [project.scripts]
@@ -44,3 +46,5 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC"]
 
+[tool.hatch.metadata]
+allow-direct-references = true

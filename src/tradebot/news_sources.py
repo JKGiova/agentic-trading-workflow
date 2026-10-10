@@ -8,13 +8,21 @@ from urllib.parse import urlparse
 import httpx
 from bs4 import BeautifulSoup
 
+from tradebot.agentreach_sources import AgentReachSources
 from tradebot.contracts import Category, Coverage, SearchAttempt, utcnow
 from tradebot.research import Research, make_evidence
 
 
 class NewsSources:
     def __init__(
-        self, credentials, policy, memory, client=None, ticker_factory=None, search_factory=None
+        self,
+        credentials,
+        policy,
+        memory,
+        client=None,
+        ticker_factory=None,
+        search_factory=None,
+        agentreach=None,
     ):
         self.credentials, self.policy, self.memory = credentials, policy, memory
         self.client = client or httpx.AsyncClient(timeout=15, follow_redirects=False)
@@ -22,6 +30,7 @@ class NewsSources:
         self.legacy = Research(credentials, policy, self.client)
         self.ticker_factory = ticker_factory
         self.search_factory = search_factory
+        self.agentreach = agentreach or AgentReachSources(credentials, policy)
 
     async def close(self):
         if self.owns_client:
@@ -63,6 +72,7 @@ class NewsSources:
         return items, gaps or len(rows) >= 30
 
     async def collect(self, instrument, cutoff):
+        self.legacy.policy = self.policy
         start = cutoff - timedelta(hours=self.policy.news_hours)
         items, attempts = [], []
 
@@ -114,7 +124,15 @@ class NewsSources:
             )
         )
         # Optional existing adapters remain explicit. Missing credentials remain recorded gaps.
-        await run(Category.SOCIAL, "x", lambda: self.legacy._social(instrument, start, cutoff))
+        self.agentreach.policy = self.policy
+        if self.policy.x_backend == "agentreach":
+            await run(
+                Category.SOCIAL,
+                "agentreach_x",
+                lambda: self.agentreach.social(instrument, start, cutoff),
+            )
+        else:
+            await run(Category.SOCIAL, "x", lambda: self.legacy._social(instrument, start, cutoff))
 
         async def market():
             import yfinance as yf
@@ -206,6 +224,24 @@ class NewsSources:
         addresses = await asyncio.get_running_loop().getaddrinfo(url.hostname, 443)
         if not addresses or any(not ipaddress.ip_address(row[4][0]).is_global for row in addresses):
             raise ValueError("Source does not resolve to public addresses")
+        if self.policy.article_backend == "agentreach":
+            text = await self.agentreach.read(item["url"])
+            evidence = make_evidence(
+                "agentreach_web",
+                item["id"],
+                task["stock"],
+                Category(task["role"]),
+                item["title"],
+                text,
+                item["url"],
+                item["published_at"],
+            ).model_copy(update={"retrieved_at": now})
+            self.memory.remember([evidence], now)
+            return {
+                "status": "EXECUTED",
+                "content_level": "bounded Jina Reader markdown",
+                "evidence": [evidence.model_dump(mode="json")],
+            }
         headers = (
             {"User-Agent": self.credentials.sec_user_agent} if url.hostname == "www.sec.gov" else {}
         )

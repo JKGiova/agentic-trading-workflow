@@ -8,6 +8,7 @@ from pathlib import Path
 
 from sqlalchemy.exc import SQLAlchemyError
 
+from tradebot.agentreach_sources import AgentReachSources
 from tradebot.service import TradeService, demo_policy
 from tradebot.settings import Credentials, Policy, ReportSchedule
 from tradebot.storage import Store
@@ -33,7 +34,9 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--init", action="store_true", help="Create a nonsecret config template")
     result.add_argument("--session", action="store_true", help="Open bounded research terminal")
     setup = result.add_mutually_exclusive_group()
-    setup.add_argument("--onboard", action="store_true", help="Open Telegram setup again")
+    setup.add_argument(
+        "--onboard", action="store_true", help="Open Telegram and provider setup again"
+    )
     setup.add_argument(
         "--telegram-test", action="store_true", help="Send one test to the saved private chat"
     )
@@ -83,6 +86,7 @@ def main(argv=None) -> int:
                 print("Open onboarding in an interactive terminal, or use --telegram-test.")
                 return 1
             controller = SetupController(args.database)
+            controller.config = args.config
             try:
                 if args.telegram_test:
                     result = asyncio.run(controller.test())
@@ -143,6 +147,11 @@ def main(argv=None) -> int:
                         "continuous": args.supervisor,
                         "report_interval_hours": policy.session_hours if args.supervisor else None,
                         "telegram_ready": telegram_ready if args.supervisor else None,
+                        "news_connectors": (
+                            AgentReachSources(credentials, policy).capabilities()
+                            if args.supervisor and not args.demo
+                            else None
+                        ),
                     },
                     indent=2,
                 )

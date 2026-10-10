@@ -7,7 +7,7 @@ from textual import on, work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.message import Message
-from textual.widgets import Button, Footer, Input, Label, Static
+from textual.widgets import Button, Collapsible, Footer, Input, Label, Static
 from textual.worker import WorkerCancelled, WorkerFailed
 
 from tradebot.onboarding import SetupError, test_status
@@ -37,6 +37,7 @@ class SetupTerminal(App):
     Button { margin-right: 1; }
     #home { height: auto; }
     #schedule-form { height: auto; }
+    #model-form, #news-form { height: auto; }
     #schedule-intro, #schedule-summary { height: auto; margin-bottom: 1; }
     #connection { height: auto; margin-bottom: 1; }
     """
@@ -67,6 +68,9 @@ class SetupTerminal(App):
                     yield Button("Send test message", variant="primary", id="test")
                     yield Button("Change bot", id="change")
                     yield Button("Report interval", id="schedule")
+                with Horizontal():
+                    yield Button("Model credentials", id="model")
+                    yield Button("News credentials", id="news")
                 yield Static("", id="schedule-summary", markup=False)
             with Vertical(id="schedule-form"):
                 yield Static(
@@ -79,6 +83,53 @@ class SetupTerminal(App):
                 yield Label("Hours between reports")
                 yield Input(value="3", type="number", id="report-hours")
                 yield Button("Save report interval", variant="primary", id="save-schedule")
+            with Vertical(id="model-form"):
+                yield Static(
+                    "Configure your model provider. NVIDIA NIM is the default. "
+                    "Keys are stored locally; saving does not call or charge the model.",
+                    markup=False,
+                )
+                for name, label in (
+                    ("nvidia_api_key", "NVIDIA NIM API key"),
+                    ("openrouter_api_key", "OpenRouter API key (alternative)"),
+                ):
+                    yield Label(label)
+                    yield SecretInput(
+                        password=True, id=name, placeholder="Blank keeps the saved key"
+                    )
+                with Horizontal():
+                    yield Button("Save model keys", variant="primary", id="save-model")
+                    yield Button("Configure later", id="skip-model")
+            with Vertical(id="news-form"):
+                yield Static(
+                    "Agent Reach reads public web pages without login. For X, log in yourself "
+                    "and export cookies with Cookie-Editor → Header String. "
+                    "X and the providers below are optional. "
+                    "Saved credentials are not live-verified.",
+                    markup=False,
+                )
+                with Horizontal():
+                    yield Button("Save news access", variant="primary", id="save-news")
+                    yield Button("Configure later", id="skip-news")
+                yield Label("X cookies · auth_token and ct0")
+                yield SecretInput(password=True, id="x-cookies", placeholder="auth_token=…; ct0=…")
+                yield Label("Approved X accounts · numeric_id:handle, numeric_id:handle")
+                yield Input(id="x-authors", placeholder="123456:company")
+                yield Label("Web reading · allowed article hostnames, separated by commas")
+                yield Input(id="article-domains", placeholder="www.nvidia.com, www.sec.gov")
+                yield Label("SEC identity · organization and contact email (optional)")
+                yield Input(id="sec_user_agent", placeholder="YourCompany contact@example.com")
+                with Collapsible(title="Optional Alpaca and legacy provider credentials"):
+                    for name, label in (
+                        ("alpaca_api_key", "Alpaca API key (read-only account access)"),
+                        ("alpaca_secret_key", "Alpaca secret key"),
+                        ("x_bearer_token", "Official X API token (explicit alternative)"),
+                        ("tavily_api_key", "Tavily API key (older bounded sessions)"),
+                    ):
+                        yield Label(label)
+                        yield SecretInput(
+                            password=True, id=name, placeholder="Blank keeps the saved key"
+                        )
             yield Static("", id="status", markup=False)
             yield Button("Exit", id="exit")
         yield Footer()
@@ -98,6 +149,8 @@ class SetupTerminal(App):
         self.query_one("#token-form").display = True
         self.query_one("#home").display = False
         self.query_one("#schedule-form").display = False
+        self.query_one("#model-form").display = False
+        self.query_one("#news-form").display = False
         token = self.controller.credentials.telegram_bot_token.get_secret_value()
         self.query_one("#token", Input).value = token
         self.query_one("#token", Input).focus()
@@ -108,12 +161,19 @@ class SetupTerminal(App):
         if "report_schedule" in pending and "telegram" not in pending:
             self.show_schedule()
             return
-        self.query_one("#heading", Static).update("Telegram")
+        for step in ("model_access", "news_access"):
+            if step in pending and "telegram" not in pending:
+                self.show_access(step)
+                return
+        self.query_one("#heading", Static).update("Connections")
         self.query_one("#intro").display = False
         self.query_one("#token-form").display = False
         self.query_one("#home").display = True
         self.query_one("#schedule-form").display = False
-        self.query_one("#token", Input).value = ""
+        self.query_one("#model-form").display = False
+        self.query_one("#news-form").display = False
+        for field in self.query(SecretInput):
+            field.value = ""
         username = (self.controller.memory.setting("telegram_bot") or {}).get("username", "")
         self.query_one("#connection", Static).update(
             f"@{username} · private chat paired" if username else "Your private chat is paired."
@@ -126,7 +186,9 @@ class SetupTerminal(App):
         )
         if not pending:
             self.status(
-                "Setup complete. Start the analysis team with tradingworkflow --supervisor."
+                "Setup saved. Configure your watchlist, then check "
+                "tradingworkflow --supervisor --doctor. "
+                "Deferred credentials must be added before enabling their capabilities."
             )
         else:
             result = self.controller.last_test()
@@ -137,7 +199,7 @@ class SetupTerminal(App):
 
     def show_schedule(self):
         self.query_one("#heading", Static).update("Reports · Choose interval")
-        for widget_id in ("intro", "token-form", "home"):
+        for widget_id in ("intro", "token-form", "home", "model-form", "news-form"):
             self.query_one("#" + widget_id).display = False
         self.query_one("#token", Input).value = ""
         self.query_one("#schedule-form").display = True
@@ -145,23 +207,131 @@ class SetupTerminal(App):
         self.query_one("#report-hours", Input).value = (
             f"{schedule.report_hours:g}" if schedule else "3"
         )
-        self.status("Save the interval to finish setup. Starting analysis is a separate command.")
+        self.status("Save the interval to continue setup. Starting analysis is a separate command.")
         self.query_one("#report-hours", Input).focus()
 
     def set_busy(self, busy):
         self.busy = busy
         if not self.is_running:
             return
+        for widget in self.query("Input, Button"):
+            if widget.id != "exit":
+                widget.disabled = busy
+
+    def show_access(self, step):
+        form = "model-form" if step == "model_access" else "news-form"
+        self.query_one("#heading", Static).update(
+            "Model access" if step == "model_access" else "News access"
+        )
         for widget_id in (
-            "connect",
-            "test",
-            "change",
-            "token",
-            "schedule",
-            "report-hours",
-            "save-schedule",
+            "intro",
+            "token-form",
+            "home",
+            "schedule-form",
+            "model-form",
+            "news-form",
         ):
-            self.query_one("#" + widget_id).disabled = busy
+            self.query_one("#" + widget_id).display = widget_id == form
+        for field in self.query(SecretInput):
+            field.value = ""
+        if step == "news_access":
+            try:
+                policy = self.controller.policy()
+            except ValueError, OSError:
+                self.status(
+                    "Cannot load the source policy. Repair your config file "
+                    "or choose Configure later."
+                )
+                self.query_one("#x-cookies", Input).focus()
+                return
+            self.query_one("#x-authors", Input).value = ", ".join(
+                f"{key}:{value}" for key, value in policy.approved_x_authors.items()
+            )
+            self.query_one(
+                "#sec_user_agent", Input
+            ).value = self.controller.credentials.sec_user_agent
+            self.query_one("#article-domains", Input).value = ", ".join(policy.article_domains)
+        self.status(
+            "Blank fields retain saved access. Configure later skips this step without enabling it."
+        )
+        self.query_one("#nvidia_api_key" if step == "model_access" else "#x-cookies", Input).focus()
+
+    @on(Button.Pressed, "#model")
+    def change_model(self):
+        if not self.busy:
+            self.show_access("model_access")
+
+    @on(Button.Pressed, "#news")
+    def change_news(self):
+        if not self.busy:
+            self.show_access("news_access")
+
+    @on(Button.Pressed, "#save-model")
+    @on(Input.Submitted, "#nvidia_api_key")
+    @on(Input.Submitted, "#openrouter_api_key")
+    def save_model(self):
+        self.save_access("model_access")
+
+    @on(Button.Pressed, "#save-news")
+    @on(Input.Submitted, "#x-cookies")
+    @on(Input.Submitted, "#x-authors")
+    @on(Input.Submitted, "#article-domains")
+    @on(Input.Submitted, "#sec_user_agent")
+    @on(Input.Submitted, "#alpaca_api_key")
+    @on(Input.Submitted, "#alpaca_secret_key")
+    @on(Input.Submitted, "#x_bearer_token")
+    @on(Input.Submitted, "#tavily_api_key")
+    def save_news(self):
+        self.save_access("news_access")
+
+    def save_access(self, step):
+        if self.busy:
+            return
+        try:
+            if step == "model_access":
+                self.controller.save_access(
+                    step,
+                    {
+                        name: self.query_one("#" + name, Input).value
+                        for name in ("nvidia_api_key", "openrouter_api_key")
+                    },
+                )
+            else:
+                self.controller.save_news_access(
+                    self.query_one("#x-cookies", Input).value,
+                    self.query_one("#x-authors", Input).value,
+                    {
+                        name: self.query_one("#" + name, Input).value
+                        for name in (
+                            "sec_user_agent",
+                            "alpaca_api_key",
+                            "alpaca_secret_key",
+                            "x_bearer_token",
+                            "tavily_api_key",
+                        )
+                    },
+                    self.query_one("#article-domains", Input).value,
+                )
+            self.show_home()
+        except SetupError as exc:
+            self.status(str(exc))
+        except ValueError, OSError, SQLAlchemyError:
+            self.status(
+                "Could not save access. Check your configuration and local storage, then retry."
+            )
+
+    @on(Button.Pressed, "#skip-model")
+    @on(Button.Pressed, "#skip-news")
+    def defer_access(self, event):
+        if not self.busy:
+            try:
+                self.controller.complete_access(
+                    "model_access" if event.button.id == "skip-model" else "news_access",
+                    deferred=True,
+                )
+                self.show_home()
+            except OSError, SQLAlchemyError:
+                self.status("Could not save setup. Check local storage and retry.")
 
     @on(Button.Pressed, "#connect")
     @on(Input.Submitted, "#token")

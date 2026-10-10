@@ -5,7 +5,9 @@
 - Owner interaction is a single-window Textual CLI with four panes: open positions,
   selected position, research chat, portfolio/performance. Do not add a web dashboard.
 - The default command opens Telegram onboarding/connection home without starting
-  research. Onboarding collects Telegram access and the recurring report interval.
+  research. Onboarding collects Telegram access, the recurring report interval,
+  model credentials and optional news/Alpaca read-only access. Credentials can be
+  deferred for Telegram-only testing; research still requires its actual credentials.
   Keep --demo, --supervisor and --session explicit. Future onboarding
   steps may collect account/configuration access only once those capabilities exist.
 - Graphify was uninstalled by the owner on 2026-10-10; it is not required.

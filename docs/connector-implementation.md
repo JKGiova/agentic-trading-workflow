@@ -29,7 +29,9 @@ Existing HTTP fixtures verify parsing/permissions; real entitlements are unverif
 
 ## Selected target and provider migration
 
-The owner selected **Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed targeted research**. See [provider plan](provider-plan.md) for exact responsibilities, backend pinning and access proofs. Existing runtime adapters above remain unchanged until implementation. Alpaca/Benzinga news, Tavily and official X below are retained as optional alternatives, not required defaults.
+The owner selected **Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed targeted research**. See [provider plan](provider-plan.md) for exact responsibilities, backend pinning and access proofs. The continuous team now uses pinned Agent Reach web/X backends; see the
+[implemented connector guide](agentreach-connectors.md). The older bounded
+session retains the adapters documented above. Alpaca/Benzinga news, Tavily and official X below are retained as optional alternatives, not required defaults.
 
 ## Concrete provider mapping
 

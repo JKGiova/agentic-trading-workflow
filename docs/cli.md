@@ -1,4 +1,4 @@
-# Terminal interface and running v0.3.0
+# Terminal interface and running v0.4.0
 
 [Wiki home](README.md) · [Codebase map](codebase-map.md)
 
@@ -43,8 +43,8 @@ tradingworkflow
 ```
 
 `uv` replaces the old virtual environment; ignored configuration, credentials and
-research databases remain in place. Existing Telegram setup requests only the new
-report interval step.
+research databases remain in place. Existing Telegram setup retains its saved interval and adds model/news credentials;
+older setups missing the interval still request it first.
 
 With an existing Python 3.14 and no `uv`, the standard Python installation is
 also supported (dependency versions resolve from `pyproject.toml` rather than the lock):
@@ -65,10 +65,11 @@ If executable permissions were lost when
 downloading, use `bash start.sh`. The older `tradebot` command remains an alias.
 
 No arguments opens onboarding: hidden Telegram token entry, private-chat pairing,
-a test message and the hours between reports. Later launches open the saved
-connection home with **Report interval** for editing X. It requires no
+a test message, the hours between reports and model/news credential screens. Later
+launches open the saved connection home with interval and credential editing. It requires no
 NVIDIA or broker credentials and no policy file. See [onboarding](onboarding.md)
-for secret storage, relaunch, cancellation and future wallet/configuration steps.
+for secret storage, relaunch, cancellation and optional credential deferral.
+The [Agent Reach guide](agentreach-connectors.md) explains cookie export and registered web domains.
 Choose research modes explicitly; `./start.sh` forwards these same arguments:
 
 ```bash

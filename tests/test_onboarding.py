@@ -97,6 +97,9 @@ def setup(tmp_path, monkeypatch):
     monkeypatch.setattr("tradebot.telegram.secrets.token_hex", lambda _: "fixture_nonce")
     api = TelegramAPI()
     controller = SetupController(notifier_factory=api.factory)
+    # These legacy Telegram tests explicitly defer the new provider steps.
+    controller.complete_access("model_access", deferred=True)
+    controller.complete_access("news_access", deferred=True)
     yield controller, api
     controller.close()
 
@@ -396,7 +399,12 @@ def test_cli_default_opens_setup_without_policy_model_or_broker(tmp_path, monkey
 
     def run(self):
         shown.append(self.force)
-        assert self.controller.pending_steps() == ["telegram", "report_schedule"]
+        assert self.controller.pending_steps() == [
+            "telegram",
+            "report_schedule",
+            "model_access",
+            "news_access",
+        ]
 
     def forbidden(*args, **kwargs):
         raise AssertionError("Setup cannot create a research service")
@@ -463,7 +471,7 @@ async def test_v1_setup_adds_interval_without_repairing_and_can_edit_it(setup):
         await pilot.press("enter")
         await pilot.pause()
         assert controller.pending_steps() == []
-        assert controller.memory.setting("onboarding")["version"] == 2
+        assert controller.memory.setting("onboarding")["version"] == 3
         await pilot.click("#schedule")
         assert field.value == "2"
         field.value = "-1"

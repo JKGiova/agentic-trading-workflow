@@ -2,8 +2,8 @@
 
 [Wiki home](README.md) · [Continuous runtime](continuous-runtime.md) · [Codebase map](codebase-map.md)
 
-Reviewed **2026-10-10**. **v0.3.0 targets Python 3.14 and adds onboarding-controlled recurring Telegram reports.** Trading
-orders remain disabled. Real NVIDIA/Telegram/source access has not been tested
+Reviewed **2026-10-10**. **v0.4.0 targets Python 3.14 and adds credential onboarding and Agent Reach web/X research.** Trading
+orders remain disabled. Real NVIDIA/Telegram/X account access has not been tested
 without owner credentials.
 
 ## Implemented in this release
@@ -22,8 +22,8 @@ without owner credentials.
   the report cutoff and interval. One-cycle runs attempt delivery before shutdown.
 - Atomic private token storage, saved/versioned setup steps, reconnect and explicit
   standalone test commands. Setup state can retain completed steps when future
-  wallet/broker/configuration capabilities are added; those connections are not
-  requested or implemented in this release.
+  wallet/configuration capabilities are added. Model keys, X cookies and optional
+  SEC/Alpaca read-only credentials are collected by this release.
 - Default NVIDIA NIM / `deepseek-ai/deepseek-v4.1-flash` adapter for research and
   chat, with local structured-output validation, bounded repair, model identity
   checks and conservative token/billing accounting.
@@ -31,8 +31,11 @@ without owner credentials.
   bounded typed research tools and original findings followed by peer review.
 - Durable supervisor with singleton lease and independent collection, worker,
   report and delivery loops; fixed X-hour cycles and immediate next-cycle work.
-- yfinance stock-news discovery and macro search, optional existing X/SEC/IR
-  sources, registered page reads and truthful missing/failed coverage.
+- yfinance stock-news discovery and macro search, pinned Agent Reach/Jina web
+  reads and twitter-cli approved-X retrieval, optional SEC/IR and explicit legacy
+  sources, and truthful missing/failed coverage.
+- New masked model/news setup screens, deferred Telegram-only setup, exact
+  author/domain registration, private atomic key storage and metadata fingerprints.
 - SQLite/PostgreSQL event versions and correction lineage, task leases,
   input/turn/tool checkpoints, retries/backoff, preserved questions/dissent and
   restart recovery with old-worker fencing.
@@ -43,6 +46,8 @@ without owner credentials.
   quota retry and unknown-send recovery; no incoming trading commands.
 - Four-pane Textual CLI, continuous status/findings and stored-report chatbot,
   headless mode and a simulated-clock full-cycle demo.
+- Source policy edits staged across cycle boundaries and interrupted updates;
+  v0.2/v0.3 cycles retain their original backends until closure during upgrades.
 - Updated locked dependencies, codebase map and meaningful offline/integration tests.
 
 ## Retained earlier capabilities
@@ -62,8 +67,8 @@ A complete HTTP-fixture test crosses onboarding, saved scheduling, NVIDIA transp
 all four agents, synthesis, two consecutive reports and Telegram delivery. Tests
 isolate real owner secrets.
 
-Release verification locally on **Python 3.14.8**: **169 passed, two PostgreSQL tests
-skipped without a test server; 97.38% statement coverage**. CI runs the PostgreSQL cases with its
+Release verification locally on **Python 3.14.8**: **222 passed, two PostgreSQL tests
+skipped without a test server; 96.30% statement coverage**. CI runs the PostgreSQL cases with its
 database service; see the commit-specific Actions result for that outcome.
 
 CI runs Python 3.14, isolated PostgreSQL, lint/format, a 90% minimum coverage
@@ -80,8 +85,8 @@ Offline fixture success is not a real provider-access or predictive-quality clai
 
 1. Configure the selected watchlist, private NVIDIA/Telegram credentials and owner
    chat pairing; measure actual latency, output quality, quota and source coverage.
-2. Provision AgentReach-backed approved X/transcript access and fuller official
-   company facts. The current Social role reports a gap without source access.
+2. Verify credentialed Agent Reach X access and add transcript/search capabilities
+   and fuller official company facts. The Social role reports missing access as a gap.
 3. Consume every closed-cycle obligation in the bounded debate/Orchestrator
    pipeline, then produce one volatility-aware portfolio-wide Manager plan.
 4. Complete durable reservations, order intents, reconciliation and protections

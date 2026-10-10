@@ -15,6 +15,8 @@ def isolate_provider_secrets(monkeypatch):
         "ALPACA_API_KEY",
         "ALPACA_SECRET_KEY",
         "X_BEARER_TOKEN",
+        "X_AUTH_TOKEN",
+        "X_CT0",
         "TAVILY_API_KEY",
         "SEC_USER_AGENT",
     ):

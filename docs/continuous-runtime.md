@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [CLI](cli.md) · [Model provider](model-provider.md)
 
-**Implemented in v0.3.0 on Python 3.14, reviewed 2026-10-10.** Four specialist agents run throughout
+**Implemented in v0.4.0 on Python 3.14, reviewed 2026-10-10.** Four specialist agents run throughout
 configurable research cycles. A deterministic supervisor owns scheduling, source
 assignment, memory, bounded peer review, report closure and Telegram delivery.
 This is a research service; it submits no orders. The existing bounded debate and
@@ -32,9 +32,10 @@ adding the supervisor does not add another investment manager.
 ## Run and configure
 
 After [installation and environment activation](cli.md#install-and-connect-telegram),
-use `tradingworkflow` for Telegram-only first-run setup. Its onboarding asks for the
-bot token, pairs your private chat, sends a test and asks for the hours between
-reports without running the analysis team. Later launches reuse saved setup; choose
+use `tradingworkflow` for first-run setup. Its onboarding asks for the
+bot token, pairs your private chat, sends a test, asks for the hours between
+reports and collects model/news credentials without running the analysis team.
+Credentials can be deferred for Telegram-only testing. Later launches reuse saved setup; choose
 **Report interval** to change the schedule. See [onboarding](onboarding.md).
 
 First verify the full offline path without credentials:
@@ -55,6 +56,9 @@ Create a private configuration, then edit its watchlist and limits:
 tradingworkflow --init
 ```
 
+If source onboarding already created the template, edit the existing file;
+`--init` deliberately refuses to overwrite it.
+
 `config.local.json` is ignored by git. Its `instruments` array must contain the
 chosen stocks. For example, the instrument shape is
 `{"symbol":"NVDA","name":"NVIDIA","sector":"technology"}`; this is a configuration
@@ -62,7 +66,7 @@ example, not an investment recommendation. Configure official `ir_feeds`, CIKs,
 `article_domains` and approved X author IDs/handles when those sources are available.
 
 Use onboarding for Telegram or supply its token manually in `.env`. Supply the
-NVIDIA key in the private `.env` when enabling research:
+NVIDIA key in onboarding (or use a private `.env`) when enabling research:
 
 ```dotenv
 TRADEBOT_NVIDIA_API_KEY=your_private_key
@@ -123,8 +127,13 @@ roles is one source, not multiple confirmations. Lookup results and page content
 are bounded. Pages must reference known evidence IDs and registered HTTPS domains;
 private-address destinations, unregistered redirects and oversized responses are
 rejected. Full evidence stays in memory while model context receives limited excerpts.
-AgentReach-backed X/transcript provisioning is not integrated yet; the current
-optional X path is the existing authenticated adapter.
+Agent Reach web/X access is now integrated through pinned backends and explicit
+onboarding cookies. The [connector guide](agentreach-connectors.md) specifies
+process isolation, author/date checks, source provenance and limitations. Transcript
+provisioning remains pending; the official X API is an explicit alternative.
+Upgrading an open v0.2/v0.3 cycle preserves its original source backends until it
+closes. Onboarding author/domain edits are staged for the next cycle and preserve
+the old policy across restarts; unrelated policy changes remain rejected.
 
 At a deadline, freeze assessment and evidence IDs, open the next fixed window,
 carry unfinished/deferred events forward, and synthesize reports independently.

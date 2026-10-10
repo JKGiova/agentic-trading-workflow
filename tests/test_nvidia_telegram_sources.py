@@ -217,6 +217,7 @@ async def test_source_failures_sec_and_ir_are_recorded(store, policy):
 
 
 async def test_scoped_tools_read_search_and_article_policy(store, policy, monkeypatch):
+    policy = policy.model_copy(update={"article_backend": "direct"})
     now = utcnow()
     item = make_evidence(
         "fixture",
@@ -273,7 +274,9 @@ async def test_scoped_tools_read_search_and_article_policy(store, policy, monkey
             await source.execute(
                 AgentTurn(action="READ_PAGE", evidence_id=item.id), task, context, now
             )
-        source.policy = policy.model_copy(update={"article_domains": ["example.com"]})
+        source.policy = policy.model_copy(
+            update={"article_domains": ["example.com"], "article_backend": "direct"}
+        )
         result = await source.execute(
             AgentTurn(action="READ_PAGE", evidence_id=item.id), task, context, now
         )
@@ -294,7 +297,9 @@ async def test_scoped_tools_read_search_and_article_policy(store, policy, monkey
 @pytest.mark.parametrize("case", ["private", "oversize", "redirect", "empty"])
 async def test_page_reader_rejects_private_large_redirect_empty(store, policy, monkeypatch, case):
     now = utcnow()
-    policy = policy.model_copy(update={"article_domains": ["example.com"]})
+    policy = policy.model_copy(
+        update={"article_domains": ["example.com"], "article_backend": "direct"}
+    )
     item = make_evidence(
         "fixture", "one", "AAPL", Category.COMPANY, "Source", "", "https://example.com", now
     )

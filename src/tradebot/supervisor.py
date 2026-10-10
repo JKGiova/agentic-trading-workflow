@@ -55,18 +55,52 @@ class AnalysisSupervisor:
         return list(configured.values())
 
     def current(self):
+        transition = (
+            self.memory.setting("news_policy_transition") if self.use_saved_schedule else None
+        )
+        apply_next = False
+        if transition:
+            configured = {name: getattr(self.policy, name) for name in transition["next"]}
+            if not transition["ready"] and configured == transition["next"]:
+                transition = {**transition, "ready": True}
+                self.memory.set_setting("news_policy_transition", transition)
+            if transition["ready"]:
+                open_rows = self.memory.rows(cycles, cycles.c.status == "OPEN")
+                if open_rows and open_rows[0]["id"] != transition["cycle"]:
+                    previous = {**self.policy.model_dump(mode="json"), **transition["previous"]}
+                    old_configuration = digest(
+                        {key: value for key, value in previous.items() if key != "session_hours"}
+                    )
+                    if open_rows[0]["payload"].get("configuration_hash") == old_configuration:
+                        # Rollover may race the setup file/database replacement.
+                        # An already-open old-policy cycle keeps its source permissions.
+                        transition = {**transition, "cycle": open_rows[0]["id"]}
+                        self.memory.set_setting("news_policy_transition", transition)
+                apply_next = not open_rows or open_rows[0]["id"] != transition["cycle"]
+                self.policy = self.policy.model_copy(
+                    update=transition["next" if apply_next else "previous"]
+                )
         if self.use_saved_schedule:
             self.policy = ReportSchedule.apply(self.policy, self.memory)
             self.agent.policy = self.policy
         payload = self.policy.model_dump(mode="json")
         self.policy_hash = digest(payload)
-        return self.memory.open_cycle(
+        cycle = self.memory.open_cycle(
             self.clock(),
             self.policy.session_hours,
             [item.symbol for item in self.instruments()],
             self.policy_hash,
             policy_payload=payload,
         )
+        effective = self.policy
+        if cycle["payload"].get("legacy_source_backends"):
+            effective = effective.model_copy(
+                update={"x_backend": "official", "article_backend": "direct"}
+            )
+        self.research.policy = effective
+        if apply_next:
+            self.memory.set_setting("news_policy_transition", None)
+        return cycle
 
     def rollover(self):
         now = self.clock()

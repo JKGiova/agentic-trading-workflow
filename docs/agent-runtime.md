@@ -14,8 +14,8 @@ credentialed owner pilot.
 | --- | --- | --- |
 | Market Analyst | Macro/sector prompt, scoped evidence/history, Yahoo search and bounded tools | Measure source coverage and market relevance on real cases |
 | Financial Analyst | Financial prompt, earnings/guidance claims, original/peer findings and lead synthesis | Cutoff-aware numerical company facts and model evaluation |
-| Company Analyst | Announcements/filings prompt, Yahoo leads, optional SEC/IR and registered page reads | Full typed SEC facts and AgentReach transcript capabilities |
-| Social Analyst | Approved-author prompt, optional authenticated X, explicit coverage gaps | AgentReach-backed author/date capability and real account setup |
+| Company Analyst | Announcements/filings prompt, Yahoo leads, optional SEC/IR and registered page reads | Full typed SEC facts and transcript capabilities |
+| Social Analyst | Approved-author prompt, Agent Reach X with explicit cookies, coverage gaps | Live account access verification and transcript expansion |
 | Bull and Bear | Existing bounded opening/challenge/rebuttal/final graph | Consume each closed-cycle obligation and verify external claims |
 | Orchestrator | Existing structured revised forecast/verdict and citation validation | Integrate closed-cycle evidence revisions |
 | Portfolio Manager | Existing per-stock action/notional previews | One portfolio-wide volatility/capital plan |

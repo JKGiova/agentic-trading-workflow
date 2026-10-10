@@ -83,6 +83,8 @@ class Policy(Contract):
     cycle_model_budget: Money = Decimal("8")
     report_language: str = "Italian"
     article_domains: list[str] = Field(default_factory=list)
+    x_backend: Literal["agentreach", "official"] = "agentreach"
+    article_backend: Literal["agentreach", "direct"] = "agentreach"
     risk: RiskPolicy = Field(default_factory=RiskPolicy)
 
     @field_validator("instruments")
@@ -118,6 +120,8 @@ class Credentials(BaseSettings):
     alpaca_api_key: SecretStr = SecretStr("")
     alpaca_secret_key: SecretStr = SecretStr("")
     x_bearer_token: SecretStr = SecretStr("")
+    x_auth_token: SecretStr = SecretStr("")
+    x_ct0: SecretStr = SecretStr("")
     tavily_api_key: SecretStr = SecretStr("")
     sec_user_agent: str = ""
 
