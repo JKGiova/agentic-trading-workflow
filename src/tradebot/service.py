@@ -8,7 +8,7 @@ from tradebot.broker import AlpacaReadOnly
 from tradebot.contracts import Position, Snapshot, utcnow
 from tradebot.models import DemoModel, model_client
 from tradebot.research import DemoResearch, Research
-from tradebot.settings import Credentials, Instrument, Policy
+from tradebot.settings import Credentials, Instrument, Policy, ReportSchedule
 from tradebot.storage import Store
 from tradebot.workflow import Workflow
 
@@ -84,9 +84,13 @@ class TradeService:
             from tradebot.telegram import DemoNotifier, TelegramNotifier
 
             memory = AnalysisMemory(store)
+            if not demo:
+                policy = self.policy = ReportSchedule.apply(policy, memory)
             self.research = DemoResearch() if demo else NewsSources(credentials, policy, memory)
             notifier = DemoNotifier() if demo else TelegramNotifier(credentials, memory)
-            self.supervisor = AnalysisSupervisor(policy, store, self.model, self.research, notifier)
+            self.supervisor = AnalysisSupervisor(
+                policy, store, self.model, self.research, notifier, use_saved_schedule=not demo
+            )
         else:
             self.research = DemoResearch() if demo else Research(credentials, policy)
         self.workflow = Workflow(policy, store, self.model, self.research, self.broker)
@@ -191,7 +195,7 @@ class TradeService:
                 reply = await self.model.answer(
                     question[:2000], self.chat_context(context_stock), history
                 )
-            except (ValueError, RuntimeError):
+            except ValueError, RuntimeError:
                 self.store.append_chat("assistant", "Request failed; no action performed.")
                 raise
             self.store.append_chat("assistant", reply)
@@ -238,8 +242,6 @@ class TradeService:
         if self.demo:
             from datetime import datetime, timedelta
 
-            from tradebot.contracts import utcnow
-
             now = utcnow()
             supervisor.clock = lambda: now
             supervisor.agent.clock = lambda: now
@@ -259,6 +261,8 @@ class TradeService:
                     await running
                     raise RuntimeError("Supervisor stopped before report closure")
                 await asyncio.sleep(0.5)
+            # A one-cycle command must attempt its summary before shutting down delivery loops.
+            await supervisor.notifier.deliver(utcnow())
             return supervisor.memory.cycle(initial)
         finally:
             supervisor.stop.set()

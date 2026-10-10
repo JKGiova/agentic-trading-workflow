@@ -82,19 +82,49 @@ class AnalysisMemory:
         return rows[0]["payload"] if rows else None
 
     def set_setting(self, name, payload):
-        with self.store.transaction() as conn:
-            self.store._ensure(conn, settings, {"name": name, "payload": payload})
-            conn.execute(update(settings).where(settings.c.name == name).values(payload=payload))
+        self.set_settings({name: payload})
 
-    def open_cycle(self, now, hours, stocks, policy_hash):
+    def set_settings(self, values):
+        """Persist related preferences and completed setup steps in one transaction."""
+        with self.store.transaction() as conn:
+            for name, payload in values.items():
+                self.store._ensure(conn, settings, {"name": name, "payload": payload})
+                conn.execute(
+                    update(settings).where(settings.c.name == name).values(payload=payload)
+                )
+
+    def open_cycle(self, now, hours, stocks, policy_hash, policy_payload=None):
+        configuration_hash = (
+            digest({key: value for key, value in policy_payload.items() if key != "session_hours"})
+            if policy_payload is not None
+            else None
+        )
         spent = str(self.store.model_spend())
         with self.store.transaction() as conn:
             row = conn.execute(select(cycles).where(cycles.c.status == "OPEN")).mappings().first()
             if row:
                 if row["payload"]["policy_hash"] != policy_hash:
-                    raise ValueError(
-                        "Open research cycle policy changed; restore its configuration"
+                    compatible = bool(
+                        configuration_hash
+                        and row["payload"].get("configuration_hash") == configuration_hash
                     )
+                    # v0.2 cycles used the full policy hash; allow only an interval upgrade.
+                    if policy_payload is not None and not row["payload"].get("configuration_hash"):
+                        duration = (
+                            datetime.fromisoformat(row["end"])
+                            - datetime.fromisoformat(row["start"])
+                        ).total_seconds() / 3600
+                        durations = [duration]
+                        if duration.is_integer():
+                            durations.append(int(duration))
+                        compatible = row["payload"]["policy_hash"] in {
+                            digest({**policy_payload, "session_hours": value})
+                            for value in durations
+                        }
+                    if not compatible:
+                        raise ValueError(
+                            "Open research cycle policy changed; restore its configuration"
+                        )
                 return dict(row)
             cid = str(uuid.uuid4())
             previous = conn.execute(
@@ -108,6 +138,7 @@ class AnalysisMemory:
             payload = {
                 "stocks": sorted(set(stocks)),
                 "policy_hash": policy_hash,
+                "configuration_hash": configuration_hash,
                 "coverage": [],
                 "manifest": [],
                 "reports": {},

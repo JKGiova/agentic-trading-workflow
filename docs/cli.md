@@ -1,4 +1,4 @@
-# Terminal interface and running v0.2.1
+# Terminal interface and running v0.3.0
 
 [Wiki home](README.md) · [Codebase map](codebase-map.md)
 
@@ -15,14 +15,15 @@ repository, install its locked runtime dependencies and activate the environment
 ```bash
 git clone https://github.com/JKGiova/agentic-trading-workflow.git
 cd agentic-trading-workflow
-uv sync --locked --no-dev --python 3.12
+uv sync --locked --no-dev --python 3.14
 source .venv/bin/activate
 tradingworkflow
 ```
 
-`uv sync` creates `.venv`, downloads Python 3.12 if needed and installs the package,
-including the `tradingworkflow` command, from `uv.lock`. Use `--python 3.13` to select
-the other tested Python version. Activation is `source .venv/bin/activate` on
+`uv sync` creates `.venv`, downloads Python 3.14 if needed and installs the package,
+including the `tradingworkflow` command, from `uv.lock`. The project pins Python 3.14
+in `.python-version`; packaging requires Python 3.14 or newer and CI verifies 3.14.
+Activation is `source .venv/bin/activate` on
 macOS/Linux and `.venv\Scripts\Activate.ps1` in Windows PowerShell.
 
 For each later terminal session, return to the repository, activate `.venv` and run
@@ -32,11 +33,24 @@ After pulling an update, rerun `uv sync --locked --no-dev` to refresh dependenci
 and installed commands. Keep commands in the repository so local configuration and
 state paths resolve consistently.
 
-With an existing Python 3.12/3.13 and no `uv`, the standard Python installation is
+To upgrade an existing checkout from Python 3.12/3.13:
+
+```bash
+git pull
+uv sync --locked --no-dev --python 3.14
+source .venv/bin/activate
+tradingworkflow
+```
+
+`uv` replaces the old virtual environment; ignored configuration, credentials and
+research databases remain in place. Existing Telegram setup requests only the new
+report interval step.
+
+With an existing Python 3.14 and no `uv`, the standard Python installation is
 also supported (dependency versions resolve from `pyproject.toml` rather than the lock):
 
 ```bash
-python3.12 -m venv .venv
+python3.14 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
 tradingworkflow
@@ -46,12 +60,13 @@ The optional `./start.sh` Bash launcher installs `uv` if needed into the ignored
 `.tradebot/tools` directory, synchronizes the locked runtime dependencies and starts
 `tradingworkflow` automatically. Bootstrap requires `curl` or `wget` and internet
 access. It does not require sudo or modify shell profiles. Already-installed
-development tools are retained. To select Python 3.13 with the launcher, use
-`TRADEBOT_PYTHON=3.13 ./start.sh`. If executable permissions were lost when
+development tools are retained. Python 3.14 is also the launcher's default.
+If executable permissions were lost when
 downloading, use `bash start.sh`. The older `tradebot` command remains an alias.
 
-No arguments opens Telegram onboarding: hidden token entry, private-chat pairing
-and a test message. Later launches open the saved connection home. It requires no
+No arguments opens onboarding: hidden Telegram token entry, private-chat pairing,
+a test message and the hours between reports. Later launches open the saved
+connection home with **Report interval** for editing X. It requires no
 NVIDIA or broker credentials and no policy file. See [onboarding](onboarding.md)
 for secret storage, relaunch, cancellation and future wallet/configuration steps.
 Choose research modes explicitly; `./start.sh` forwards these same arguments:
@@ -207,7 +222,7 @@ uv run python tools/export_code_map.py --check
 ```
 
 Offline tests use HTTP fixtures and Textual Pilot; they never contact paid providers.
-GitHub CI adds PostgreSQL 16 and Python 3.12/3.13. The PostgreSQL test drops only the
+GitHub CI adds PostgreSQL 16 and Python 3.14. The PostgreSQL test drops only the
 tables in the configured isolated test database; never point `TRADEBOT_TEST_DATABASE_URL`
 at application state. Real API access checks remain opt-in and are not part of CI.
 

@@ -153,7 +153,11 @@ class TradingTerminal(App):
                 f"\n\nContinuous research: {status['cycle']}"
                 f"\nPending tasks: {status['pending_tasks']}"
             )
-            text += f"\nTelegram paired: {status['telegram_bound']}\nDelivery: {status['telegram']}"
+            text += (
+                f"\nReport interval: {status['report_interval_hours']:g} hours"
+                f"\nNext report cutoff: {status['report_cutoff']}"
+                f"\nTelegram paired: {status['telegram_bound']}\nDelivery: {status['telegram']}"
+            )
             self.query_one("#performance-text", Static).update(text)
 
     def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted):

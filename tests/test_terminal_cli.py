@@ -212,6 +212,7 @@ def test_cli_headless_and_pair_paths_are_executable(tmp_path, monkeypatch, capsy
     (tmp_path / "config.local.json").write_text(json.dumps(config))
     monkeypatch.setenv("TRADEBOT_NVIDIA_API_KEY", "fixture")
     monkeypatch.setenv("TRADEBOT_TELEGRAM_BOT_TOKEN", "fixture")
+    monkeypatch.setenv("TRADEBOT_TELEGRAM_CHAT_ID", "42")
 
     async def supervise(self, notify):
         assert self.continuous

@@ -41,6 +41,20 @@ class RiskPolicy(Contract):
     max_snapshot_age_seconds: Annotated[int, Field(gt=0)] = 60
 
 
+class ReportSchedule(Contract):
+    report_hours: Annotated[float, Field(ge=1 / 3600, le=8760, allow_inf_nan=False)] = 3
+
+    @classmethod
+    def read(cls, memory):
+        saved = memory.setting("report_schedule")
+        return cls.model_validate(saved) if saved is not None else None
+
+    @classmethod
+    def apply(cls, policy, memory):
+        saved = cls.read(memory)
+        return policy.model_copy(update={"session_hours": saved.report_hours}) if saved else policy
+
+
 class Policy(Contract):
     instruments: list[Instrument] = Field(default_factory=list)
     approved_x_authors: dict[str, str] = Field(default_factory=dict)
@@ -87,7 +101,7 @@ class Policy(Contract):
         return values
 
     @classmethod
-    def read(cls, path: Path) -> "Policy":
+    def read(cls, path: Path) -> Policy:
         return cls.model_validate(json.loads(path.read_text()))
 
 

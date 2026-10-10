@@ -58,7 +58,7 @@ class NewsSources:
                 )
                 if start <= item.published_at <= cutoff:
                     items.append(item)
-            except (ValueError, KeyError, TypeError, AttributeError):
+            except ValueError, KeyError, TypeError, AttributeError:
                 gaps = True
         return items, gaps or len(rows) >= 30
 

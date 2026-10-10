@@ -27,19 +27,26 @@ def split_message(text, limit=3500):
     return [f"[{index + 1}/{len(parts)}] {part}" for index, part in enumerate(parts)]
 
 
+def telegram_chat(credentials, memory):
+    chat_id = credentials.telegram_chat_id
+    token = credentials.telegram_bot_token.get_secret_value()
+    stored = memory.setting("telegram_owner")
+    if not chat_id and token and stored:
+        if stored.get("bot_fingerprint") == hashlib.sha256(token.encode()).hexdigest():
+            chat_id = stored["chat_id"]
+    if chat_id and (not isinstance(chat_id, str) or not chat_id.lstrip("-").isdigit()):
+        raise ValueError("Telegram chat ID must be numeric")
+    return chat_id
+
+
 class TelegramNotifier:
     def __init__(self, credentials, memory, client=None):
         self.token = credentials.telegram_bot_token.get_secret_value()
         self.identity = hashlib.sha256(self.token.encode()).hexdigest()
         self.memory = memory
-        self.chat_id = credentials.telegram_chat_id
+        self.chat_id = telegram_chat(credentials, memory)
         self.client = client or httpx.AsyncClient(timeout=20, follow_redirects=False)
         self.owns_client = client is None
-        if self.chat_id and not self.chat_id.lstrip("-").isdigit():
-            raise ValueError("Telegram chat ID must be numeric")
-        stored = memory.setting("telegram_owner")
-        if not self.chat_id and stored and stored.get("bot_fingerprint") == self.identity:
-            self.chat_id = stored["chat_id"]
 
     async def close(self):
         if self.owns_client:
@@ -177,7 +184,7 @@ class TelegramNotifier:
                     )
                     break
                 self.memory.delivery_result(row, "SENT", now, message_id=result["message_id"])
-            except (RuntimeError, KeyError, TypeError):
+            except RuntimeError, KeyError, TypeError:
                 self.memory.delivery_result(
                     row, "UNKNOWN", now, error="Delivery outcome unknown; no automatic resend"
                 )

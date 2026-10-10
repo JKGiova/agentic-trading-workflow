@@ -6,8 +6,10 @@ import json
 import sys
 from pathlib import Path
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from tradebot.service import TradeService, demo_policy
-from tradebot.settings import Credentials, Policy
+from tradebot.settings import Credentials, Policy, ReportSchedule
 from tradebot.storage import Store
 from tradebot.terminal import TradingTerminal
 
@@ -96,15 +98,33 @@ def main(argv=None) -> int:
             raise ValueError("Headless mode requires --supervisor")
         if args.telegram_pair and args.demo:
             raise ValueError("Telegram pairing is not available in synthetic demo mode")
+        telegram_ready = False
+        if args.supervisor and not args.demo:
+            from tradebot.analysis_memory import AnalysisMemory
+            from tradebot.telegram import telegram_chat
+
+            Path(".tradebot").mkdir(exist_ok=True)
+            setup_store = Store(args.database or "sqlite:///.tradebot/research.db")
+            try:
+                memory = AnalysisMemory(setup_store)
+                policy = ReportSchedule.apply(policy, memory)
+                telegram_ready = bool(
+                    credentials.telegram_bot_token.get_secret_value()
+                    and telegram_chat(credentials, memory)
+                )
+            finally:
+                setup_store.close()
         missing = (
             []
             if args.demo
             else (
-                credentials.analysis_missing(policy)
+                credentials.analysis_missing(policy, telegram=True)
                 if args.supervisor
                 else credentials.missing(policy)
             )
         )
+        if args.supervisor and not args.demo and not telegram_ready:
+            missing.append("paired Telegram chat (run tradingworkflow for onboarding)")
         if args.telegram_pair:
             missing = (
                 [] if credentials.telegram_bot_token.get_secret_value() else ["telegram_bot_token"]
@@ -121,17 +141,20 @@ def main(argv=None) -> int:
                         "model_provider": policy.model_provider,
                         "model": policy.model,
                         "continuous": args.supervisor,
+                        "report_interval_hours": policy.session_hours if args.supervisor else None,
+                        "telegram_ready": telegram_ready if args.supervisor else None,
                     },
                     indent=2,
                 )
             )
             return 1 if missing else 0
         if missing:
-            print(
-                "Configuration incomplete: "
-                + ", ".join(missing)
-                + ". Run tradingworkflow --doctor."
+            doctor_command = (
+                "tradingworkflow --supervisor --doctor"
+                if args.supervisor
+                else "tradingworkflow --doctor"
             )
+            print("Configuration incomplete: " + ", ".join(missing) + f". Run {doctor_command}.")
             return 1
         directory = Path(".tradebot")
         directory.mkdir(exist_ok=True)
@@ -187,7 +210,7 @@ def main(argv=None) -> int:
     except KeyboardInterrupt:
         print("Supervisor stopped; durable progress retained.")
         return 0
-    except (ValueError, RuntimeError, OSError, TimeoutError) as exc:
+    except (ValueError, RuntimeError, OSError, TimeoutError, SQLAlchemyError) as exc:
         # Validation errors can contain input values; never print credential/config bodies.
         print(
             f"Startup/session failed ({type(exc).__name__}). Check configuration and doctor output."

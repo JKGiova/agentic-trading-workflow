@@ -38,8 +38,8 @@ if [[ -z "$uv_bin" ]]; then
     fi
 fi
 
-printf 'Installing/checking locked dependencies (Python %s)...\n' "${TRADEBOT_PYTHON:-3.12}" >&2
-"$uv_bin" sync --locked --no-dev --inexact --python "${TRADEBOT_PYTHON:-3.12}" >&2
+printf 'Installing/checking locked dependencies (Python %s)...\n' "${TRADEBOT_PYTHON:-3.14}" >&2
+"$uv_bin" sync --locked --no-dev --inexact --python "${TRADEBOT_PYTHON:-3.14}" >&2
 
 if [[ $# -eq 0 ]]; then
     printf 'Opening Telegram setup. Ctrl+Q exits.\n' >&2

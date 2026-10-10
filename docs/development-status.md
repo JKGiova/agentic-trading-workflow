@@ -2,18 +2,24 @@
 
 [Wiki home](README.md) · [Continuous runtime](continuous-runtime.md) · [Codebase map](codebase-map.md)
 
-Reviewed **2026-10-10**. **v0.2.1 adds first-run Telegram onboarding to the continuous research team.** Trading
+Reviewed **2026-10-10**. **v0.3.0 targets Python 3.14 and adds onboarding-controlled recurring Telegram reports.** Trading
 orders remain disabled. Real NVIDIA/Telegram/source access has not been tested
 without owner credentials.
 
 ## Implemented in this release
 
-- Install with `uv sync --locked --no-dev --python 3.12`, activate `.venv`, and
+- Install with `uv sync --locked --no-dev --python 3.14`, activate `.venv`, and
   launch with the packaged `tradingworkflow` command. The Bash launcher starts the
   same entry point; `tradebot` remains a compatibility alias.
 - Default launcher opens a single-window Telegram onboarding/home screen without
   model or broker credentials. Token entry is masked, pairing uses a private
   one-time code, and successful setup sends an isolated test message.
+- Onboarding asks for X hours between reports, supports decimal intervals and
+  persists validated preferences atomically with setup completion. Existing paired
+  users add this step without reentering tokens. Schedule changes preserve current
+  cycle deadlines and take effect on the next cycle, including across restarts.
+- Continuous startup checks a matching Telegram destination; the four-pane CLI shows
+  the report cutoff and interval. One-cycle runs attempt delivery before shutdown.
 - Atomic private token storage, saved/versioned setup steps, reconnect and explicit
   standalone test commands. Setup state can retain completed steps when future
   wallet/broker/configuration capabilities are added; those connections are not
@@ -52,14 +58,15 @@ The offline suite covers timing boundaries, news corrections, duplicate work,
 original-before-peer ordering, tool/citation validation, crash/lease recovery,
 spend limits, frozen manifests, source failures, next-cycle overlap, Telegram
 pairing/rate limits/unknown sends, CLI startup/shutdown and the four-pane terminal.
-A complete HTTP-fixture test crosses NVIDIA transport, all four agents, synthesis,
-report persistence and Telegram delivery. Tests isolate real owner secrets.
+A complete HTTP-fixture test crosses onboarding, saved scheduling, NVIDIA transport,
+all four agents, synthesis, two consecutive reports and Telegram delivery. Tests
+isolate real owner secrets.
 
-Release verification locally: **152 passed, two PostgreSQL tests skipped without
-a test server; 96.23% statement coverage**. CI runs the PostgreSQL cases with its
+Release verification locally on **Python 3.14.8**: **169 passed, two PostgreSQL tests
+skipped without a test server; 97.38% statement coverage**. CI runs the PostgreSQL cases with its
 database service; see the commit-specific Actions result for that outcome.
 
-CI runs Python 3.12/3.13, isolated PostgreSQL, lint/format, a 90% minimum coverage
+CI runs Python 3.14, isolated PostgreSQL, lint/format, a 90% minimum coverage
 gate, map freshness, installed-command checks and launcher checks. Offline tests
 exercise the installed `tradingworkflow` executable for help, configuration checks
 and safe noninteractive first launch; CI also launches it after activating `.venv`.

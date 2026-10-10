@@ -60,7 +60,7 @@ def launcher(tmp_path):
 def test_existing_uv_defaults_and_argument_forwarding(launcher, args):
     project, bin_dir, environment, run = launcher
     executable(bin_dir / "uv", FAKE_UV)
-    result = run(*args, TRADEBOT_PYTHON="3.13", APP_EXIT="7")
+    result = run(*args, TRADEBOT_PYTHON="3.14", APP_EXIT="7")
     assert result.returncode == 7
     calls = Path(environment["LAUNCH_LOG"]).read_text().split("--end--\n")
     assert calls[0].splitlines() == [
@@ -70,7 +70,7 @@ def test_existing_uv_defaults_and_argument_forwarding(launcher, args):
         "--no-dev",
         "--inexact",
         "--python",
-        "3.13",
+        "3.14",
     ]
     assert calls[1].splitlines() == [
         str(project),

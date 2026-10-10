@@ -7,17 +7,17 @@ import tempfile
 from pathlib import Path
 
 from dotenv import dotenv_values
-from pydantic import SecretStr
+from pydantic import SecretStr, ValidationError
 
 from tradebot.analysis_memory import AnalysisMemory, outbox
 from tradebot.contracts import utcnow
-from tradebot.settings import Credentials
+from tradebot.settings import Credentials, ReportSchedule
 from tradebot.storage import Store
 from tradebot.telegram import TelegramNotifier
 
-SETUP_VERSION = 1
+SETUP_VERSION = 2
 # Add only ready product capabilities here; completed steps survive future additions.
-REQUIRED_STEPS = ("telegram",)
+REQUIRED_STEPS = ("telegram", "report_schedule")
 TOKEN_NAME = "TRADEBOT_TELEGRAM_BOT_TOKEN"
 
 
@@ -79,7 +79,35 @@ class SetupController:
         completed = dict(state.get("steps", {}))
         if completed.get("telegram") != connection or not connection:
             completed.pop("telegram", None)
+        schedule = self.schedule()
+        if not schedule or completed.get("report_schedule") != schedule.model_dump(mode="json"):
+            completed.pop("report_schedule", None)
         return [step for step in REQUIRED_STEPS if step not in completed]
+
+    def schedule(self):
+        return ReportSchedule.read(self.memory)
+
+    def save_schedule(self, hours):
+        try:
+            schedule = ReportSchedule(report_hours=hours)
+        except ValidationError:
+            raise SetupError(
+                "Enter an interval between 1 second and 8760 hours, for example 3 or 0.5 hours"
+            ) from None
+        payload = schedule.model_dump(mode="json")
+        state = self.memory.setting("onboarding") or {"steps": {}}
+        self.memory.set_settings(
+            {
+                "report_schedule": payload,
+                "onboarding": {
+                    **state,
+                    "version": SETUP_VERSION,
+                    "steps": {**state.get("steps", {}), "report_schedule": payload},
+                    "updated_at": utcnow().isoformat(),
+                },
+            }
+        )
+        return schedule
 
     def last_test(self):
         last = self.memory.setting("telegram_test")

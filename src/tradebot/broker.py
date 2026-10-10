@@ -37,7 +37,7 @@ class AlpacaReadOnly:
             result = await self.client.get(self.BASE + path, headers=self.headers, params=params)
             result.raise_for_status()
             return result.json()
-        except (httpx.HTTPError, ValueError):
+        except httpx.HTTPError, ValueError:
             raise BrokerError("Alpaca paper read failed; cached snapshot remains visible") from None
 
     async def snapshot(self, previous: Snapshot | None) -> Snapshot:
@@ -106,5 +106,5 @@ class AlpacaReadOnly:
             if ask <= 0 or bid <= 0:
                 raise BrokerError("No usable IEX quote")
             return (ask + bid) / 2
-        except (httpx.HTTPError, ValueError, KeyError):
+        except httpx.HTTPError, ValueError, KeyError:
             raise BrokerError("IEX quote unavailable") from None

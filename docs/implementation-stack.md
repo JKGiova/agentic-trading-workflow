@@ -14,7 +14,7 @@ Build a small Python application with an explicit LangGraph workflow and Postgre
 
 | Responsibility | Proposed tool/package | How we use it |
 | --- | --- | --- |
-| Runtime | Python 3.12/3.13, virtual environment | One language for agents, data, risk, and evaluation; locked dependencies and CI |
+| Runtime | Python 3.14, virtual environment | One language for agents, data, risk, and evaluation; locked dependencies and CI |
 | Agent workflow | `langgraph`, `langgraph-checkpoint-postgres` | Explicit nodes/branches, shared frozen evidence, and persistent session checkpoints |
 | Model provider | NVIDIA NIM / `deepseek-ai/deepseek-v4.1-flash` through a thin `httpx` client | Bounded model/tool loops, validated typed outputs and usage logging; NVIDIA adapter implemented; OpenRouter is an explicit compatibility option |
 | Contracts | `pydantic`, `pydantic-settings` | Validate reports, scenarios, forecasts, allocation proposals, and configuration |

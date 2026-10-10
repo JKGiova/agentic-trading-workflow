@@ -88,4 +88,4 @@ flowchart TD
 
 The CLI drives application services. Workflow uses model/retrieval adapters and deterministic risk previews; storage persists research and read-only snapshots. The broker adapter has no submission method.
 
-[Machine-readable map](codebase-map.json) contains 19 modules, 58 import edges and 247 definitions.
+[Machine-readable map](codebase-map.json) contains 19 modules, 58 import edges and 257 definitions.

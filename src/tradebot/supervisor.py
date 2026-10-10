@@ -11,14 +11,22 @@ from tradebot.analysis_memory import AnalysisMemory, cycles, digest, events, out
 from tradebot.analysts import AnalystAgent, Finding
 from tradebot.contracts import Category, Coverage, Evidence, Forecast, SearchAttempt, utcnow
 from tradebot.models import model_budget_scope
-from tradebot.settings import Instrument
+from tradebot.settings import Instrument, ReportSchedule
 from tradebot.storage import leases
 from tradebot.telegram import split_message
 
 
 class AnalysisSupervisor:
     def __init__(
-        self, policy, store, model, research, notifier, clock=utcnow, notify=lambda _: None
+        self,
+        policy,
+        store,
+        model,
+        research,
+        notifier,
+        clock=utcnow,
+        notify=lambda _: None,
+        use_saved_schedule=True,
     ):
         self.policy, self.store, self.model, self.research = policy, store, model, research
         self.memory = AnalysisMemory(store)
@@ -27,6 +35,7 @@ class AnalysisSupervisor:
         self.stop = asyncio.Event()
         self.owner = str(uuid.uuid4())
         self.policy_hash = digest(policy.model_dump(mode="json"))
+        self.use_saved_schedule = use_saved_schedule
         self.report_lock = asyncio.Lock()
         self.collect_lock = asyncio.Lock()
         self.runner = None
@@ -46,11 +55,17 @@ class AnalysisSupervisor:
         return list(configured.values())
 
     def current(self):
+        if self.use_saved_schedule:
+            self.policy = ReportSchedule.apply(self.policy, self.memory)
+            self.agent.policy = self.policy
+        payload = self.policy.model_dump(mode="json")
+        self.policy_hash = digest(payload)
         return self.memory.open_cycle(
             self.clock(),
             self.policy.session_hours,
             [item.symbol for item in self.instruments()],
             self.policy_hash,
+            policy_payload=payload,
         )
 
     def rollover(self):
@@ -311,7 +326,7 @@ class AnalysisSupervisor:
                     model_budget_scope.reset(token)
                 if not set(forecast.evidence_ids) <= {x["id"] for x in context["evidence"]}:
                     raise ValueError("Report forecast fabricated a citation")
-            except (RuntimeError, ValueError, OSError, TimeoutError):
+            except RuntimeError, ValueError, OSError, TimeoutError:
                 forecast = Forecast(
                     probability=None,
                     scenarios=[],
@@ -414,7 +429,7 @@ class AnalysisSupervisor:
                     compact["summary"] = compact["summary"][:500]
                     compact["evidence_ids"] = compact["evidence_ids"][:8]
                     compact["claims"] = compact["claims"][:2]
-                except (ValueError, RuntimeError, OSError, TimeoutError):
+                except ValueError, RuntimeError, OSError, TimeoutError:
                     compact = Finding(
                         summary="; ".join(x["summary"] for x in chunk)[:500],
                         direction="unknown",
@@ -518,6 +533,16 @@ class AnalysisSupervisor:
         )
         return {
             "cycle": active[0]["id"] if active else None,
+            "report_cutoff": active[0]["end"] if active else None,
+            "report_interval_hours": (
+                (
+                    datetime.fromisoformat(active[0]["end"])
+                    - datetime.fromisoformat(active[0]["start"])
+                ).total_seconds()
+                / 3600
+                if active
+                else self.policy.session_hours
+            ),
             "pending_tasks": len(queued),
             "telegram_bound": bool(getattr(self.notifier, "chat_id", "")),
             "telegram": {

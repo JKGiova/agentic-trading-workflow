@@ -10,13 +10,15 @@ import httpx
 import pytest
 from dotenv import dotenv_values
 from sqlalchemy import update
+from sqlalchemy.exc import SQLAlchemyError
 from textual.widgets import Input, Static
 
 from tradebot.analysis_memory import cycles, outbox, tasks
 from tradebot.cli import main
 from tradebot.contracts import utcnow
-from tradebot.onboarding import TOKEN_NAME, SetupController, save_token
+from tradebot.onboarding import TOKEN_NAME, SetupController, SetupError, save_token
 from tradebot.onboarding import test_status as status_text
+from tradebot.service import demo_policy
 from tradebot.settings import Credentials
 from tradebot.setup_terminal import SetupTerminal
 from tradebot.telegram import TelegramNotifier
@@ -101,10 +103,12 @@ def setup(tmp_path, monkeypatch):
 
 async def test_first_run_pairs_sends_and_resumes_without_reentering_secrets(setup):
     controller, api = setup
-    assert controller.pending_steps() == ["telegram"]
+    assert controller.pending_steps() == ["telegram", "report_schedule"]
     progress = []
     result = await controller.connect(TOKEN, progress.append)
     assert result["status"] == "SENT"
+    assert controller.pending_steps() == ["report_schedule"]
+    controller.save_schedule("0.5")
     assert controller.pending_steps() == []
     assert controller.connection()["chat_id"] == "42"
     assert any("/start fixture_nonce" in text for text in progress)
@@ -123,6 +127,7 @@ async def test_first_run_pairs_sends_and_resumes_without_reentering_secrets(setu
     try:
         calls = len(api.calls)
         assert reopened.pending_steps() == []
+        assert reopened.schedule().report_hours == 0.5
         assert reopened.connection()["chat_id"] == "42"
         assert len(api.calls) == calls  # Loading saved setup never makes a network call.
         await reopened.test()
@@ -141,7 +146,7 @@ async def test_invalid_token_is_not_saved_or_paired(setup, failure):
     assert TOKEN not in str(error.value)
     assert not await asyncio.to_thread(Path(".tradebot/credentials.env").exists)
     assert not controller.connection()
-    assert controller.pending_steps() == ["telegram"]
+    assert controller.pending_steps() == ["telegram", "report_schedule"]
     assert all(client.is_closed for client in api.clients)
 
 
@@ -209,10 +214,13 @@ async def test_exported_token_conflict_is_not_silently_saved(setup, monkeypatch)
 async def test_new_bot_requires_new_pairing_and_keeps_completed_future_steps(setup, monkeypatch):
     controller, api = setup
     await controller.connect(TOKEN, lambda _: None)
+    controller.save_schedule(3)
     state = controller.memory.setting("onboarding")
     state["steps"]["settings"] = {"selected": True}
     controller.memory.set_setting("onboarding", state)
-    monkeypatch.setattr("tradebot.onboarding.REQUIRED_STEPS", ("telegram", "settings", "wallet"))
+    monkeypatch.setattr(
+        "tradebot.onboarding.REQUIRED_STEPS", ("telegram", "report_schedule", "settings", "wallet")
+    )
     assert controller.pending_steps() == ["wallet"]
     pair_count = sum(method == "getUpdates" for method, _ in api.calls)
     result = await controller.connect("222222:new_bot_secret", lambda _: None)
@@ -230,7 +238,7 @@ async def test_telegram_test_isolates_research_outbox_and_quota_retry(setup):
     api.failure = "quota"
     result = await controller.connect(TOKEN, lambda _: None)
     assert result["status"] == "PENDING"
-    assert controller.pending_steps() == ["telegram"]
+    assert controller.pending_steps() == ["telegram", "report_schedule"]
     research = controller.memory.rows(outbox, outbox.c.cycle == cycle["id"])[0]
     assert research["status"] == "PENDING"
     assert all(payload.get("text") != "private research report" for _, payload in api.calls)
@@ -247,6 +255,7 @@ async def test_telegram_test_isolates_research_outbox_and_quota_retry(setup):
     api.failure = ""
     retry = await controller.test()
     assert retry["id"] == result["id"] and retry["status"] == "SENT"
+    controller.save_schedule(3)
     assert controller.pending_steps() == []
 
 
@@ -255,7 +264,7 @@ async def test_unknown_delivery_never_replays_on_launch_or_in_research_loop(setu
     api.failure = "timeout"
     result = await controller.connect(TOKEN, lambda _: None)
     assert result["status"] == "UNKNOWN"
-    assert controller.pending_steps() == ["telegram"]
+    assert controller.pending_steps() == ["telegram", "report_schedule"]
     assert TOKEN not in json.dumps(result)
     calls = len(api.calls)
     notifier = api.factory(controller.credentials, controller.memory)
@@ -291,9 +300,18 @@ async def test_onboarding_terminal_masks_token_pairs_and_reopens_as_home(setup, 
         await app.workers.wait_for_complete()
         await pilot.pause()
         assert not app.query_one("#token-form").display
-        assert app.query_one("#home").display
+        assert app.query_one("#schedule-form").display
         assert "delivered" in str(app.query_one("#status", Static).content)
         assert field.value == ""
+        for widget_id in ("report-hours", "save-schedule", "status", "exit"):
+            widget = app.query_one("#" + widget_id)
+            assert 0 <= widget.region.x < widget.region.right <= size[0]
+            assert 0 <= widget.region.y < widget.region.bottom <= size[1] - 1
+        app.query_one("#report-hours", Input).value = "0.5"
+        await pilot.click("#save-schedule")
+        await pilot.pause()
+        assert app.query_one("#home").display
+        assert "0.5 hours" in str(app.query_one("#schedule-summary", Static).content)
         assert controller.pending_steps() == []
         assert not controller.memory.rows(tasks)
         await pilot.click("#test")
@@ -335,7 +353,7 @@ async def test_token_is_redacted_from_input_events_and_debug_descriptions(setup,
     original = MessagePump._dispatch_message
 
     async def inspect_message(self, message):
-        if isinstance(message, (Input.Changed, Input.Submitted)):
+        if isinstance(message, (Input.Changed, Input.Submitted)) and message.input.id == "token":
             observed.append(repr(message))
         return await original(self, message)
 
@@ -363,6 +381,7 @@ async def test_failed_pair_and_test_ui_remain_retryable_without_secret_leaks(set
         api.failure = ""
         await pilot.press("enter")
         await app.workers.wait_for_complete()
+        await pilot.click("#save-schedule")
         api.failure = "timeout"
         await pilot.click("#test")
         await app.workers.wait_for_complete()
@@ -377,7 +396,7 @@ def test_cli_default_opens_setup_without_policy_model_or_broker(tmp_path, monkey
 
     def run(self):
         shown.append(self.force)
-        assert self.controller.pending_steps() == ["telegram"]
+        assert self.controller.pending_steps() == ["telegram", "report_schedule"]
 
     def forbidden(*args, **kwargs):
         raise AssertionError("Setup cannot create a research service")
@@ -414,3 +433,101 @@ def test_status_messages_handle_incomplete_delivery():
     assert "delivered" in status_text({"status": "SENT"})
     assert "rate limiting" in status_text({"status": "PENDING"})
     assert "could not be confirmed" in status_text({"status": "SENDING"})
+
+
+@pytest.mark.parametrize("hours", [0, -1, float("nan"), float("inf"), "", "abc", 1e-10, 8761])
+def test_invalid_report_intervals_preserve_saved_setup(setup, hours):
+    controller, api = setup
+    controller.save_schedule(2.5)
+    state = controller.memory.setting("onboarding")
+    with pytest.raises(SetupError, match="interval"):
+        controller.save_schedule(hours)
+    assert controller.schedule().report_hours == 2.5
+    assert controller.memory.setting("onboarding") == state
+    assert not api.calls and not controller.memory.rows(tasks)
+
+
+async def test_v1_setup_adds_interval_without_repairing_and_can_edit_it(setup):
+    controller, api = setup
+    await controller.connect(TOKEN, lambda _: None)
+    state = controller.memory.setting("onboarding")
+    state["version"] = 1
+    controller.memory.set_setting("onboarding", state)
+    calls = len(api.calls)
+    app = SetupTerminal(controller)
+    async with app.run_test(size=(80, 24)) as pilot:
+        assert app.query_one("#schedule-form").display
+        assert not app.query_one("#token-form").display
+        field = app.query_one("#report-hours", Input)
+        field.value = "2"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert controller.pending_steps() == []
+        assert controller.memory.setting("onboarding")["version"] == 2
+        await pilot.click("#schedule")
+        assert field.value == "2"
+        field.value = "-1"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert "interval" in str(app.query_one("#status", Static).content)
+        assert controller.schedule().report_hours == 2
+        field.value = "0.5"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert app.query_one("#home").display
+        assert controller.schedule().report_hours == 0.5
+    assert len(api.calls) == calls
+    assert controller.connection()["chat_id"] == "42"
+
+
+@pytest.mark.parametrize("failure", [OSError, SQLAlchemyError])
+async def test_interval_save_failure_rolls_back_preferences_and_keeps_ui_retryable(
+    setup, monkeypatch, failure
+):
+    controller, _ = setup
+    await controller.connect(TOKEN, lambda _: None)
+    controller.save_schedule(2)
+    state = controller.memory.setting("onboarding")
+    original = controller.store._ensure
+
+    def fail_state(conn, table, row):
+        if row.get("name") == "onboarding":
+            raise failure("Controlled storage failure")
+        return original(conn, table, row)
+
+    app = SetupTerminal(controller)
+    async with app.run_test() as pilot:
+        await pilot.click("#schedule")
+        app.query_one("#report-hours", Input).value = "4"
+        monkeypatch.setattr(controller.store, "_ensure", fail_state)
+        await pilot.press("enter")
+        await pilot.pause()
+        assert "Could not save" in str(app.query_one("#status", Static).content)
+        assert controller.schedule().report_hours == 2
+        assert controller.memory.setting("onboarding") == state
+        monkeypatch.setattr(controller.store, "_ensure", original)
+        await pilot.press("enter")
+        await pilot.pause()
+        assert app.query_one("#home").display
+        assert controller.schedule().report_hours == 4
+
+
+async def test_supervisor_doctor_reads_onboarding_and_requires_matching_telegram(
+    setup, monkeypatch, capsys
+):
+    controller, api = setup
+    await controller.connect(TOKEN, lambda _: None)
+    controller.save_schedule(0.5)
+    await asyncio.to_thread(Path("config.local.json").write_text, demo_policy().model_dump_json())
+    monkeypatch.setenv("TRADEBOT_NVIDIA_API_KEY", "fixture_only_nvidia")
+    calls = len(api.calls)
+    assert main(["--supervisor", "--doctor"]) == 0
+    doctor = json.loads(capsys.readouterr().out)
+    assert doctor["report_interval_hours"] == 0.5 and doctor["telegram_ready"]
+    assert not doctor["network_access_verified"] and not controller.memory.rows(tasks)
+    assert len(api.calls) == calls
+    monkeypatch.setenv(TOKEN_NAME, "999:different_bot")
+    assert main(["--supervisor", "--doctor"]) == 1
+    assert not json.loads(capsys.readouterr().out)["telegram_ready"]
+    assert main(["--supervisor", "--headless"]) == 1
+    assert "paired Telegram chat" in capsys.readouterr().out

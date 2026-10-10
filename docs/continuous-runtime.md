@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [CLI](cli.md) · [Model provider](model-provider.md)
 
-**Implemented in v0.2, reviewed 2026-10-10.** Four specialist agents run throughout
+**Implemented in v0.3.0 on Python 3.14, reviewed 2026-10-10.** Four specialist agents run throughout
 configurable research cycles. A deterministic supervisor owns scheduling, source
 assignment, memory, bounded peer review, report closure and Telegram delivery.
 This is a research service; it submits no orders. The existing bounded debate and
@@ -33,8 +33,9 @@ adding the supervisor does not add another investment manager.
 
 After [installation and environment activation](cli.md#install-and-connect-telegram),
 use `tradingworkflow` for Telegram-only first-run setup. Its onboarding asks for the
-bot token, pairs your private chat and sends a test without running the analysis
-team. Later launches reuse saved setup. See [onboarding](onboarding.md).
+bot token, pairs your private chat, sends a test and asks for the hours between
+reports without running the analysis team. Later launches reuse saved setup; choose
+**Report interval** to change the schedule. See [onboarding](onboarding.md).
 
 First verify the full offline path without credentials:
 
@@ -88,8 +89,11 @@ Pairing displays the bot link and `/start <one-time-code>`. Only an exact code f
 a private chat whose sender matches the chat is accepted. The binding is stored
 locally against a token fingerprint; changing the bot requires pairing again.
 Alternatively supply an explicitly known numeric `TRADEBOT_TELEGRAM_CHAT_ID`.
-Doctor validates local configuration, not live API access. Provider `--supervisor
---once` waits for one real cycle; it does not fast-forward time.
+Doctor validates local configuration, the effective report interval and a matching
+Telegram destination, not live API access. Analysis startup requires a token and
+paired chat. Provider `--supervisor --once` waits for one real cycle and attempts
+delivery before exiting; it does not fast-forward time. Delivery not yet confirmed
+remains durable with its normal retry/unknown-send behavior.
 
 ## Operational policy
 
@@ -98,6 +102,13 @@ Defaults: `session_hours=3`, `collection_seconds=300`, four model workers,
 `max_cycle_tasks=240`, `cycle_model_budget=8`, `report_language="Italian"`.
 `news_hours` independently defaults to three hours. NIM uses
 `deepseek-ai/deepseek-v4.1-flash`, 8,192 output tokens and the configured input bound.
+
+Onboarding's saved report interval overrides `session_hours` for continuous research.
+Manual setups without a saved interval use the configured `session_hours`. Schedule
+changes are read during operation and apply to the next cycle without shortening or
+discarding an open cycle. v0.2 cycles can resume across this upgrade when only the
+interval changed; changes to source, model, budget or other policy fields still
+require restoring the original configuration. Demo mode ignores saved owner settings.
 
 Operating dollars are conservative reservations using the policy's rates, not
 verified NVIDIA bills. Monthly limits apply across calls; each cycle reserves 70%
@@ -132,7 +143,9 @@ rather than leaving an apparently running service with a dead subsystem.
 Each closed cycle queues a plain-text recap for every analyzed watchlist stock and
 holding: role findings, initial uncalibrated confidence, dissent, source links,
 coverage gaps and unfinished tasks. Summaries are split within Telegram's UTF-16
-length limit and sent in part order. Reports remain queued until a chat is paired.
+length limit and sent in part order. Each X-hour window freezes independently while
+the next research cycle starts; delivery follows report synthesis and may be delayed
+by provider latency or quotas. Keep the process running for recurring reports.
 
 Telegram does not provide our application an exactly-once send key. A timed-out or
 interrupted send becomes UNKNOWN and is not automatically resent; later parts of
@@ -141,7 +154,9 @@ responses receive bounded retry, then FAILED. The terminal shows pending, sent,
 unknown and failed deliveries. There is no incoming trading-command interface.
 
 CI exercises HTTP fixtures and deterministic clocks, including a full NIM-client →
-analysts → frozen reports → Telegram-outbox path. It also uses isolated PostgreSQL
+onboarding/pairing → saved interval → analysts → two consecutive frozen reports →
+Telegram-outbox delivery path, including no early report and no duplicate send.
+It also uses isolated PostgreSQL
 for task-claim and spending concurrency. These prove behavior under controlled
 responses, not real model accuracy, account quota or source completeness. A real
 NVIDIA/Telegram test follows when owner credentials are supplied.

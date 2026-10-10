@@ -1,10 +1,12 @@
 # Project working agreements
 
 - Preserve the English topic wiki; keep the root README as an entry point.
+- Target Python 3.14 in packaging, launcher, locked environment and CI.
 - Owner interaction is a single-window Textual CLI with four panes: open positions,
   selected position, research chat, portfolio/performance. Do not add a web dashboard.
 - The default command opens Telegram onboarding/connection home without starting
-  research. Keep --demo, --supervisor and --session explicit. Future onboarding
+  research. Onboarding collects Telegram access and the recurring report interval.
+  Keep --demo, --supervisor and --session explicit. Future onboarding
   steps may collect account/configuration access only once those capabilities exist.
 - Graphify was uninstalled by the owner on 2026-10-10; it is not required.
 - Publish a current codebase map in `docs/codebase-map.md` and

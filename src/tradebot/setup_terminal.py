@@ -2,6 +2,7 @@
 
 from contextlib import suppress
 
+from sqlalchemy.exc import SQLAlchemyError
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
@@ -35,6 +36,8 @@ class SetupTerminal(App):
     Horizontal { height: auto; }
     Button { margin-right: 1; }
     #home { height: auto; }
+    #schedule-form { height: auto; }
+    #schedule-intro, #schedule-summary { height: auto; margin-bottom: 1; }
     #connection { height: auto; margin-bottom: 1; }
     """
 
@@ -63,6 +66,19 @@ class SetupTerminal(App):
                 with Horizontal():
                     yield Button("Send test message", variant="primary", id="test")
                     yield Button("Change bot", id="change")
+                    yield Button("Report interval", id="schedule")
+                yield Static("", id="schedule-summary", markup=False)
+            with Vertical(id="schedule-form"):
+                yield Static(
+                    "Choose how many hours the analysts work before sending a Telegram report. "
+                    "Decimals work too: 0.5 means every 30 minutes. "
+                    "Changes apply after any current cycle finishes.",
+                    id="schedule-intro",
+                    markup=False,
+                )
+                yield Label("Hours between reports")
+                yield Input(value="3", type="number", id="report-hours")
+                yield Button("Save report interval", variant="primary", id="save-schedule")
             yield Static("", id="status", markup=False)
             yield Button("Exit", id="exit")
         yield Footer()
@@ -81,23 +97,37 @@ class SetupTerminal(App):
         self.query_one("#intro").display = True
         self.query_one("#token-form").display = True
         self.query_one("#home").display = False
+        self.query_one("#schedule-form").display = False
         token = self.controller.credentials.telegram_bot_token.get_secret_value()
         self.query_one("#token", Input).value = token
         self.query_one("#token", Input).focus()
         self.status("Your token is hidden and saved privately on this computer.")
 
     def show_home(self):
+        pending = self.controller.pending_steps()
+        if "report_schedule" in pending and "telegram" not in pending:
+            self.show_schedule()
+            return
         self.query_one("#heading", Static).update("Telegram")
         self.query_one("#intro").display = False
         self.query_one("#token-form").display = False
         self.query_one("#home").display = True
+        self.query_one("#schedule-form").display = False
         self.query_one("#token", Input).value = ""
         username = (self.controller.memory.setting("telegram_bot") or {}).get("username", "")
         self.query_one("#connection", Static).update(
             f"@{username} · private chat paired" if username else "Your private chat is paired."
         )
-        if not self.controller.pending_steps():
-            self.status("Setup complete. Your saved connection will be used on future launches.")
+        schedule = self.controller.schedule()
+        self.query_one("#schedule-summary", Static).update(
+            f"Reports every {schedule.report_hours:g} hours while analysis is running."
+            if schedule
+            else "Choose a report interval after confirming your Telegram test."
+        )
+        if not pending:
+            self.status(
+                "Setup complete. Start the analysis team with tradingworkflow --supervisor."
+            )
         else:
             result = self.controller.last_test()
             self.status(
@@ -105,11 +135,32 @@ class SetupTerminal(App):
             )
         self.query_one("#test", Button).focus()
 
+    def show_schedule(self):
+        self.query_one("#heading", Static).update("Reports · Choose interval")
+        for widget_id in ("intro", "token-form", "home"):
+            self.query_one("#" + widget_id).display = False
+        self.query_one("#token", Input).value = ""
+        self.query_one("#schedule-form").display = True
+        schedule = self.controller.schedule()
+        self.query_one("#report-hours", Input).value = (
+            f"{schedule.report_hours:g}" if schedule else "3"
+        )
+        self.status("Save the interval to finish setup. Starting analysis is a separate command.")
+        self.query_one("#report-hours", Input).focus()
+
     def set_busy(self, busy):
         self.busy = busy
         if not self.is_running:
             return
-        for widget_id in ("connect", "test", "change", "token"):
+        for widget_id in (
+            "connect",
+            "test",
+            "change",
+            "token",
+            "schedule",
+            "report-hours",
+            "save-schedule",
+        ):
             self.query_one("#" + widget_id).disabled = busy
 
     @on(Button.Pressed, "#connect")
@@ -126,12 +177,19 @@ class SetupTerminal(App):
                 self.query_one("#token", Input).value, self.status
             )
             self.show_home()
-            self.status(test_status(result))
+            self.status(
+                test_status(result)
+                + (
+                    " Choose your report interval below."
+                    if self.query_one("#schedule-form").display
+                    else ""
+                )
+            )
         except TimeoutError:
             self.status("Pairing timed out. Connect again and send the displayed /start code.")
         except SetupError as exc:
             self.status(str(exc))
-        except (ValueError, RuntimeError, OSError, KeyError, TypeError):
+        except ValueError, RuntimeError, OSError, KeyError, TypeError:
             self.status("Connection failed. Check your token, network and private /start code.")
         finally:
             self.set_busy(False)
@@ -149,8 +207,10 @@ class SetupTerminal(App):
         self.status("Sending your test message…")
         try:
             result = await self.controller.test()
+            if result["status"] == "SENT":
+                self.show_home()
             self.status(test_status(result))
-        except (ValueError, RuntimeError, OSError, KeyError, TypeError):
+        except ValueError, RuntimeError, OSError, KeyError, TypeError:
             self.status("Test failed. Check your connection or reconnect your bot.")
         finally:
             self.set_busy(False)
@@ -159,6 +219,24 @@ class SetupTerminal(App):
     def change(self):
         if not self.busy:
             self.show_form()
+
+    @on(Button.Pressed, "#schedule")
+    def change_schedule(self):
+        if not self.busy:
+            self.show_schedule()
+
+    @on(Button.Pressed, "#save-schedule")
+    @on(Input.Submitted, "#report-hours")
+    def save_schedule(self):
+        if self.busy:
+            return
+        try:
+            self.controller.save_schedule(self.query_one("#report-hours", Input).value)
+            self.show_home()
+        except SetupError as exc:
+            self.status(str(exc))
+        except OSError, SQLAlchemyError:
+            self.status("Could not save the interval. Check local storage and try again.")
 
     @on(Button.Pressed, "#exit")
     def leave(self):

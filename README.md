@@ -2,26 +2,27 @@
 
 A news-driven AI workflow for a selected group of stocks, with persistent evidence, mandatory position reviews, direct Bull/Bear debate, and a separate investment agent.
 
-**Status: v0.2.1 with first-run Telegram onboarding.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
+**Status: v0.3.0 on Python 3.14, with onboarding-configured Telegram reports.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
 
 ## Install and run
 
 ```bash
 git clone https://github.com/JKGiova/agentic-trading-workflow.git
 cd agentic-trading-workflow
-uv sync --locked --no-dev --python 3.12
+uv sync --locked --no-dev --python 3.14
 source .venv/bin/activate
 tradingworkflow
 ```
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first if needed.
-It creates `.venv`, installs Python 3.12 if needed and installs the locked runtime
+It creates `.venv`, installs Python 3.14 if needed and installs the locked runtime
 dependencies. On macOS/Linux, activate the environment with the command above;
 in Windows PowerShell use `.venv\Scripts\Activate.ps1`.
 
 `tradingworkflow` opens Telegram onboarding on first run. Paste your BotFather token
 in the hidden field, pair your private chat using the displayed `/start` code, and
-receive a test message. Later launches reuse saved setup. This entry point runs
+receive a test message, then choose the hours between reports. Decimal intervals
+are supported: `0.5` means every 30 minutes. Later launches reuse saved setup. This entry point runs
 independently of the model/research team. See the [onboarding guide](docs/onboarding.md).
 
 For later launches, `cd` into the repository, activate `.venv` and run
@@ -32,6 +33,12 @@ Use `tradingworkflow --demo` for the four-pane offline research demo, `--supervi
 configured continuous research, and `--session` for the older bounded terminal.
 Pass `--onboard` to edit setup or `--telegram-test` to send one standalone test.
 See the [CLI guide](docs/cli.md) for provider configuration.
+
+After configuring the NVIDIA key and selected stocks, start the team with
+`tradingworkflow --supervisor` (or add `--headless`). It continuously researches
+news and sends a report for each completed X-hour cycle using the saved interval.
+Keep the process running to receive reports. Open `tradingworkflow` and choose
+**Report interval** to change X; any current cycle keeps its original deadline.
 
 One window: open positions, selected-position focus, research chatbot, portfolio/performance. `F1`–`F4` focus panes, `Ctrl+R` researches, `Ctrl+U` refreshes and `Ctrl+Q` exits. The demo is explicitly synthetic; provider mode requires private credentials and configuration. See the [CLI guide](docs/cli.md) and [codebase map](docs/codebase-map.md).
 

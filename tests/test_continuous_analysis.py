@@ -5,7 +5,7 @@ from decimal import Decimal
 import pytest
 from sqlalchemy import update
 
-from tradebot.analysis_memory import AnalysisMemory, cycles, events, outbox, tasks
+from tradebot.analysis_memory import AnalysisMemory, cycles, digest, events, outbox, tasks
 from tradebot.analysts import AgentTurn, Finding
 from tradebot.contracts import Category, Coverage, Forecast, SearchAttempt, utcnow
 from tradebot.models import DemoModel
@@ -396,6 +396,58 @@ async def test_pending_reports_restart_and_policy_change(store, policy, clock):
     assert next_cycle["start"] > current["end"]
 
 
+@pytest.mark.parametrize("legacy", [False, True])
+@pytest.mark.parametrize("initial_hours", [0.5, 3])
+async def test_saved_interval_changes_after_current_cycle_and_survives_restart(
+    store, policy, clock, legacy, initial_hours
+):
+    team = supervisor(store, policy, clock)
+    team.memory.set_setting("report_schedule", {"report_hours": initial_hours})
+    first = team.current()
+    await team.collect()
+    await drain(team)
+    if legacy:
+        payload = dict(first["payload"])
+        payload.pop("configuration_hash")
+        payload["policy_hash"] = digest(
+            {**policy.model_dump(mode="json"), "session_hours": initial_hours}
+        )
+        with store.transaction() as conn:
+            conn.execute(update(cycles).where(cycles.c.id == first["id"]).values(payload=payload))
+    team.memory.set_setting("report_schedule", {"report_hours": 2})
+    assert team.current()["id"] == first["id"] and team.current()["end"] == first["end"]
+    restarted = supervisor(store, policy, clock)
+    assert restarted.current()["id"] == first["id"]
+    assert restarted.current()["end"] == first["end"]
+    assert restarted.status()["report_interval_hours"] == initial_hours
+    clock.now += timedelta(hours=initial_hours)
+    second = restarted.rollover()
+    assert second["start"] == first["end"]
+    assert second["end"] == (clock() + timedelta(hours=2)).isoformat()
+    await restarted.close_pending()
+    assert restarted.memory.cycle(first["id"])["status"] == "CLOSED"
+    changed = supervisor(store, policy.model_copy(update={"collection_seconds": 600}), clock)
+    with pytest.raises(ValueError, match="policy changed"):
+        changed.current()
+
+
+async def test_provider_service_applies_saved_interval_but_demo_remains_isolated(tmp_path, policy):
+    from tradebot.storage import Store
+
+    for demo in (False, True):
+        db = Store(f"sqlite:///{tmp_path / f'{demo}.db'}")
+        AnalysisMemory(db).set_setting("report_schedule", {"report_hours": 0.5})
+        service = TradeService(db, policy, Credentials(_env_file=None), demo=demo, continuous=True)
+        try:
+            cycle = service.supervisor.current()
+            expected = policy.session_hours if demo else 0.5
+            assert service.policy.session_hours == expected
+            assert service.supervisor.status()["report_interval_hours"] == expected
+            assert cycle["status"] == "OPEN"
+        finally:
+            await service.close()
+
+
 async def test_real_run_shutdown_single_supervisor_and_delivery_recovery(store, policy, clock):
     team = supervisor(store, policy, clock)
     team.memory.queue_summary("old", ["pending"], clock())
@@ -607,20 +659,49 @@ async def test_refresh_failure_keeps_mandatory_holdings(store, policy, clock):
     assert any("stored holdings" in message for message in messages)
 
 
-async def test_nvidia_team_to_telegram_end_to_end_http_contracts(store, policy, clock):
+async def test_nvidia_team_to_telegram_end_to_end_http_contracts(
+    store, policy, clock, tmp_path, monkeypatch
+):
     import json
 
     import httpx
 
     from tradebot.models import NvidiaNIM
+    from tradebot.onboarding import TOKEN_NAME, SetupController
     from tradebot.telegram import TelegramNotifier
 
     calls, delivered = [], []
     fixtures = DemoModel()
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv(TOKEN_NAME)
+    monkeypatch.setattr("tradebot.telegram.secrets.token_hex", lambda _: "fixture_nonce")
 
     async def handler(request):
         body = json.loads(request.content)
         if request.url.host == "api.telegram.org":
+            method = request.url.path.rsplit("/", 1)[-1]
+            if method == "getMe":
+                return httpx.Response(
+                    200, json={"ok": True, "result": {"is_bot": True, "username": "fixture_bot"}}
+                )
+            if method == "getUpdates":
+                return httpx.Response(
+                    200,
+                    json={
+                        "ok": True,
+                        "result": [
+                            {
+                                "update_id": 1,
+                                "message": {
+                                    "chat": {"id": 42, "type": "private"},
+                                    "from": {"id": 42},
+                                    "text": "/start fixture_nonce",
+                                },
+                            }
+                        ],
+                    },
+                )
+            assert method == "sendMessage"
             delivered.append(body)
             return httpx.Response(200, json={"ok": True, "result": {"message_id": len(delivered)}})
         assert request.url.host == "integrate.api.nvidia.com"
@@ -649,24 +730,54 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(store, policy, 
         )
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        database = str(store.engine.url)
+
+        def factory(credentials, memory):
+            return TelegramNotifier(credentials, memory, client)
+
+        controller = SetupController(database, notifier_factory=factory)
+        try:
+            assert (await controller.connect("123456789:fixture_only", lambda _: None))[
+                "status"
+            ] == "SENT"
+            controller.save_schedule("0.5")
+        finally:
+            controller.close()
+        reopened = SetupController(database, notifier_factory=factory)
+        try:
+            assert reopened.pending_steps() == []
+            assert reopened.schedule().report_hours == 0.5
+            assert reopened.connection()["chat_id"] == "42"
+        finally:
+            reopened.close()
+        delivered.clear()
         creds = Credentials(
-            _env_file=None,
             nvidia_api_key="private-nvidia",
-            telegram_bot_token="private-telegram",
-            telegram_chat_id="42",
         )
         model = NvidiaNIM(creds, policy, store, client)
         memory = AnalysisMemory(store)
         notifier = TelegramNotifier(creds, memory, client)
         team = AnalysisSupervisor(policy, store, model, Sources(clock), notifier, clock=clock)
         first = team.current()
-        await team.collect()
-        await drain(team)
-        clock.now += timedelta(hours=3)
-        team.rollover()
-        await team.close_pending()
-        await notifier.deliver(clock())
-        assert team.memory.cycle(first["id"])["status"] == "CLOSED"
+        assert team.status()["report_interval_hours"] == 0.5
+        for _ in range(2):
+            cycle = team.current()
+            await team.collect()
+            await drain(team)
+            clock.now += timedelta(minutes=29)
+            assert team.rollover()["id"] == cycle["id"]
+            await team.close_pending()
+            await notifier.deliver(clock())
+            assert not team.memory.rows(outbox, outbox.c.cycle == cycle["id"])
+            clock.now += timedelta(minutes=1)
+            team.rollover()
+            await team.close_pending()
+            await notifier.deliver(clock())
+            assert team.memory.cycle(cycle["id"])["status"] == "CLOSED"
+            before = len(delivered)
+            await notifier.deliver(clock())
+            assert len(delivered) == before
+        assert len(team.memory.rows(cycles, cycles.c.status == "CLOSED")) == 2
         assert {
             "market_analyst",
             "financial_analyst",
@@ -675,21 +786,43 @@ async def test_nvidia_team_to_telegram_end_to_end_http_contracts(store, policy, 
             "analyst_lead",
         } <= {role for role, _ in calls}
         assert delivered and all(message["chat_id"] == "42" for message in delivered)
+        text = "\n".join(message["text"] for message in delivered)
+        assert all(symbol in text for symbol in ("AAPL", "NVDA", "MSFT"))
+        assert "confidence" in text and "https://example.com/release" in text
+        assert "fixture_only" not in text and "private-nvidia" not in text
+        assert team.memory.cycle(first["id"])["payload"]["reports"]
         assert all(row["status"] == "SENT" for row in memory.rows(outbox))
         assert store.model_spend() > 0
 
 
 async def test_provider_service_one_cycle_and_shutdown(tmp_path, policy):
+    import httpx
+
     from tradebot.storage import Store
+    from tradebot.telegram import TelegramNotifier
 
     # NVIDIA and yfinance access are explicitly replaced by validated fixture implementations.
     db = Store(f"sqlite:///{tmp_path / 'provider.db'}")
     policy = policy.model_copy(update={"session_hours": 0.00002})
-    service = TradeService(
-        db, policy, Credentials(_env_file=None, nvidia_api_key="fixture"), continuous=True
+    creds = Credentials(
+        _env_file=None,
+        nvidia_api_key="fixture",
+        telegram_bot_token="fixture",
+        telegram_chat_id="42",
     )
+    service = TradeService(db, policy, creds, continuous=True)
     await service.model.close()
     await service.research.close()
+    await service.supervisor.notifier.close()
+    sent = []
+
+    def telegram(request):
+        sent.append(request)
+        return httpx.Response(200, json={"ok": True, "result": {"message_id": len(sent)}})
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(telegram))
+    service.supervisor.notifier = TelegramNotifier(creds, service.supervisor.memory, client)
+    service.supervisor.notifier.owns_client = True
     fixture = DemoModel()
     source = Sources(utcnow)
 
@@ -702,6 +835,11 @@ async def test_provider_service_one_cycle_and_shutdown(tmp_path, policy):
     try:
         result = await asyncio.wait_for(service.run_analysis_cycle(), 4)
         assert result["status"] == "CLOSED"
+        assert sent
+        assert all(
+            row["status"] == "SENT"
+            for row in service.supervisor.memory.rows(outbox, outbox.c.cycle == result["id"])
+        )
         with pytest.raises(ValueError, match="already started"):
             await service.run_supervisor()
     finally:
