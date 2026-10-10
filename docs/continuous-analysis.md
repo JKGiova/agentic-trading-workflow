@@ -5,14 +5,16 @@
 The [agent control-loop blueprint](agent-control-loop.md) gives the concrete
 per-task role contracts, persistence, and staged implementation.
 
-**Owner update, 2026-10-10; target only.** Analysts work throughout a configurable
+**Owner update, 2026-10-10; full target.** Analysts work throughout a configurable
 X-hour research cycle, collaborate on findings, and publish one report per analyzed
 stock at its end. Every report enters debate. The Portfolio Manager then assesses
 the selected cases against market volatility, capital and the whole portfolio.
 
 This supersedes the earlier target of a single analyst pass every X hours and
-debates restricted to opening/reinforcement proposals. The current v0.1 still uses
-that older runnable subset; this page does not claim continuous agents are implemented.
+debates restricted to opening/reinforcement proposals. The v0.2 [continuous runtime](continuous-runtime.md) implements the analyst loops,
+peer review, memory, report manifests and Telegram summaries. Closed-cycle debate
+execution and portfolio-wide management remain pending; the old bounded decision
+workflow is a separate runnable subset.
 
 ## Cycle timing
 
@@ -129,7 +131,7 @@ protections and policy-triggered risk reduction do not wait for a scheduled deba
 
 ## Portfolio Manager
 
-The target name replaces Portfolio Manager for the same eighth AI role, not an
+The target name replaces Allocator for the same eighth AI role, not an
 extra manager. It receives all completed debate/holding outcomes and a fresh Alpaca
 snapshot, produces one coherent portfolio plan, and can fund only a subset of
 approved candidates. It cannot change the Orchestrator's final confidence or policy.

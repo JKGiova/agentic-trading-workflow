@@ -4,7 +4,7 @@ import json
 import re
 from decimal import Decimal
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -52,14 +52,23 @@ class Policy(Contract):
     horizon_trading_days: Annotated[int, Field(gt=0)] = 5
     max_debates: Annotated[int, Field(gt=0)] = 3
     session_timeout_seconds: Annotated[int, Field(gt=0)] = 1800
-    model: str = "google/gemini-2.5-flash"
-    model_max_tokens: Annotated[int, Field(gt=0)] = 1800
+    model_provider: Literal["nvidia", "openrouter"] = "nvidia"
+    model: str = "deepseek-ai/deepseek-v4.1-flash"
+    model_max_tokens: Annotated[int, Field(gt=0)] = 8192
     model_concurrency: Annotated[int, Field(gt=0)] = 4
     # User-configured conservative rates; update for the selected endpoint.
     input_dollars_per_million: Money = Decimal("0.30")
     output_dollars_per_million: Money = Decimal("2.50")
     monthly_model_budget: Money = Decimal("30")
     max_call_input_tokens: Annotated[int, Field(gt=0)] = 40000
+    collection_seconds: Annotated[int, Field(ge=10)] = 300
+    agent_tool_rounds: Annotated[int, Field(ge=0, le=8)] = 3
+    agent_timeout_seconds: Annotated[int, Field(ge=1)] = 300
+    task_retries: Annotated[int, Field(ge=1, le=5)] = 2
+    max_cycle_tasks: Annotated[int, Field(ge=4)] = 240
+    cycle_model_budget: Money = Decimal("8")
+    report_language: str = "Italian"
+    article_domains: list[str] = Field(default_factory=list)
     risk: RiskPolicy = Field(default_factory=RiskPolicy)
 
     @field_validator("instruments")
@@ -85,6 +94,9 @@ class Policy(Contract):
 class Credentials(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="TRADEBOT_", env_file=".env", extra="ignore")
     openrouter_api_key: SecretStr = SecretStr("")
+    nvidia_api_key: SecretStr = SecretStr("")
+    telegram_bot_token: SecretStr = SecretStr("")
+    telegram_chat_id: str = ""
     alpaca_api_key: SecretStr = SecretStr("")
     alpaca_secret_key: SecretStr = SecretStr("")
     x_bearer_token: SecretStr = SecretStr("")
@@ -95,7 +107,7 @@ class Credentials(BaseSettings):
         missing = [
             name
             for name in [
-                "openrouter_api_key",
+                f"{policy.model_provider}_api_key",
                 "alpaca_api_key",
                 "alpaca_secret_key",
                 "x_bearer_token",
@@ -111,4 +123,14 @@ class Credentials(BaseSettings):
             missing.append("authorized market search domains")
         if not self.sec_user_agent:
             missing.append("SEC identifying user agent")
+        return missing
+
+    def analysis_missing(self, policy: Policy, telegram: bool = False) -> list[str]:
+        missing = []
+        if not getattr(self, f"{policy.model_provider}_api_key").get_secret_value():
+            missing.append(f"{policy.model_provider}_api_key")
+        if not policy.instruments:
+            missing.append("configured watchlist")
+        if telegram and not self.telegram_bot_token.get_secret_value():
+            missing.append("telegram_bot_token")
         return missing

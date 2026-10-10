@@ -305,7 +305,7 @@ class Store:
         with self.engine.connect() as conn:
             return [dict(x._mapping) for x in conn.execute(select(queue))]
 
-    def reserve_model(self, role: str, estimate: Decimal, monthly_cap: Decimal) -> str:
+    def reserve_model(self, role: str, estimate: Decimal, monthly_cap: Decimal, scope=None) -> str:
         month = utcnow().strftime("%Y-%m")
         with self.transaction() as conn:
             rows = conn.execute(select(usage).where(usage.c.month == month)).all()
@@ -315,6 +315,24 @@ class Store:
             )
             if used + estimate > monthly_cap:
                 raise ValueError("Monthly model budget exhausted; work remains deferred")
+            if scope:
+                scope_rows = conn.execute(
+                    select(usage).where(
+                        usage.c.payload["cycle"].as_string() == scope["cycle"],
+                        usage.c.payload["kind"].as_string() == scope["kind"],
+                    )
+                ).all()
+                scoped = sum(
+                    (
+                        Decimal(r.actual if r.actual is not None else r.reserved)
+                        for r in scope_rows
+                        if r.payload.get("cycle") == scope["cycle"]
+                        and r.payload.get("kind") == scope["kind"]
+                    ),
+                    Decimal(0),
+                )
+                if scoped + estimate > Decimal(str(scope["cap"])):
+                    raise ValueError("Cycle model budget exhausted; work remains deferred")
             call_id = str(uuid.uuid4())
             conn.execute(
                 insert(usage).values(
@@ -324,26 +342,42 @@ class Store:
                     reserved=str(estimate),
                     actual=None,
                     status="RESERVED",
-                    payload={},
+                    payload={"cycle": scope["cycle"], "kind": scope["kind"]} if scope else {},
                 )
             )
         return call_id
 
     def settle_model(self, call_id: str, actual: Decimal | None, payload: dict):
         with self.transaction() as conn:
+            previous = (
+                conn.execute(select(usage.c.payload).where(usage.c.id == call_id)).scalar() or {}
+            )
             conn.execute(
                 update(usage)
                 .where(usage.c.id == call_id)
                 .values(
                     actual=str(actual) if actual is not None else None,
                     status="BILLED" if actual is not None else "UNKNOWN",
-                    payload=payload,
+                    payload={**previous, **payload},
                 )
             )
 
     def model_spend(self) -> Decimal:
         with self.engine.connect() as conn:
             rows = conn.execute(select(usage).where(usage.c.month == utcnow().strftime("%Y-%m")))
+            return sum(
+                (Decimal(r.actual if r.actual is not None else r.reserved) for r in rows),
+                Decimal(0),
+            )
+
+    def scoped_spend(self, cycle: str, kind: str) -> Decimal:
+        with self.engine.connect() as conn:
+            rows = conn.execute(
+                select(usage).where(
+                    usage.c.payload["cycle"].as_string() == cycle,
+                    usage.c.payload["kind"].as_string() == kind,
+                )
+            )
             return sum(
                 (Decimal(r.actual if r.actual is not None else r.reserved) for r in rows),
                 Decimal(0),

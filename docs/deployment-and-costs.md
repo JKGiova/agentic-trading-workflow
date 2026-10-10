@@ -45,7 +45,7 @@ The [continuous target](continuous-analysis.md) changes the cost model: add per-
 | Runtime | Mode, database URL, exchange calendar/time zone, collection/decision intervals, session deadline |
 | Instruments | Selected stocks, eligibility, CIK/aliases, benchmark and forecast horizon |
 | Source access | Alpaca credentials/feed, pinned yfinance, selected AgentReach backends and private authentication, approved X IDs/domains, SEC user agent and IR registry; optional legacy X/Tavily/FRED credentials |
-| Models | Private NVIDIA credential, NIM base URL, DeepSeek V4.1 Flash per role/stage, endpoint capabilities, reasoning/token/concurrency settings; current OpenRouter configuration awaits migration |
+| Models | Private NVIDIA credential, NIM base URL, DeepSeek V4.1 Flash per role/stage, endpoint capabilities, reasoning/token/concurrency settings; NVIDIA configuration is implemented; OpenRouter is an explicit compatibility route |
 | Financial limits | Investable capital, cash reserve, maximum exposure/positions/concentration, stressed-loss budget, daily-loss and liquidity/freshness limits |
 | Operating limits | LLM dollars/tokens, X returned-resource allowance, search credits, tool/verification counts, retry budget, maximum debates |
 | Audit | Prompt/schema/policy versions, retention, log settings and checkpoint pruning |

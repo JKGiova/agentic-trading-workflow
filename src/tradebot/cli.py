@@ -28,6 +28,15 @@ def parser() -> argparse.ArgumentParser:
         "--auto", action="store_true", help="Schedule sessions every configured X hours"
     )
     result.add_argument("--init", action="store_true", help="Create a nonsecret config template")
+    result.add_argument(
+        "--supervisor", action="store_true", help="Continuous four-analyst research team"
+    )
+    result.add_argument("--headless", action="store_true", help="Run supervisor without TUI")
+    result.add_argument(
+        "--telegram-pair",
+        action="store_true",
+        help="Pair your private Telegram chat using a one-time code",
+    )
     return result
 
 
@@ -47,7 +56,23 @@ def main(argv=None) -> int:
     try:
         policy = demo_policy() if args.demo else Policy.read(args.config)
         credentials = Credentials()
-        missing = [] if args.demo else credentials.missing(policy)
+        if args.headless and not args.supervisor:
+            raise ValueError("Headless mode requires --supervisor")
+        if args.telegram_pair and args.demo:
+            raise ValueError("Telegram pairing is not available in synthetic demo mode")
+        missing = (
+            []
+            if args.demo
+            else (
+                credentials.analysis_missing(policy)
+                if args.supervisor
+                else credentials.missing(policy)
+            )
+        )
+        if args.telegram_pair:
+            missing = (
+                [] if credentials.telegram_bot_token.get_secret_value() else ["telegram_bot_token"]
+            )
         if args.doctor:
             print(
                 json.dumps(
@@ -57,6 +82,9 @@ def main(argv=None) -> int:
                         "configuration_ok": not missing,
                         "missing": missing,
                         "network_access_verified": False,
+                        "model_provider": policy.model_provider,
+                        "model": policy.model,
+                        "continuous": args.supervisor,
                     },
                     indent=2,
                 )
@@ -70,19 +98,54 @@ def main(argv=None) -> int:
         url = (
             args.database or f"sqlite:///{directory / ('demo.db' if args.demo else 'research.db')}"
         )
-        service = TradeService(Store(url), policy, credentials, demo=args.demo)
+        if args.telegram_pair:
+            from tradebot.analysis_memory import AnalysisMemory
+            from tradebot.telegram import TelegramNotifier
+
+            store = Store(url)
+            notifier = TelegramNotifier(credentials, AnalysisMemory(store))
+
+            async def pair():
+                try:
+                    await notifier.pair()
+                finally:
+                    await notifier.close()
+                    store.close()
+
+            asyncio.run(pair())
+            return 0
+        service = TradeService(
+            Store(url), policy, credentials, demo=args.demo, continuous=args.supervisor
+        )
         if args.once:
 
             async def run_once():
                 try:
-                    return await service.run_session()
+                    return (
+                        await service.run_analysis_cycle()
+                        if args.supervisor
+                        else await service.run_session()
+                    )
                 finally:
                     await service.close()
 
             result = asyncio.run(run_once())
             print(json.dumps(result, indent=2))
-            return 0 if result["status"] == "COMPLETE" else 1
-        TradingTerminal(service, automatic=args.auto).run()
+            return 0 if result["status"] in {"COMPLETE", "CLOSED"} else 1
+        if args.headless:
+
+            async def supervise():
+                try:
+                    await service.run_supervisor(print)
+                finally:
+                    await service.close()
+
+            asyncio.run(supervise())
+        else:
+            TradingTerminal(service, automatic=args.auto).run()
+        return 0
+    except KeyboardInterrupt:
+        print("Supervisor stopped; durable progress retained.")
         return 0
     except (ValueError, RuntimeError, OSError, TimeoutError) as exc:
         # Validation errors can contain input values; never print credential/config bodies.

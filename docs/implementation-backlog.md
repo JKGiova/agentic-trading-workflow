@@ -58,12 +58,12 @@ Implement W0 then W1/W2, then W3/W4 as one restartable stock slice, then W5 and 
 
 ## Next concrete task
 
-Include the [NVIDIA NIM / DeepSeek V4.1 Flash migration](model-provider.md) in
-the provider-contract slice: explicit provider settings, research/chat wiring,
-private authentication, endpoint-specific payloads, usage/budget accounting,
-offline HTTP fixtures and a separate opt-in capability probe. The current
-OpenRouter adapter is not the selected target and must not be described as
-already migrated.
+The [continuous v0.2 team](continuous-runtime.md) now implements the NVIDIA
+adapter, typed specialist/tool loops, durable task/event memory, bounded peer review,
+cycle manifests, budget reservations and Telegram delivery. Run the credentialed
+NVIDIA/Telegram/source pilot next, then connect the closed reports to every-stock
+debate and a portfolio-wide Manager. The earlier milestone tables retain the full
+target; their implemented subsets are tracked in [status](development-status.md).
 
 The custom research graph and terminal now exist. Start the refined **C0+C1**
 packages in [connector implementation](connector-implementation.md): typed source

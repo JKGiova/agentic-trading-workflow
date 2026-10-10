@@ -10,10 +10,11 @@
 - Do not introduce confidence/EV/score admission thresholds or economic queue ranking.
   Retain mandatory holding research, every-stock debate obligations, the separate
   Portfolio Manager and deterministic risk checks. The target analysts collaborate
-  continuously within X-hour research cycles; current v0.1 remains a bounded session.
+  continuously within X-hour research cycles; v0.2 implements the continuous
+  research/report team; automatic closed-cycle decisions remain separate.
 - Keep secrets, portfolio state, chat histories and raw private research out of git.
 - Run Ruff and meaningful offline tests before publishing code; integration tests
   use an isolated test database. Provider checks requiring keys are opt-in.
-- v0.1 is research-only. Do not add broker order submission until the durable
+- The runtime is research-only. Do not add broker order submission until the durable
   reservation/intent/reconciliation/protection milestone and its tests are complete.
 

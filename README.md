@@ -2,7 +2,7 @@
 
 A news-driven AI workflow for a selected group of stocks, with persistent evidence, mandatory position reviews, direct Bull/Bear debate, and a separate investment agent.
 
-**Status: v0.1 research terminal.** A runnable four-pane CLI, explicit offline demo, research agents, source adapters and deterministic allocation previews are implemented. Network order submission and prospective performance validation remain later milestones.
+**Status: v0.2 continuous research team.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
 
 ## Run the terminal
 
@@ -25,11 +25,11 @@ One window: open positions, selected-position focus, research chatbot, portfolio
 5. A separate **Portfolio Manager agent** evaluates final confidence, measured volatility, cash, pending commitments and portfolio exposure, then chooses position actions and investment amounts.
 6. Deterministic budget and risk checks validate and reserve capital before paper execution.
 
-The target [continuous cycle](docs/continuous-analysis.md) starts new research while the closed cycle is debated. The current release still uses bounded sessions; continuous collaboration, every-stock debates and the expanded Manager are planned. Research uses the recent three-hour window, relevant history and backlog; order monitoring is independent.
+The implemented [continuous runtime](docs/continuous-runtime.md) opens the next research cycle while closing reports and queuing every-stock debate obligations. Automatic closed-cycle debate/portfolio consumption and broker execution remain later milestones. The older bounded decision session is still available separately.
 
 ## Read first
 
-The detailed plan lives in the **[project wiki](docs/README.md)**. The selected target uses Alpaca for broker/market data, yfinance for news leads, and AgentReach-backed tools for deeper research. Start with the [research workflow](docs/research-workflow.md), [persistent memory](docs/memory-and-retrieval.md), and [provider plan](docs/provider-plan.md); these refinements are planned, not installed. Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
+The detailed plan lives in the **[project wiki](docs/README.md)**. The selected target uses Alpaca for broker/market data, yfinance for news leads, and AgentReach-backed tools for deeper research. Start with the [research workflow](docs/research-workflow.md), [persistent memory](docs/memory-and-retrieval.md), and [provider plan](docs/provider-plan.md); yfinance and the NVIDIA adapter now run in the continuous team; AgentReach provisioning remains pending. Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
 
 | Document | Purpose |
 | --- | --- |
@@ -58,9 +58,9 @@ The wiki also covers [session scheduling](docs/session-workflow.md), [data and m
 - `tools/`: deterministic code map export; Graphify provenance is recorded separately.
 - `LICENSE`: repository license.
 
-## First milestone
+## Next milestone
 
-Continue [T0 and the backlog](docs/implementation-backlog.md): prove actual authorized source/model/account access, then implement independent collectors, durable execution/recovery and prospective validation. The initial custom graph is runnable; all current allocations are nonexecutable research previews.
+Configure and verify real NVIDIA/Telegram access, then connect closed-cycle reports to the debate and Portfolio Manager pipeline. Continue the [backlog](docs/implementation-backlog.md) for AgentReach source access, durable execution and prospective validation. Current allocations remain nonexecutable research previews.
 
 See [source research](docs/research.md) for TradingAgents, TradingCrew, TradeAgent, and AI Hedge Fund. No upstream code is adopted by this plan; review its specific license before reuse.
 

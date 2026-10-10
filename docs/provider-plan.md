@@ -9,7 +9,9 @@ Existing adapters remain documented as implemented; provider migration is pendin
 The selected model service is now **NVIDIA NIM / DeepSeek V4.1 Flash**, replacing
 the OpenRouter baseline in the target. All initial roles and chat use
 `deepseek-ai/deepseek-v4.1-flash`; see [model provider](model-provider.md). The
-current runnable model client remains OpenRouter until its tested migration.
+default model client is now NVIDIA NIM. The continuous team uses yfinance,
+registered page reads and optional existing X/SEC/IR adapters; AgentReach-backed
+provisioning remains pending. See [continuous runtime](continuous-runtime.md).
 
 | Component | Selected responsibility | Explicit boundary |
 | --- | --- | --- |

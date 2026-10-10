@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+from contextvars import ContextVar
 from decimal import Decimal, InvalidOperation
 
 import httpx
@@ -10,6 +11,8 @@ from pydantic import BaseModel, ValidationError
 from tradebot.contracts import Allocation, Case, Forecast, Report, Verdict
 from tradebot.settings import Credentials, Policy
 from tradebot.storage import Store
+
+model_budget_scope = ContextVar("model_budget_scope", default=None)
 
 
 class ModelError(RuntimeError):
@@ -36,6 +39,9 @@ def strict_schema(schema: dict) -> dict:
 
 
 class OpenRouter:
+    endpoint = "https://openrouter.ai/api/v1/chat/completions"
+    provider_name = "openrouter"
+
     def __init__(
         self,
         credentials: Credentials,
@@ -44,7 +50,7 @@ class OpenRouter:
         client: httpx.AsyncClient | None = None,
     ):
         self.policy, self.store = policy, store
-        self.key = credentials.openrouter_api_key.get_secret_value()
+        self.key = getattr(credentials, f"{self.provider_name}_api_key").get_secret_value()
         self.client = client or httpx.AsyncClient(timeout=120, follow_redirects=False)
         self.owns_client = client is None
         self.semaphore = asyncio.Semaphore(policy.model_concurrency)
@@ -55,7 +61,7 @@ class OpenRouter:
 
     async def _request(self, role: str, messages: list[dict], schema: dict | None = None) -> str:
         if not self.key:
-            raise ModelError("OpenRouter credential missing")
+            raise ModelError(f"{self.provider_name} credential missing")
         # UTF-8 bytes are a conservative input-token bound; add request/template overhead.
         if (
             len(json.dumps(messages, ensure_ascii=False).encode())
@@ -68,6 +74,67 @@ class OpenRouter:
             Decimal(self.policy.max_call_input_tokens) * self.policy.input_dollars_per_million
             + Decimal(self.policy.model_max_tokens) * self.policy.output_dollars_per_million
         ) / Decimal(1_000_000)
+        body = self.request_body(role, messages, schema)
+        async with self.semaphore:
+            call_id = self.store.reserve_model(
+                role, estimated, self.policy.monthly_model_budget, scope=model_budget_scope.get()
+            )
+            try:
+                response = await self.client.post(
+                    self.endpoint,
+                    json=body,
+                    headers={"Authorization": f"Bearer {self.key}"},
+                )
+                response.raise_for_status()
+                payload = response.json()
+                usage = payload.get("usage", {})
+                cost = usage.get("cost") if self.provider_name == "openrouter" else None
+                try:
+                    actual = Decimal(str(cost)) if cost is not None else None
+                except InvalidOperation:
+                    actual = None
+                if actual is not None and (not actual.is_finite() or actual < 0):
+                    actual = None
+                self.store.settle_model(
+                    call_id,
+                    actual,
+                    {
+                        "model": payload.get("model"),
+                        "provider": self.provider_name,
+                        "usage": usage,
+                        "request_id": payload.get("id"),
+                    },
+                )
+                if self.provider_name == "nvidia" and payload.get("model") != self.policy.model:
+                    raise ModelError("NVIDIA returned an unexpected model identity")
+                choice = payload["choices"][0]
+                message = choice["message"]
+                if choice.get("finish_reason") not in {None, "stop"}:
+                    raise ModelError("Model completion was truncated or did not finish normally")
+                if message.get("tool_calls") or not isinstance(message.get("content"), str):
+                    raise ModelError("Unexpected model tool call or empty response")
+                if not message["content"].strip():
+                    raise ModelError("Empty model response")
+                return message["content"]
+            except (
+                httpx.HTTPError,
+                ValueError,
+                KeyError,
+                IndexError,
+                TypeError,
+                AttributeError,
+            ) as exc:
+                self.store.settle_model(call_id, None, {"error_type": type(exc).__name__})
+                status = (
+                    exc.response.status_code
+                    if isinstance(exc, httpx.HTTPStatusError)
+                    else "transport"
+                )
+                raise ModelError(
+                    f"Model request failed ({status}); cost reservation retained"
+                ) from None
+
+    def request_body(self, role, messages, schema):
         body = {
             "model": self.policy.model,
             "messages": messages,
@@ -80,49 +147,7 @@ class OpenRouter:
                 "type": "json_schema",
                 "json_schema": {"name": role.replace("-", "_"), "strict": True, "schema": schema},
             }
-        async with self.semaphore:
-            call_id = self.store.reserve_model(role, estimated, self.policy.monthly_model_budget)
-            try:
-                response = await self.client.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    json=body,
-                    headers={"Authorization": f"Bearer {self.key}"},
-                )
-                response.raise_for_status()
-                payload = response.json()
-                usage = payload.get("usage", {})
-                cost = usage.get("cost")
-                try:
-                    actual = Decimal(str(cost)) if cost is not None else None
-                except InvalidOperation:
-                    actual = None
-                if actual is not None and (not actual.is_finite() or actual < 0):
-                    actual = None
-                self.store.settle_model(
-                    call_id,
-                    actual,
-                    {
-                        "model": payload.get("model"),
-                        "provider": payload.get("provider"),
-                        "usage": usage,
-                        "request_id": payload.get("id"),
-                    },
-                )
-                message = payload["choices"][0]["message"]
-                if message.get("tool_calls") or not isinstance(message.get("content"), str):
-                    raise ModelError("Unexpected model tool call or empty response")
-                return message["content"]
-            except (httpx.HTTPError, ValueError, KeyError, IndexError) as exc:
-                # Ambiguous costs stay reserved. No uncontrolled transport retries.
-                self.store.settle_model(call_id, None, {"error_type": type(exc).__name__})
-                status = (
-                    exc.response.status_code
-                    if isinstance(exc, httpx.HTTPStatusError)
-                    else "transport"
-                )
-                raise ModelError(
-                    f"Model request failed ({status}); cost reservation retained"
-                ) from None
+        return body
 
     async def structured(self, role: str, contract: type[BaseModel], context: dict):
         schema = strict_schema(contract.model_json_schema())
@@ -180,6 +205,38 @@ class OpenRouter:
         )
 
 
+class NvidiaNIM(OpenRouter):
+    """NVIDIA chat transport with locally validated JSON and typed tool actions.
+
+    We do not assume hosted JSON Schema enforcement. The schema is part of the
+    system instruction and Pydantic checks the answer with one bounded repair.
+    Token-only NVIDIA usage retains its conservative cost reservation.
+    """
+
+    endpoint = "https://integrate.api.nvidia.com/v1/chat/completions"
+    provider_name = "nvidia"
+
+    def request_body(self, role, messages, schema):
+        messages = [dict(message) for message in messages]
+        if schema:
+            messages[0]["content"] += "\nReturn a JSON object matching this schema:\n" + json.dumps(
+                schema
+            )
+        return {
+            "model": self.policy.model,
+            "messages": messages,
+            "max_tokens": self.policy.model_max_tokens,
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "stream": False,
+        }
+
+
+def model_client(credentials, policy, store):
+    cls = NvidiaNIM if policy.model_provider == "nvidia" else OpenRouter
+    return cls(credentials, policy, store)
+
+
 class DemoModel:
     """Deterministic fixtures, never presented as an AI forecast."""
 
@@ -191,6 +248,21 @@ class DemoModel:
 
     async def structured(self, role, contract, context):
         self.calls.append((role, context))
+        from tradebot.analysts import AgentTurn, Finding
+
+        if contract is AgentTurn:
+            items = context.get("evidence", [])
+            return AgentTurn(
+                action="FINISH",
+                report=Finding(
+                    summary=f"DEMO: synthetic {role} {context.get('phase', 'original')} analysis",
+                    direction="mixed",
+                    evidence_ids=[x["id"] for x in items[:2]],
+                    opposing_evidence=["Synthetic opposing interpretation"],
+                    gaps=["Synthetic data; no real provider access"],
+                    questions=[],
+                ),
+            )
         items = context.get("evidence", [])
         ids = [x["id"] for x in items if x.get("category") != "social"][:2]
         stock = context.get("stock", "")
@@ -206,8 +278,8 @@ class DemoModel:
             rationale="Synthetic fixture for exercising the workflow, not a prediction.",
             gaps=[],
         )
-        if contract is Report:
-            return Report(
+        if contract in {Report, Finding}:
+            return contract(
                 summary=f"DEMO: synthetic {role} briefing for {stock}",
                 direction="mixed",
                 evidence_ids=ids,

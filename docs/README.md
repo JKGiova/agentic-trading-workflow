@@ -4,19 +4,20 @@
 
 This is the versioned project wiki. Each page covers one part of the design; implementation milestones and current progress are tracked separately. All content is in English.
 
-**Status: v0.1 research-only terminal.** Start with the [CLI guide](cli.md),
+**Status: v0.2 continuous research team; orders disabled.** Start with the [CLI guide](cli.md),
 [development status](development-status.md) and [codebase map](codebase-map.md).
 The topic pages retain the full target; execution and prospective validation remain pending.
 
 ## Implementation specifications
 
-The proposed build is Python/LangGraph with PostgreSQL, NVIDIA NIM / DeepSeek V4.1 Flash model calls, explicit source adapters, and an Alpaca paper pilot. Model-provider migration from the current OpenRouter client is pending. Alternatives and unverified access requirements are documented rather than silently selected.
+The proposed build is Python/LangGraph with PostgreSQL, NVIDIA NIM / DeepSeek V4.1 Flash model calls, explicit source adapters, and an Alpaca paper pilot. The NVIDIA adapter and yfinance discovery are implemented; live access needs owner credentials. Alternatives and unverified access requirements are documented rather than silently selected.
 
 | Page | Purpose |
 | --- | --- |
+| [Continuous runtime guide](continuous-runtime.md) | Implemented supervisor, specialist tools/memory, launch, Telegram pairing and recovery |
 | [Continuous analyst cycles](continuous-analysis.md) | X-hour news loops, analyst collaboration, report boundaries, every-stock debates and Portfolio Manager |
 | [Agent control loop](agent-control-loop.md) | TradingAgents comparison, actual agent contracts, durable task loops and implementation slices |
-| [Model provider](model-provider.md) | NVIDIA NIM / DeepSeek V4.1 Flash selection, connection contract, capability checks and pending migration |
+| [Model provider](model-provider.md) | NVIDIA NIM / DeepSeek V4.1 Flash adapter, connection contract, and capability checks |
 | [Research workflow](research-workflow.md) | TradingAgents-style analyst tool loops, event follow-up, cutoff revisions and a CES example |
 | [Memory and retrieval](memory-and-retrieval.md) | Persistent checkpoints, evidence/event/thesis memory, SQL retrieval and outcome lessons |
 | [Selected provider plan](provider-plan.md) | Alpaca, yfinance and AgentReach responsibilities, boundaries and access checks |

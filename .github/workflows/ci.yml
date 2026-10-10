@@ -42,4 +42,5 @@ jobs:
       - run: bash -n start.sh
       - run: ./start.sh --demo --doctor
       - run: ./start.sh --demo --once
+      - run: ./start.sh --demo --supervisor --once
 

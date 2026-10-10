@@ -16,7 +16,7 @@ NIM is the inference service, not the scheduler or memory store.
 | Base URL | `https://integrate.api.nvidia.com/v1` |
 | Chat operation | `POST /chat/completions` |
 | Model ID | `deepseek-ai/deepseek-v4.1-flash` |
-| Authentication | Private `NVIDIA_API_KEY`; bearer authentication through the adapter |
+| Authentication | Private `TRADEBOT_NVIDIA_API_KEY`; bearer authentication through the adapter |
 | Transport | Existing async HTTPX stack behind a provider-specific client |
 | Initial scope | All roles use the same model, with distinct prompts, schemas and tool permissions |
 
@@ -30,32 +30,25 @@ The owner initially requested V4 Flash, then explicitly selected V4.1 Flash afte
 the older free endpoint's deprecation was identified. Do not silently use the old
 V4 ID, a dated variant, a partner route or a different provider.
 
-## Runtime migration: pending
+## Runtime adapter: implemented in v0.2
 
-Current v0.1 still instantiates the OpenRouter client and expects
-`TRADEBOT_OPENROUTER_API_KEY`. No NVIDIA call has been made and no NVIDIA credential
-has been added to git. The settings above describe the next adapter migration,
-not working current CLI environment variables.
+`NvidiaNIM` is the default model client for research and chat. The policy explicitly
+selects provider and model; OpenRouter remains an explicit compatibility choice.
+The NVIDIA adapter sends the selected ID to the NVIDIA chat endpoint without
+OpenRouter routing fields. It checks returned model identity and completion status,
+rejecting truncated, empty, reasoning-only or unexpected native-tool responses.
 
-1. Introduce explicit provider/model settings and a private NVIDIA credential.
-   Wire the NVIDIA adapter into research and chatbot creation; update doctor,
-   sample policy and CLI instructions together. Missing credentials fail clearly.
-2. Use the NVIDIA request contract. Remove OpenRouter-only routing fields rather
-   than changing only the hostname. Validate endpoint output, completion status,
-   token usage and requested/returned model identity; never treat truncated or
-   reasoning-only content as a completed assessment.
-3. Check native function calling, tool-result turns and structured-output support
-   against the exact hosted endpoint. OpenAI-compatible chat transport alone does
-   not establish JSON Schema enforcement or tool support. If a capability is
-   absent, use an explicit tested typed-action/JSON validation path, or mark the
-   required capability unavailable; do not pretend a tool ran.
-4. Preserve current input/output limits, concurrency caps, one bounded schema
-   repair and cost reservations. NVIDIA usage may report tokens without an
-   OpenRouter-style billed `usage.cost`; keep usage, configured cost estimates and
-   provider-confirmed billing separate. Unknown billing must not become zero cost.
-5. Run a bounded opt-in probe for JSON reports and a read-only tool round trip,
-   recording latency, actual usage, limits and capability gaps. Credentials stay
-   in environment/secret storage and outside prompts, logs and reports.
+Structured answers use a schema in the prompt, local Pydantic validation and one
+bounded repair. Analyst research uses typed action envelopes executed by code,
+so it does not depend on native function-call or server JSON-Schema enforcement.
+No claim of those hosted capabilities is inferred from OpenAI compatibility.
+
+Token-only usage retains conservative operating-cost reservations; it is not
+reported as a confirmed zero-dollar bill. Concurrent monthly/cycle budgets are
+enforced in storage. See [continuous runtime](continuous-runtime.md) for private
+credentials, terminal/headless launch, pairing and recovery. HTTP fixtures cover
+the adapter and the end-to-end team/delivery path. Actual NVIDIA latency, quota,
+output quality and Telegram access remain unverified until credentials are supplied.
 
 ## Continuous-loop implications
 

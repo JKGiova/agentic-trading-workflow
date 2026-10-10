@@ -81,7 +81,7 @@ uv run tradebot
 
 `--init` creates a nonsecret policy template and refuses to overwrite it. Add selected
 instruments, sectors, verified CIKs/aliases/authorized IR feed URLs, authorized market
-search domains and the approved X author-ID/handle mapping. Supply OpenRouter,
+search domains and the approved X author-ID/handle mapping. Supply the selected NVIDIA model credential (or explicitly selected OpenRouter),
 Alpaca **paper**, X, Tavily and identifying SEC credentials in the private `.env`.
 Choose your model/rates and financial/operating limits deliberately; the defaults
 are prototype configuration, not personalized investment settings.
@@ -97,7 +97,7 @@ SEC filing metadata and IR RSS. Filing metadata is labelled as metadata; full SE
 filings/company facts are not implemented. Date-less, failed or truncated searches
 are recorded as incomplete. Articles are not assumed accessible through paywalls.
 
-The chatbot uses OpenRouter in provider mode and only receives a bounded snapshot,
+The chatbot uses the selected NVIDIA NIM adapter in provider mode and only receives a bounded snapshot,
 selected stock's reports/evidence and recent conversation. Mentioning a single configured
 ticker or company name can inspect a researched stock outside the open-position list.
 It has no mutation,
@@ -179,3 +179,13 @@ at application state. Real API access checks remain opt-in and are not part of C
 
 See [development status](development-status.md) for what is verified and still pending,
 and [the backlog](implementation-backlog.md) for the retained full plan.
+
+## Continuous team and Telegram (v0.2)
+
+Use `./start.sh --supervisor` for the continuous team in the four-pane terminal,
+`--supervisor --headless` for background operation, and `--telegram-pair` for the
+private-chat pairing code. `--demo --supervisor --once` exercises a complete cycle
+with an injected clock. Provider `--supervisor --once` waits for a real cycle.
+See [continuous runtime](continuous-runtime.md) for credentials, optional-source
+coverage, operating budgets and delivery recovery. In continuous mode Ctrl+R
+collects news; it does not run the older bounded decision session.

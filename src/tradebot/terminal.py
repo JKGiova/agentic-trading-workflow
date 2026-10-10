@@ -76,12 +76,21 @@ class TradingTerminal(App):
         )
         self.refresh_data()
         self.set_interval(30, self.refresh_data)
-        if self.automatic:
+        if self.service.supervisor:
+            self.continuous_analysis()
+        elif self.automatic:
             self.set_interval(self.service.policy.session_hours * 3600, self.research_session)
         table.focus()
 
     async def on_unmount(self):
         await self.service.close()
+
+    @work(group="supervisor", exit_on_error=False)
+    async def continuous_analysis(self):
+        try:
+            await self.service.run_supervisor(self.set_status)
+        except (ValueError, RuntimeError) as exc:
+            self.set_status(f"Supervisor stopped: {type(exc).__name__}")
 
     def set_status(self, text: str):
         self.last_status = text
@@ -138,6 +147,14 @@ class TradingTerminal(App):
                 "Orders disabled; allocations are research previews."
             )
         self.query_one("#performance-text", Static).update(text)
+        if self.service.supervisor:
+            status = self.service.supervisor.status()
+            text += (
+                f"\n\nContinuous research: {status['cycle']}"
+                f"\nPending tasks: {status['pending_tasks']}"
+            )
+            text += f"\nTelegram paired: {status['telegram_bound']}\nDelivery: {status['telegram']}"
+            self.query_one("#performance-text", Static).update(text)
 
     def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted):
         symbol = event.row_key.value
@@ -160,6 +177,17 @@ class TradingTerminal(App):
             f"Mark: ${position.price}   Unrealized: ${position.unrealized:+.2f}\n\n"
             f"Entry thesis\n{position.thesis}\n"
         )
+        if self.service.supervisor:
+            report = self.service.supervisor.latest_report(position.symbol)
+            if report:
+                value = report["forecast"]["probability"]
+                confidence = f"{value:.1%}" if value is not None else "unknown"
+                text += (
+                    f"\nContinuous cycle cutoff: {report['cutoff']}"
+                    f"\nInitial confidence: {confidence}\n"
+                )
+                for role, findings in report["roles"].items():
+                    text += f"{role}: " + "; ".join(x["summary"] for x in findings[-2:]) + "\n"
         initial = stages.get("initial_forecast", {}).get("output", {})
         verdict = stages.get("effective_verdict", {})
         research = stages.get("research", {})
@@ -199,10 +227,18 @@ class TradingTerminal(App):
         self.refresh_data()
 
     def action_research(self):
+        if self.service.supervisor:
+            self.collect_news()
+            return
         if self.service.session_lock.locked():
             self.set_status("Session already running")
         else:
             self.research_session()
+
+    @work(group="collection", exclusive=True, exit_on_error=False)
+    async def collect_news(self):
+        await self.service.supervisor.collect()
+        self.render_portfolio()
 
     @work(group="research", exclusive=False, exit_on_error=False)
     async def research_session(self):

@@ -4,13 +4,20 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentic-trading-workflow"
-version = "0.1.0"
+version = "0.2.0"
 description = "Auditable stock research with an eight-role workflow and a four-pane terminal"
 requires-python = ">=3.12"
 dependencies = [
-  "textual>=8.2,<9", "httpx[socks]>=0.28,<0.29", "pydantic>=2.14,<3",
-  "pydantic-settings>=2.15,<3", "langgraph>=1.2.14,<2",
-  "sqlalchemy>=2.0,<3", "psycopg[binary]>=3.3,<4", "feedparser>=6.0,<7",
+  "textual>=8.2,<9",
+  "httpx[socks]>=0.28,<0.29",
+  "pydantic>=2.14,<3",
+  "pydantic-settings>=2.15,<3",
+  "langgraph>=1.2.14,<2",
+  "sqlalchemy>=2.0,<3",
+  "psycopg[binary]>=3.3,<4",
+  "feedparser>=6.0,<7",
+  "yfinance>=0.2.66,<1",
+  "beautifulsoup4>=4.12,<5",
 ]
 
 [project.scripts]

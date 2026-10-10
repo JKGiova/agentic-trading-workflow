@@ -6,7 +6,7 @@ Reviewed **2026-10-09**. The [v0.1 CLI](cli.md) implements a first subset with a
 
 ## Continuous-cycle refinement
 
-The selected target is now [continuous analyst cycles](continuous-analysis.md): durable per-news tasks, bounded cross-review, fixed report manifests, every-stock debates and a volatility-aware Portfolio Manager. Use separate research-task and decision graphs/leases; current v0.1 still uses one-pass model stages.
+The selected target is now [continuous analyst cycles](continuous-analysis.md): durable per-news tasks, bounded cross-review, fixed report manifests, every-stock debates and a volatility-aware Portfolio Manager. Use separate research-task and decision graphs/leases; v0.2 implements the continuous analyst/report subset; decision consumption remains separate.
 
 ## Recommended first implementation
 
@@ -16,7 +16,7 @@ Build a small Python application with an explicit LangGraph workflow and Postgre
 | --- | --- | --- |
 | Runtime | Python 3.12/3.13, virtual environment | One language for agents, data, risk, and evaluation; locked dependencies and CI |
 | Agent workflow | `langgraph`, `langgraph-checkpoint-postgres` | Explicit nodes/branches, shared frozen evidence, and persistent session checkpoints |
-| Model provider | NVIDIA NIM / `deepseek-ai/deepseek-v4.1-flash` through a thin `httpx` client | Bounded model/tool loops, validated typed outputs and usage logging; migrate the current OpenRouter adapter |
+| Model provider | NVIDIA NIM / `deepseek-ai/deepseek-v4.1-flash` through a thin `httpx` client | Bounded model/tool loops, validated typed outputs and usage logging; NVIDIA adapter implemented; OpenRouter is an explicit compatibility option |
 | Contracts | `pydantic`, `pydantic-settings` | Validate reports, scenarios, forecasts, allocation proposals, and configuration |
 | Business storage | PostgreSQL, `sqlalchemy` 2.x, `psycopg`, `alembic` | Evidence, jobs, queue, forecasts, reservations, orders, and versioned migrations |
 | Periodic triggers | APScheduler 3.x | One scheduler enqueues collection/session/settlement jobs; database deduplication controls execution |
@@ -47,7 +47,7 @@ Select one orchestration route. Framework memory does not replace the evidence/p
 The owner selected **NVIDIA NIM with DeepSeek V4.1 Flash** on 2026-10-10. Start
 with `deepseek-ai/deepseek-v4.1-flash` across every role and the chatbot, preserving
 distinct specialist instructions and source permissions. This supersedes the
-OpenRouter/Gemini baseline; the current runnable client still needs migration.
+OpenRouter/Gemini baseline; the NVIDIA adapter is now implemented.
 
 See [model provider](model-provider.md) for the endpoint, private credential and
 acceptance checks. Verify native tool calls and structured-output support on the

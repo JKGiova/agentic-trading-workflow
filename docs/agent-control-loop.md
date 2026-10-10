@@ -2,10 +2,11 @@
 
 [Wiki home](README.md) · [Cycle semantics](continuous-analysis.md) · [Agent runtime](agent-runtime.md)
 
-**Target design, not implemented in v0.1.** The current graph calls four analysts
-once over a precollected bundle, synthesizes the reports and runs debate. The goal
-is four specialists with their own bounded research tools and persistent work
-history, invoked repeatedly as new work arrives throughout an X-hour cycle.
+**Implementation blueprint, refined in v0.2.** The [continuous runtime](continuous-runtime.md)
+now implements specialist tool loops, durable work history, bounded cross-review,
+report closure and supervisor scheduling throughout X-hour cycles. The older
+one-pass decision graph remains a separate subset; portfolio-wide decisions and
+automatic closed-cycle debate execution remain pending.
 
 ## What to borrow from TradingAgents
 

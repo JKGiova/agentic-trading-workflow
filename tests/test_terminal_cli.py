@@ -128,3 +128,80 @@ def test_cli_missing_config_is_handled(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     assert main([]) == 1
     assert "Startup/session failed" in capsys.readouterr().out
+
+
+def test_continuous_cli_demo_and_doctor(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    assert main(["--init"]) == 0
+    assert main(["--demo", "--supervisor", "--once"]) == 0
+    result = json.loads(capsys.readouterr().out.split("credentials.\n")[-1])
+    assert result["status"] == "CLOSED"
+    assert set(result["payload"]["reports"]) == {"AAPL", "NVDA", "MSFT"}
+    assert main(["--demo", "--supervisor", "--doctor"]) == 0
+    assert main(["--headless", "--demo"]) == 1
+    assert main(["--telegram-pair", "--demo"]) == 1
+
+
+async def test_continuous_terminal_runs_and_stops_four_panes(store, policy):
+    service = TradeService(store, policy, Credentials(_env_file=None), demo=True, continuous=True)
+    app = TradingTerminal(service)
+    async with app.run_test(size=(120, 36)) as pilot:
+        await pilot.pause(0.3)
+        assert service.supervisor_task is not None
+        assert "Continuous research" in str(app.query_one("#performance-text", Static).content)
+        await pilot.press("ctrl+r")
+        await pilot.pause(0.2)
+        assert app.query_one("#positions", DataTable).row_count == 2
+        # Render an already tested closed report while the continuous workers remain active.
+
+        cycle = service.supervisor.current()
+        service.supervisor.memory.save_report(
+            cycle["id"],
+            "AAPL",
+            {
+                "cutoff": cycle["end"],
+                "forecast": {"probability": 0.5},
+                "roles": {"company": [{"summary": "Saved finding"}]},
+                "evidence": [],
+            },
+        )
+        app.render_portfolio()
+        assert "Saved finding" in str(app.query_one("#detail-text", Static).content)
+        await pilot.press("f3")
+        app.query_one("#question", Input).value = "What does AAPL research show?"
+        await pilot.press("enter")
+        await pilot.pause(0.1)
+        assert service.store.chat_history()[-1]["role"] == "assistant"
+    assert service.closed
+    assert service.supervisor_task.done()
+
+
+def test_cli_headless_and_pair_paths_are_executable(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    assert main(["--init"]) == 0
+
+    config = json.loads((tmp_path / "config.local.json").read_text())
+    config["instruments"] = [{"symbol": "NVDA", "name": "NVIDIA", "sector": "technology"}]
+    (tmp_path / "config.local.json").write_text(json.dumps(config))
+    monkeypatch.setenv("TRADEBOT_NVIDIA_API_KEY", "fixture")
+    monkeypatch.setenv("TRADEBOT_TELEGRAM_BOT_TOKEN", "fixture")
+
+    async def supervise(self, notify):
+        assert self.continuous
+        notify("Supervisor stopped")
+
+    monkeypatch.setattr(TradeService, "run_supervisor", supervise)
+    assert main(["--supervisor", "--headless"]) == 0
+    from tradebot.telegram import TelegramNotifier
+
+    async def pair(self):
+        self.memory.set_setting(
+            "telegram_owner", {"chat_id": "42", "bot_fingerprint": self.identity}
+        )
+
+    monkeypatch.setattr(TelegramNotifier, "pair", pair)
+    assert main(["--telegram-pair"]) == 0
+    assert main(["--supervisor", "--doctor"]) == 0
+    monkeypatch.delenv("TRADEBOT_TELEGRAM_BOT_TOKEN")
+    assert main(["--telegram-pair"]) == 1
+    assert "fixture" not in capsys.readouterr().out
