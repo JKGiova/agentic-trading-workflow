@@ -2,14 +2,12 @@
   "provider": "Graphify MCP plugin",
   "repository": "JKGiova/agentic-trading-workflow",
   "checked_at": "2026-10-10",
-  "status": "blocked_workspace_selection",
-  "error_code": "no_workspace",
-  "attempted_tools": [
-    "list_workspaces"
-  ],
+  "status": "uninstalled_by_owner",
+  "error_code": null,
+  "attempted_tools": [],
   "workspace_handle": null,
   "indexed_commit": null,
   "export_available": false,
   "separate_local_map": "codebase-map.json",
-  "next_step": "Supply the actual workspace handle, call set_workspace and verify indexing before exporting."
+  "next_step": "Graphify is no longer required; maintain the separate deterministic AST map."
 }

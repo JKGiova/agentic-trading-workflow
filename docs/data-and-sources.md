@@ -27,6 +27,10 @@ Use the selected AgentReach-backed X capability behind a typed, author-validated
 
 Being on the whitelist makes an account eligible for collection. Claims still require evaluation and, where appropriate, corroboration. Source permissions, API access, and content-retention obligations must be reviewed before enabling a connector.
 
+## Continuous consumption
+
+Collectors enqueue leads/corrections throughout the X-hour [analyst cycle](continuous-analysis.md). Specialists save findings and bounded exchanges in the research notebook, then take the next item. Deadline manifests exclude late work; news collection continues while closed reports are debated.
+
 ## Evidence pipeline and persistent memory
 
 For each source item, record:

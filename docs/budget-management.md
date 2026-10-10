@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The analysis team's confidence/payoff estimates go directly to debate as inputs, without screening proposals. Bull/Bear analyze them, and the Orchestrator's revised estimates and research verdict inform investment review. A separate [Portfolio Allocator](portfolio-allocator.md) chooses the action and amount; deterministic tools enforce confidence-based sizing, downside budgets, cash reservations, and risk limits.
+The analysis team's confidence/payoff estimates go directly to debate as inputs, without screening proposals. Bull/Bear analyze them, and the Orchestrator's revised estimates and research verdict inform investment review. A separate [Portfolio Manager](portfolio-allocator.md) chooses the action and amount; deterministic tools enforce confidence-based sizing, downside budgets, cash reservations, and risk limits.
 
 ## Acceptance depends on opportunity, not probability alone
 
@@ -22,7 +22,7 @@ These metrics support debate and investment reasoning; they have no minimum-scor
 
 | Condition | Decision |
 | --- | --- |
-| Admissible opening or reinforcement proposal | Queue for debate regardless of initial confidence/edge/score |
+| Every analyzed-stock report, including holdings | Queue for debate regardless of initial confidence/edge/score |
 | Session debate budget exhausted | Keep pending with a visible reason; refresh inputs when resumed |
 | Initial estimates missing or uncertain | Debate may request bounded verification; disclose gaps |
 | Orchestrator research `REJECT` or `DEFER` | No addition proceeds to investment selection |
@@ -34,7 +34,7 @@ These metrics support debate and investment reasoning; they have no minimum-scor
 
 There is no automatic rejection at 60% or any other universal probability threshold. Lower confidence can be justified by better supported gains relative to losses. High volatility, nominally cheap shares, and optimistic maximum targets do not establish favorable opportunity.
 
-`REDUCE` and `CLOSE` remain available independently of entry debate; missing news alone does not require liquidation.
+Ordinary holding reports are debated before Manager decisions; independent protection and deterministic policy-triggered risk reduction remain active throughout the cycle. Missing news alone does not require liquidation.
 
 ## Confidence-based sizing with a downside budget
 
@@ -102,15 +102,16 @@ Store the policy version, NAV, both confidence record IDs and values, debate/res
 - Release an unfilled reservation only after broker-confirmed cancellation, rejection, or expiry.
 - Broker buying power may already account for open orders. Reconcile it with the internal ledger without subtracting the same reservation twice; use the more restrictive verified availability on comparable bases.
 - Recompute headroom after fills, price changes, deposits, withdrawals, and confirmed order changes. Reject or defer stale proposals before submission.
-- Keep trading capital separate from news, X API, LLM, market-data, and hosting budgets. Reserve research capacity for required holding reviews before optional debates; operating-budget exhaustion blocks new exposure without disabling reconciliation and risk monitoring.
+- Keep trading capital separate from news, X API, LLM, market-data, and hosting budgets. Reserve capacity for required holding research/reporting/debates before discretionary follow-up; operating-budget exhaustion blocks new exposure without disabling reconciliation and risk monitoring.
 
 Portfolio capital and operating spend have different ledgers. See [deployment and costs](deployment-and-costs.md) for model/source pricing, workload assumptions, and cost reservations; see [storage contracts](persistence-and-contracts.md) for atomic cash/risk reservations.
 
 ## Related pages
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Existing-position management](position-management.md)
 - [New-entry debate](new-entry-debate.md)
 - [Risk and execution](risk-and-execution.md)
 - [Validation](validation.md)
+

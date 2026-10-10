@@ -58,7 +58,7 @@ These examples show why probability alone is insufficient. Bull/Bear should chal
 3. Schedule within the configured session research budget using least-recently-debated priority, then stock ID. Confidence and opportunity score do not determine queue order. Pending proposals are visibly queued, not financially rejected.
 4. Bull/Bear examine the probability/payoff trade-off, costs, downside, timing, uncertainty, and portfolio relevance. Bounded verification can fill initial gaps.
 5. The Orchestrator records revised confidence, scenarios, calculations when supported, dissent, and an explained `APPROVE`, `DEFER`, or `REJECT` research verdict.
-6. The Portfolio Allocator assesses an approved case and chooses the action and amount. It may still reject, defer, or choose a smaller investment; deterministic tools validate risk, reserve cash, and authorize execution.
+6. The Portfolio Manager assesses an approved case and chooses the action and amount. It may still reject, defer, or choose a smaller investment; deterministic tools validate risk, reserve cash, and authorize execution.
 
 A missing initial probability does not by itself skip debate; report it honestly. If final confidence, payoff evidence, coverage, or required sizing inputs remain unsupported, defer added investment. Debate completion is not permission to trade.
 
@@ -75,7 +75,8 @@ Equal arithmetic expected returns do not imply equal compound growth or drawdown
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
 - [Bull/Bear debate](new-entry-debate.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Validation](validation.md)
 - [Primary references](research.md)
+

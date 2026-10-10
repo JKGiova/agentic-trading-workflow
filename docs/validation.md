@@ -24,12 +24,17 @@ Operational tests must cover missing feeds, empty results versus failed searches
 
 Implementation checks are assigned to T0-T9 in the [concrete backlog](implementation-backlog.md). Use fixtures for routine CI and a test PostgreSQL instance for concurrency; separately enabled source/paper integrations record actual access and cost. No implementation tests or paper sessions have run as part of this documentation research.
 
+## Continuous-cycle verification
+
+Use a simulated clock for [continuous analysis](continuous-analysis.md), not real multi-hour sleeps. Verify deadline manifest membership, news/correction arrival, original versus revised specialist assessments, bounded collaboration, preserved dissent, idle wake-up, task starvation/retry, crash/resume and research continuing during debate. Require one debate obligation per analyzed-stock report, including holdings and HOLD/NO_ACTION cases. Show incomplete obligations and risk-data gaps. Validate one Manager plan using measured volatility, cash, pending exposure and confidence/downside caps. Actual model agreement is not independent confirmation or calibration evidence.
+
 ## Related pages
 
 - [Forecasts and confidence](forecasts-and-confidence.md)
 - [Opportunity analysis](opportunity-analysis.md)
 - [New-entry debate](new-entry-debate.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Implementation backlog](implementation-backlog.md)
 - [Implementation plan](PLAN.md)
+

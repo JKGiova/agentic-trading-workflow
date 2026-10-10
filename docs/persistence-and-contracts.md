@@ -6,6 +6,8 @@ This is the proposed application data model. Implement it through versioned Alem
 
 ## Logical tables
 
+Continuous cycles also require `research_cycles`, `research_tasks`, `specialist_assessments`, `analyst_exchanges`, `cycle_manifests` and per-report `debate_obligations`. Use cycle boundaries, immutable manifest membership, task idempotency/fencing and separate research versus decision leases as specified in [continuous analysis](continuous-analysis.md). Cross-review saves original/parent assessment references and dissent.
+
 The [memory design](memory-and-retrieval.md) extends these contracts with event versions, evidence chunks, claims, unresolved questions, retrieval manifests and settled lessons. Each derived record has its own recorded-time cutoff; LangGraph checkpoints store references and resume state rather than replacing this ledger.
 
 | Tables | Key records and constraints |

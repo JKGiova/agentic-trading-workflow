@@ -8,9 +8,9 @@ The analysis team produces the first stock forecast and confidence. The Orchestr
 
 | Stage | Owner | Output | Consequence |
 | --- | --- | --- | --- |
-| Initial analysis | Analyst Lead synthesizing four independent reports | `p_initial`, evidence, scenarios, uncertainty, and calibration status | Supply inputs and known gaps directly to debate; no initial confidence/payoff filter |
+| Initial analysis | Analyst Lead synthesizing the closed-cycle specialist findings, revisions and dissent | `p_initial`, evidence, scenarios, uncertainty, and calibration status | Supply inputs and known gaps directly to debate; no initial confidence/payoff filter |
 | Debate review | Orchestrator reviewing Bull/Bear cases and verified rebuttals | `p_final`, revised scenarios/edge/score, verdict, revision reasons, objections, and calibration status | Judge probability/payoff trade-off directly and explain the research verdict; no numerical score gate |
-| Investment decision | Separate Portfolio Allocator agent | Confidence assessment, position action, desired exposure, and investment proposal | Use `p_final` for eligible additions, within deterministic budget/risk limits |
+| Investment decision | Separate Portfolio Manager agent | Confidence assessment, position action, desired exposure, and investment proposal | Use `p_final` for eligible additions, within deterministic budget/risk limits |
 
 Missing, expired, malformed, or unsupported final confidence defers investment. Missing initial confidence is disclosed and can be investigated during debate. A research `REJECT` or `DEFER` cannot be overridden by a high number. The debate directly analyzes confidence, payoffs, and downside in [opportunity analysis](opportunity-analysis.md); there are no numerical screening gates.
 
@@ -59,6 +59,7 @@ Show news recap, horizon, initial confidence and diagnostics when available, deb
 - [Analysis team](analysis-team.md)
 - [Opportunity analysis](opportunity-analysis.md)
 - [Bull/Bear debate](new-entry-debate.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Validation](validation.md)
+

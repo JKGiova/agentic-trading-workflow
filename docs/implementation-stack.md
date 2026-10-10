@@ -4,6 +4,10 @@
 
 Reviewed **2026-10-09**. The [v0.1 CLI](cli.md) implements a first subset with a dependency lock. This page retains the full implementation target; see [status](development-status.md) for differences. Preserve the eight AI roles, direct debate without a numerical prefilter, independent Allocator and mandatory holding research.
 
+## Continuous-cycle refinement
+
+The selected target is now [continuous analyst cycles](continuous-analysis.md): durable per-news tasks, bounded cross-review, fixed report manifests, every-stock debates and a volatility-aware Portfolio Manager. Use separate research-task and decision graphs/leases; current v0.1 still uses one-pass model stages.
+
 ## Recommended first implementation
 
 Build a small Python application with an explicit LangGraph workflow and PostgreSQL business ledger. Study TradingAgents at a pinned revision; adapt selected components only after a technical spike. Keep source collection, decision sessions, and order monitoring as separate workers.

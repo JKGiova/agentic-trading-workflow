@@ -4,9 +4,13 @@
 
 The design is retained. This backlog translates it into code-sized deliverables; none is marked implemented by the documentation update.
 
+## Continuous-cycle priority
+
+The [owner update](continuous-analysis.md) supersedes single-pass research and entry-only debates. Add W3a durable news-task workers and bounded analyst exchanges, W4a fixed cycle boundaries/report manifests with next-cycle overlap, and W5a every-stock debate obligations plus a volatility-aware Portfolio Manager. The original W0-W5 evidence/retrieval/recovery prerequisites remain. Acceptance uses a simulated clock: all report obligations are present, late results cannot alter a closed manifest, research continues during debate, and budget exhaustion remains visible.
+
 ## First vertical slice
 
-Build one manually triggered, restartable `research_only` session for a configured stock: retrieve permitted news/X/disclosures, store real request coverage, run four analyst roles and lead synthesis, debate directly, produce the Orchestrator's revised forecast, and let the separate Allocator produce a non-executable proposal.
+Build one restartable `research_only` cycle for a configured stock using a simulated clock: process queued news across the window, store real request coverage and role assessments, cross-review findings, close the report manifest, debate the stock, define revised confidence, and produce a nonexecutable Portfolio Manager plan. Keep the next research cycle running while decision work completes.
 
 Use actual source access where available and marked fixtures for offline verification. Do not claim social/news completeness from mock data. Initial confidence/expected return cannot skip debate. Add deterministic budget and paper submission only after this read/research path works.
 
@@ -18,9 +22,9 @@ Use actual source access where available and marked fixtures for offline verific
 | T1. Bootstrap/contracts | T0 | `config/`, `storage/`, Pydantic contracts, migrations, CLI entry point | Invalid settings fail clearly; secrets excluded; mode is research-only; dependency lock reproducible |
 | T2. Collectors/evidence | T1 | News, X, SEC/IR and search adapters; versions, cursors, cutoff queries | Empty/failure distinct; deduplication, pagination and restart recovery verified |
 | T3. Sessions/coverage | T2 | Jobs, portfolio lease, scheduler, holding lookup matrix | Same-slot enqueue deduplicates; stale workers fenced; every holding has actual category attempts |
-| T4. Analyst team | T3 | Four role definitions and Financial Analyst lead stage | Reports cite valid evidence; initial probability may be missing; scenarios/cutoff consistent; no numerical prefilter |
-| T5. Direct debate/judgment | T4 | Fair queue, bounded rounds/verification, Orchestrator forecast/verdict | Low initial confidence/edge still debated; immutable cases/revisions; queued work visible; final gaps defer |
-| T6. Allocator/preview | T5 | Holding review and separate portfolio-plan agent; deterministic sizing previews | One action/stock; no reinforcement without debate; confidence/downside cap includes holdings/pending buys |
+| T4. Analyst team | T3 | Continuous role/task loops, bounded cross-review and deadline report manifests | Original findings/revisions/dissent preserved; late work excluded; report per stock; no numerical prefilter |
+| T5. Direct debate/judgment | T4 | Every-stock obligations, fair queue, bounded rounds/verification and Orchestrator verdict | Holdings/HOLD/NO_ACTION included; no initial confidence filtering; incomplete obligations visible; final gaps defer |
+| T6. Manager/preview | T5 | Separate volatility-aware portfolio-plan agent and deterministic sizing previews | One action/stock; approved additions only; confidence/downside, liquidity, correlation and pending buys considered |
 | T7. Paper lifecycle | T6 | Reservations, durable intents, Alpaca paper adapter, independent monitor | Simultaneous budgets cannot overspend; timeout/duplicates/partial fills/cancellations/restart reconciled |
 | T8. Prospective evaluation | T5; trading metrics after T7 | Forecast settlement, benchmark/corporate-action handling, calibration and comparisons | Initial/final forecasts settled independently of exits; no future data; losses/costs/coverage reported |
 | T9. Terminal/operations | T3-T8 as available | Textual four-pane CLI, source/queue/ledger/cost views, supervision/backups | Research-only versus paper visible; dissent/gaps/unknown orders visible; restore/recovery exercised |
@@ -72,7 +76,7 @@ Use the model candidates and cost assumptions as experiments. Do not choose a fr
 
 ## Definition of prototype completion
 
-One recoverable scheduled paper workflow covers all holdings, sends all admissible additions to fair bounded debate, preserves both forecasts, produces a separate Allocator decision, independently validates/reserves/submits permitted paper orders, monitors them continuously, and reports prospective outcomes and operating costs. No live-readiness or calibrated-forecast claim follows automatically.
+One recoverable scheduled paper workflow covers all holdings, creates fair bounded debate obligations for every analyzed-stock report, preserves both forecasts, produces a separate Allocator decision, independently validates/reserves/submits permitted paper orders, monitors them continuously, and reports prospective outcomes and operating costs. No live-readiness or calibrated-forecast claim follows automatically.
 
 ## Related pages
 

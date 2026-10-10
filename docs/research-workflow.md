@@ -7,17 +7,23 @@ Develop the existing Python/LangGraph workflow toward TradingAgents-style specia
 tool use. Keep the eight roles, mandatory holding research, direct fair debate,
 separate Allocator, confidence/downside sizing, and deterministic risk services.
 
+## Continuous cycle refinement
+
+Follow [continuous analysis](continuous-analysis.md): run the per-item tool loop throughout X hours, exchange typed findings after original assessments, freeze one report per stock at the deadline, and debate every report while the next cycle researches. The Portfolio Manager is the existing Allocator role with explicit volatility/portfolio assessment.
+
 ## The workflow we are building
 
 ```mermaid
 flowchart TD
     A["Alpaca snapshot and required holding research"] --> B["yfinance leads and stored context"]
-    B --> C["Four independent analyst tool loops"]
+    B --> C["Continuous analyst loops and bounded cross-review"]
     C --> D{"Material unanswered question?"}
     D -->|Yes| E["Bounded search, read, and persist"]
     E --> C
-    D -->|Report ready or budget exhausted| F["Freeze evidence and synthesize"]
-    F --> G["Holding review and fair entry debate"]
+    D -->|Item complete or budget exhausted| K["Save findings and take next task"]
+    K -->|Cycle open| C
+    K -->|Deadline| F["Freeze report per stock"]
+    F --> G["Every-stock fair debate"]
     G --> H{"New evidence needed?"}
     H -->|Yes| I["Verification and versioned case revision"]
     I --> G
@@ -30,27 +36,20 @@ a search executed, a claim verified, an order filled or a checkpoint committed.
 
 ## Session lifecycle
 
-1. Reconcile Alpaca account, holdings, pending commitments, clock and quotes.
-   Establish the decision cutoff and policy version. Holdings outside the configured
-   watchlist still require research; the watchlist controls new-entry eligibility.
-2. Execute and record the holding-specific lookup matrix. Discover yfinance news
-   and press-release leads, plus shared market searches. Load unresolved tasks,
-   recent evidence, relevant history and the position thesis from the database.
-3. Give each analyst its own scope and a bounded tool loop. Analysts do not see
-   other analysts' conclusions before their independent reports are complete.
-4. Persist every retrieval before returning it to the model. Group duplicates into
-   events, track conflicting claims, and request original sources for material gaps.
-5. Freeze an evidence-bundle version and record role reports. The Financial Analyst
-   performs the separate lead/synthesis stage with initial confidence and scenarios.
-6. Review all holdings. Queue eligible openings and reinforcements for Bull/Bear
-   debate in least-recently-debated order, then stock ID. Confidence, payoff and
-   economic scores never select or rank admission; unfinished work remains visible.
-7. Dispatch bounded verification requests from the debate. Material new evidence
-   creates a revised bundle and refreshed specialist assessment before judgment.
-8. The Orchestrator records revised confidence and approve/defer/reject. The
-   Allocator produces one portfolio plan; code validates cash, exposure and loss caps.
-9. Store decisions, thesis changes, remaining questions and cost. Settle outcomes
-   only after the forecast horizon; checkpoints and the business ledger remain separate.
+1. Open an X-hour cycle, reconcile Alpaca state and create mandatory holding tasks.
+2. Continuously discover yfinance leads, corrections and pending research questions.
+3. For each task, retrieve role-scoped memory, save original specialist assessments,
+   share findings/questions and perform bounded cross-review and targeted research.
+4. Persist attempts, evidence, conclusions, dissent and task checkpoints; move to the
+   next task. Do not pay for repeated empty LLM turns when there is no queued work.
+5. At cycle end freeze a manifest and synthesize one report/initial forecast per stock.
+   Start the next research cycle without waiting for debate or portfolio decisions.
+6. Queue every analyzed-stock report for fair bounded debate, including existing holdings.
+7. The Orchestrator judges cases, defines revised confidence and records holding implications.
+8. The Portfolio Manager assesses measured volatility, budget and the portfolio, then
+   chooses actions/investments; code validates limits and future execution permissions.
+9. Persist outcomes and pending work; reuse event history in later cycles. Explicit
+   case revisions handle material late evidence instead of changing the frozen report.
 
 Paper order submission remains behind the existing reservation, intent,
 reconciliation and protection milestone. The current runtime produces previews.
@@ -71,14 +70,17 @@ visible; plausible model prose does not close a coverage gap.
 
 ## The analyst tool loop
 
-Start with four tool rounds per analyst, at most three calls per round, and an
-aggregate per-stock research budget. These are configurable starting limits to
+Start with four tool rounds per analyst/event task, at most three calls per round,
+one bounded cross-review exchange per event version, and an aggregate cycle/stock
+research budget. These are configurable starting limits to
 measure, not demonstrated sufficient coverage. Reserve mandatory holding work first.
 
 Each round follows `question -> validated request -> durable result -> assessment`.
-Permit only registered typed tools. Stop on a supported report, no useful remaining
+Permit only registered typed tools. Finish the item on a supported assessment, no useful remaining
 query, repeated equivalent requests, or exhausted time/page/cost budget. Ask for a
-final report without tool access when the cap is reached; list unresolved questions.
+saved item assessment without tool access when the cap is reached; list unresolved questions.
+Then continue with the next task until the cycle deadline; item limits are not a cap
+on the entire multi-hour worker.
 
 | Tool contract | Purpose | Result |
 | --- | --- | --- |

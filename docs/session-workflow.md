@@ -1,56 +1,81 @@
-# Session workflow and scheduling
+# Research cycles, decision phases and scheduling
 
-[Wiki home](README.md) · [Project overview](../README.md)
+[Wiki home](README.md) · [Continuous analysis](continuous-analysis.md)
 
-News collection, decision sessions, and execution monitoring run independently. Implement the triggers with one APScheduler 3.x process feeding unique PostgreSQL jobs; the session worker runs the explicit LangGraph workflow. See [runtime](agent-runtime.md), [concurrency contracts](persistence-and-contracts.md), and [deployment](deployment-and-costs.md).
+Research, decision/allocation and broker monitoring run independently. The full
+[continuous-cycle specification](continuous-analysis.md) supersedes the earlier
+single-pass session target; v0.1 has not yet implemented this scheduler.
 
-| Process | Proposed starting frequency | Responsibility |
+| Process | Proposed cadence | Responsibility |
 | --- | --- | --- |
-| Source collection | Every 5 minutes | Fetch new authorized content, record acquisition times, and recover missed items |
-| AI decision session | Every 3 hours; configurable to X hours | Review existing holdings, evaluate opportunities, and propose actions |
-| Order and risk monitoring | Continuous while applicable markets are active | Track fills, protections, exposure, data freshness, and operational failures |
-| Session reporting | After every session | Save evidence, proposals, risk outcomes, execution status, and costs |
+| Source collection | Every 5 minutes | Discover, version and enqueue authorized news; maintain cursors |
+| Analyst workers | Throughout each X-hour cycle, waking on durable tasks | Read, analyze, cross-review, research gaps and save findings |
+| Cycle closure | Every X hours, initially 3 | Freeze the manifest and publish a report per analyzed stock |
+| Debate and Manager | After closure, without stopping the next research cycle | Debate every report; produce one portfolio plan from completed outcomes |
+| Broker/risk monitoring | Continuous while applicable | Reconcile fills, protections, commitments, freshness and failures |
 
-Market calendars and time zones must be explicit. Store timestamps in UTC and use the selected exchange calendar for market-open checks. Only one decision session per portfolio may run at a time.
+Use UTC timestamps and explicit exchange calendars. Research cycles have separate
+leases from the one active decision/allocation lease per portfolio. X measures
+research duration; decision latency follows. Process all unhandled backlog with
+publication-age labels, not only the latest three-hour publications.
 
-If sessions are more than three hours apart, process the unhandled backlog since the last successful session as well as the latest three-hour window. If they are closer together, identify evidence already considered. A restart must not silently lose news or repeat trades.
+## Research-cycle lifecycle
 
-## Decision-session workflow
+1. Create cycle ID, fixed start/end, source/prompt/policy versions and the union of
+   configured stocks and broker-held stocks. Record identity and eligibility gaps.
+2. Run mandatory stock-specific holding lookups and refresh shared market context.
+3. Claim new/corrected events or follow-up tasks continuously, bounded by source,
+   tool, operating-cost and time budgets. Save original specialist assessments.
+4. Exchange typed findings/questions, retrieve missing original sources, and persist
+   cited revisions and dissent. Complete/checkpoint each task before taking the next.
+5. At the deadline, freeze the evidence/assessment/task manifest atomically. Late
+   work belongs to the next cycle. Publish a complete or explicitly incomplete
+   report per analyzed stock, including initial confidence and coverage.
+6. Start the next cycle immediately. Preserve unfinished questions and task lineage;
+   never lose a holding or silently label unfinished research successful.
 
-The selected target combines yfinance leads and AgentReach-backed bounded tool loops with Alpaca snapshots. [Research workflow](research-workflow.md) specifies the analyst loop, conference follow-up and versioned verification. [Memory and retrieval](memory-and-retrieval.md) separates event/thesis knowledge from graph checkpoints. Current code still uses prefetched snippets.
+Research states: `OPEN`, `RESEARCHING`, `FREEZING`, `REPORTING`, then `CLOSED` or
+`PARTIAL`. Individual tasks also have pending/running/completed/failed/deferred states.
 
-1. Acquire a portfolio lock, create a session ID, and establish an evidence cutoff.
-2. Reconcile broker holdings, cash, fills, and pending orders; build the union of watchlist and held stocks.
-3. Collect new evidence and relevant history, including unprocessed backlog.
-4. Run the four analysts independently, prioritizing mandatory holding-specific searches.
-5. Validate coverage; retry bounded missing tasks and mark unresolved gaps.
-6. Have the Analyst Lead synthesize the team's stock recaps, forecasts, labeled `p_initial`, scenario payoffs, stressed downside, robust edge, and opportunity score; retain the independent reports.
-7. Send every mandatory holding case to the Portfolio Allocator for hold/reduce/close review and identification of possible reinforcements. Preserve incomplete-review status.
-8. Queue all admissible openings and reinforcements for debate without a confidence, edge, or score filter.
-9. Run the bounded Bull/Bear protocol in least-recently-debated order, then stock ID. Proposals beyond the session budget remain queued; initial estimate gaps are investigated within the verification budget.
-10. Have the Orchestrator publish revised `p_final` when supported, payoff/downside assumptions, diagnostics, revision reasons, and `APPROVE`/`DEFER`/`REJECT`. Retain the initial records and both final cases.
-11. Send approved, current, supportable research cases to the Allocator. Record rejected/deferred cases and unresolved gaps; no numerical opportunity gate is applied.
-12. Have the Portfolio Allocator independently assess final confidence and portfolio fit, choose position actions and investments using sizing tools, and produce one coherent plan. Net by stock and prohibit contradictory orders.
-13. Recompute deterministic confidence and stressed-loss ceilings, cash-reserve, pending-order, risk, liquidity, and protection constraints; reserve validated capital atomically. Record the agent's decision separately from the validator's final authorization.
-14. Reconcile and refresh quotes before submission; expire materially changed proposals. Submit permitted paper orders, monitor fills, and record broker-confirmed state.
-15. Persist analyst reports, both confidence/payoff records, debate queue and research verdicts, revisions, coverage, holding reviews, debates, allocation assessments, validator outcomes, order states, costs, and checkpoints; release the lock.
+## Closed-cycle decision workflow
 
-Session states: `COLLECTING`, `ANALYZING`, `REVIEWING_POSITIONS`, `QUEUED_FOR_DEBATE`, `DEBATING`, `JUDGING`, `ALLOCATING`, `VALIDATING`, `EXECUTING`, then `COMPLETED`, `PARTIAL`, or `FAILED`.
+1. Claim the decision lease and reconcile Alpaca snapshot/quotes. Validate report
+   age, policy version, coverage and the defined forecast reference basis.
+2. Create a durable debate obligation for every analyzed stock, including holdings,
+   HOLD and NO_ACTION cases. Process holding cases first, then fair last-debated/
+   stock-ID ordering without confidence/payoff ranking. Unfinished debates remain visible.
+3. Run bounded Bull/Bear research and verification on the frozen case. Material
+   post-cutoff evidence requires an explicit revised case and refreshed affected reasoning.
+4. The Orchestrator records revised confidence/scenarios, disagreement, thesis validity,
+   holding implications and APPROVE/DEFER/REJECT for added exposure.
+5. The Portfolio Manager receives approved addition candidates and all holding outcomes,
+   plus fresh portfolio/volatility inputs. Choose OPEN/REINFORCE/HOLD/REDUCE/CLOSE/
+   NO_ACTION and desired investment in one coherent plan. Deferred cases add no risk.
+6. Deterministic services recompute confidence/downside, cash, pending commitments,
+   concentration, liquidity, freshness and protection limits; reserve permitted capital.
+7. The future paper execution service reconciles/submits/monitors durable intents.
+   v0.1 remains read-only and produces nonexecutable previews.
+8. Persist reports, debates, both confidence records, Manager rationale, validation,
+   costs and incomplete obligations; release the decision lease.
 
-Complete required holding reviews before optional entry debates. Rejection of added exposure never skips an existing holding's research or blocks a justified reduction/close. Research and execution have distinct checkpoints; recovery must not repeat submissions. Proposed exit proceeds remain unavailable until broker confirmation and applicable account rules permit their use.
+Decision states: `QUEUED`, `DEBATING`, `JUDGING`, `MANAGING_PORTFOLIO`, `VALIDATING`,
+`EXECUTING`, then `COMPLETED`, `PARTIAL` or `FAILED`. Do not count queued debates as
+completed. Rejecting added exposure does not force an exit or skip holding management.
+Independent protective monitoring and policy-triggered risk reduction do not wait
+for the cycle. Unconfirmed exit proceeds cannot fund another order.
 
 ### Proposal contract
 
 | Field | Purpose |
 | --- | --- |
-| Session, proposal, and stock IDs | Traceability and duplicate prevention |
+| Cycle, report-manifest, decision-session, proposal, and stock IDs | Traceability, immutable report membership and duplicate prevention |
 | Path and action | Existing-position change or new-entry decision |
 | Thesis and changes | Forward-looking justification and comparison with the entry thesis |
 | Forecast and confidence lineage | Outcome ID, horizon, reference-price basis, `p_initial` and `p_final` record IDs/values, calibration statuses, and revision reasons |
 | Research coverage | Required tasks, actual retrieval records, and unresolved gaps |
 | Evidence IDs and URLs | Supporting and contradictory sources |
 | Information cutoff | Latest time included in the analysis |
-| Debate record | Completed or skipped, Bull/Bear final cases, unresolved objections, and Orchestrator verdict for any addition |
+| Debate record | Every-stock obligation, pending/completed/deferred status, Bull/Bear cases, unresolved objections, holding implications and exposure verdict |
 | Debate and budget policy | Queue order, research budget, uncertainty policy, stressed-loss limits, final confidence target, and loss-risk ceiling |
 | Allocation and reservations | Current/pending exposure, applied caps, final quantity/notional, costs, reservation IDs, and limiting constraint |
 | Desired exposure and protections | Inputs to deterministic sizing and risk checks |
@@ -67,7 +92,7 @@ A proposal is not a confirmed fill. A successful debate does not authorize chang
 
 - [Architecture](architecture.md)
 - [Analysis team](analysis-team.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Opportunity analysis](opportunity-analysis.md)
 - [Budget management](budget-management.md)
 - [Agent runtime](agent-runtime.md)

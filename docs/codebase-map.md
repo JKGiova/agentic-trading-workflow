@@ -4,7 +4,7 @@
 
 Generated from tracked Python source using `python tools/export_code_map.py`. The JSON includes file hashes, module imports and definitions. Import edges are static dependencies, not resolved call paths or test coverage.
 
-**Graphify:** connected, but querying currently returns `no_workspace`. No workspace handle was available, so no Graphify export or indexed commit is claimed. [Status record](graphify-status.json). This map is a separate AST export.
+**Graphify:** uninstalled by the owner on 2026-10-10. No Graphify export or indexed commit is claimed. [Status record](graphify-status.json). This map is a separate AST export.
 
 ```mermaid
 flowchart TD

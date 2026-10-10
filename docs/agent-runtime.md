@@ -18,7 +18,7 @@ and source-account access have not been measured.
 | Social Analyst | Report over supplied approved-author X evidence | Distinguish original claims, quotes, reposts and corroborated facts; track coverage gaps |
 | Bull and Bear | Independent opening, challenge, rebuttal and final calls: eight turns per stock | Typed material-claim challenges and bounded verification requests |
 | Orchestrator | Revised forecast, dissent and approve/defer/reject verdict; runtime checks references and unsupported approvals | Evidence-backed verification verdicts and explicit revision rationale |
-| Portfolio Allocator | Holding review before debates; separate per-stock post-debate action/notional proposal | One portfolio-wide plan with shared-capital and stress accounting |
+| Portfolio Manager | Holding review before debates; separate per-stock post-debate action/notional proposal | One portfolio-wide plan with shared-capital and stress accounting |
 
 Reports are independent of other analysts' conclusions, but **all four currently
 receive the same mixed-category snippets**. Role identity and task text differ;
@@ -71,9 +71,11 @@ count from the proposed shared-briefing optimization.
 
 ## Target runtime
 
+The [continuous-cycle refinement](continuous-analysis.md) now supersedes the single-pass target: analysts process/cross-review items throughout X hours, freeze report manifests, and create every-stock debate obligations. Research task leases and the portfolio decision lease are separate. The target Portfolio Manager is the current Allocator role, with volatility/portfolio tools. None of this renames or changes the current runtime in this plan update.
+
 Follow the [research workflow](research-workflow.md): analysts can request scoped news/search/page/transcript/social tools and retrieve [persistent event/position context](memory-and-retrieval.md). yfinance supplies leads, AgentReach-selected backends supply research capabilities, and Alpaca supplies broker/market data. Requests are validated and executed by code, with stored attempt IDs and bounded spend.
 
-Implement one explicit LangGraph session graph. The eight roles are reusable agent definitions, not eight permanently running servers. Four independent analyst reports complete before the Financial Analyst's separate lead/synthesis stage. Construct each analyst's input from the frozen evidence and its assigned scope only; do not expose other analysts' conclusions until synthesis. Neither initial probability nor opportunity diagnostics select or order debate candidates.
+Implement recoverable research-task/cycle graphs and a separate closed-cycle decision graph. The eight roles are reusable definitions; durable workers invoke them as news or follow-up work arrives. Each specialist records an original item assessment before bounded cross-review; preserve revisions and dissent. At the deadline, freeze the report manifest before lead synthesis. Neither initial probability nor opportunity diagnostics select or order stock-debate admission.
 
 ## Proposed graph stages
 
@@ -81,17 +83,17 @@ Implement one explicit LangGraph session graph. The eight roles are reusable age
 | --- | --- | --- |
 | Reconcile | Read broker account, positions, pending orders, clock, and policy | Timestamped portfolio snapshot and session cutoff |
 | Research | Execute required holding-specific lookup matrix and selected-stock collection | Search attempts, evidence versions, and coverage |
-| Analyze | One shared Market briefing and stock-specific Financial/Company/Social reports | Structured reports with independent conclusions |
-| Synthesize | Financial Analyst acts as lead only after all reports finish | Stock recap, initial confidence/scenarios, or explicit missing estimates |
-| Review holdings | Allocator reviews each mandatory holding case | Hold/reduce/close decision or deferred review; reinforcement candidate |
-| Queue debate | Admit eligible openings/reinforcements without numerical screening | Fair queue ordered by last debate time, then stock ID |
+| Analyze/cross-review | Continuous role-scoped item loops; original findings then bounded exchanges | Cited original assessments, revisions, questions and dissent |
+| Close/synthesize | Freeze cycle manifest; Financial Analyst assembles report per stock | Cutoff/bundle version, coverage, initial confidence/scenarios and gaps |
+| Holding case | Compare news and thesis during research; include every holding at closure | Cited thesis changes and mandatory debate obligation |
+| Queue debate | Admit every analyzed-stock report without numerical screening | Holding priority, then fair last-debated/stock-ID queue with visible obligations |
 | Debate | Two openings, two challenge sets, bounded verification, two rebuttals, two final cases | Individual turn records and frozen evidence-bundle revisions |
 | Judge | Orchestrator assesses cases and defines revised confidence/payoffs | Explained approve/defer/reject research verdict |
-| Allocate | Allocator independently assesses approved cases and proposes one portfolio plan | Action, target exposure, incremental amount, and sizing rationale |
+| Manage portfolio | Manager assesses debate/holding outcomes, measured volatility and fresh state | One portfolio plan, actions, amount, risk rationale and constraints |
 | Validate | Code recomputes caps, checks freshness/coverage, and reserves capital | Independent authorization or rejection/defer, plus order intent |
 | Monitor/report | Execution worker and independent monitor reconcile broker states | Fills, protections, costs, and session report |
 
-For added exposure, a completed debate and supported final estimates are mandatory. For risk reduction, researched holding decisions and independent deterministic protection remain available without an entry debate.
+For added exposure, a completed debate and supported final estimates are mandatory. Ordinary holding management follows every-stock debate; independent deterministic protection and policy-triggered risk reduction remain active without waiting for cycle closure.
 
 ## Typed tools
 
@@ -143,7 +145,7 @@ Unknown submission retains the reservation. Partial fills convert the filled sha
 
 - [Analysis team](analysis-team.md)
 - [Direct debate](new-entry-debate.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Persistence and contracts](persistence-and-contracts.md)
 - [Implementation backlog](implementation-backlog.md)
 

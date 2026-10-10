@@ -59,7 +59,7 @@ timestamps/feed metadata are discarded. These are explicit work packages in
 
 No actual paid-provider access, entitlements, measured predictive performance or broker submissions were verified in this implementation session. HTTP fixtures validate expected adapter behavior; real-account access still requires T0.
 
-Graphify is connected, but listing workspaces/repositories and querying graph statistics return `no_workspace`. The actual workspace handle is still needed. The published AST map is explicitly separate; no Graphify export or indexed commit is claimed.
+Graphify was uninstalled at the owner's request on 2026-10-10 and is no longer required. The published AST map remains current and explicitly separate; no Graphify export or indexed commit is claimed.
 
 ## Remaining full-plan milestones
 
@@ -83,12 +83,16 @@ Documentation refinement checks: all local Markdown links passed, the regenerate
 
 The selected target now uses Alpaca for broker/market data, yfinance for primary news discovery and AgentReach-backed bounded research. [Research workflow](research-workflow.md) specifies specialist tool loops and conference follow-up; [memory design](memory-and-retrieval.md) specifies event/evidence/thesis storage, retrieval and checkpoints. These are documentation changes: yfinance and AgentReach are not installed, and current provider adapters/tool restrictions are unchanged.
 
+## Continuous analyst update: 2026-10-10
+
+[Continuous analysis](continuous-analysis.md) now specifies news-by-news processing and collaboration throughout X-hour cycles, a frozen report per analyzed stock, every-stock debate obligations and the Portfolio Manager's volatility/budget/portfolio assessment. These are pending features. Current v0.1 remains a bounded, noncollaborative session with the existing Allocator role and per-stock previews. The only Python change in this update refreshes the map generator's Graphify status text; trading runtime behavior is unchanged.
+
 ## Next milestone
 
 Start W0/W1 in the [workflow-first backlog](implementation-backlog.md): selected-provider contracts plus evidence/event memory. Implement C0/C1 capability and evidence contracts with offline fixtures, then run
 opt-in T0 source/model/account reads when owner configuration is available. Continue
 with durable collection and typed bounded verification; C5/C6 broker reconciliation,
 shared-capital reservations, intents and protection remain prerequisites for paper
-submission. Graphify still requires the actual workspace handle. See the
+submission. Graphify is no longer a dependency. See the
 [retained backlog](implementation-backlog.md).
 

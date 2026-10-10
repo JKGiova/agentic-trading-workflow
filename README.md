@@ -18,14 +18,14 @@ One window: open positions, selected-position focus, research chatbot, portfolio
 
 ## Workflow
 
-1. Every configurable X hours, four analysts research **market, financial, company, and authorized social news**, including every holding.
-2. The analysis team publishes **initial confidence, payoff scenarios, and known gaps**, without a numerical prefilter.
-3. Admissible openings and reinforcements enter a bounded **Bull/Bear debate**, which directly evaluates confidence, potential, losses, costs, and uncertainty.
+1. Throughout each configurable X-hour cycle, four analysts continuously process **market, financial, company, and authorized social news**, share findings and persist research, including every holding.
+2. At cycle end, the team freezes one report per analyzed stock with **initial confidence, payoff scenarios, and known gaps**, without a numerical prefilter.
+3. Every analyzed stock enters a bounded **Bull/Bear debate**, including holdings, HOLD and NO_ACTION cases.
 4. The **Orchestrator** defines revised confidence, payoffs, and an explained approve/defer/reject research verdict.
-5. A separate **Portfolio Allocator agent** analyzes that confidence and chooses position actions and investment amounts. Existing holdings also receive hold/reduce/close reviews.
+5. A separate **Portfolio Manager agent** evaluates final confidence, measured volatility, cash, pending commitments and portfolio exposure, then chooses position actions and investment amounts.
 6. Deterministic budget and risk checks validate and reserve capital before paper execution.
 
-News collection and order monitoring run independently of AI sessions. Research uses the latest three-hour window, relevant history, and unprocessed backlog.
+The target [continuous cycle](docs/continuous-analysis.md) starts new research while the closed cycle is debated. The current release still uses bounded sessions; continuous collaboration, every-stock debates and the expanded Manager are planned. Research uses the recent three-hour window, relevant history and backlog; order monitoring is independent.
 
 ## Read first
 
@@ -38,8 +38,8 @@ The detailed plan lives in the **[project wiki](docs/README.md)**. The selected 
 | [Forecasts and confidence](docs/forecasts-and-confidence.md) | News recaps, probabilities, payoff scenarios, and calibration |
 | [Opportunity analysis](docs/opportunity-analysis.md) | Confidence, payoff, costs, and downside examined inside debate |
 | [Position management](docs/position-management.md) | Thesis review and reinforce/reduce/close/hold actions |
-| [Entry and reinforcement debate](docs/new-entry-debate.md) | Two researchers, revised confidence, verification, and judgment |
-| [Portfolio Allocator](docs/portfolio-allocator.md) | Separate agent choosing position actions and investments |
+| [Stock report debate](docs/new-entry-debate.md) | Two researchers, revised confidence, verification, and judgment |
+| [Portfolio Manager](docs/portfolio-allocator.md) | Separate agent choosing position actions and investments |
 | [Budget management](docs/budget-management.md) | Confidence-based sizing, downside budgets, capital limits, and reservations |
 | [Implementation plan](docs/PLAN.md) | Milestones, acceptance criteria, and open decisions |
 | [Development status](docs/development-status.md) | Completed documentation and pending implementation |

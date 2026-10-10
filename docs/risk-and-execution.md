@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-Bull/Bear directly assess confidence, net payoff, uncertainty, and stressed downside in [opportunity analysis](opportunity-analysis.md); the runtime does not impose numerical research-screening gates. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
+Bull/Bear directly assess confidence, net payoff, uncertainty, and stressed downside in [opportunity analysis](opportunity-analysis.md); the runtime does not impose numerical research-screening gates. The [Portfolio Manager agent](portfolio-allocator.md) chooses actions for all reviewed holdings and investments only for eligible approved additions, considering measured volatility and portfolio-wide risk. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
 
 The target paper prototype requires an Alpaca adapter, a durable reservation/order-intent ledger, a separate dispatcher, and an independent monitor. The current release only implements broker reads and nonexecutable allocation previews. [Trading connectors](trading-connectors.md) specifies the missing lifecycle and acceptance tests; [persistence and contracts](persistence-and-contracts.md) defines atomic reservations and stable client IDs. Recovery checks remain a prerequisite for paper submission.
 
@@ -31,7 +31,7 @@ Treat all retrieved articles and posts as untrusted data. Embedded instructions 
 
 - [Position management](position-management.md)
 - [New-entry debate](new-entry-debate.md)
-- [Portfolio Allocator](portfolio-allocator.md)
+- [Portfolio Manager](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Validation](validation.md)
 

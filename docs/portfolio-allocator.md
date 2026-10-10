@@ -1,8 +1,8 @@
-# Portfolio Allocator agent
+# Portfolio Manager agent
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-The Portfolio Allocator is a separate AI agent that makes the position and investment decision after analysis and, for additions, debate. It receives structured evidence and portfolio state rather than relying on the Orchestrator's confidence alone.
+The Portfolio Manager is the target name for the existing Portfolio Allocator/Allocator role, with expanded volatility and portfolio assessment. It is the same eighth AI role, not an additional agent. After every-stock debate, it receives approved addition cases and all holding outcomes, then chooses position actions and investment in one portfolio-wide plan. Current v0.1 still uses the Allocator implementation and independent per-stock previews.
 
 ## Inputs and confidence assessment
 
@@ -30,6 +30,12 @@ It may reject a confident proposal that lacks portfolio fit, select a smaller in
 
 The prototype is long-only. The agent chooses the eligible stock, action, and target exposure; Bear victory does not authorize a short.
 
+## Market volatility and portfolio risk
+
+Use timestamped Alpaca observations and deterministic measurement tools for stock/market volatility, liquidity/spreads and scenario stress. Record calculation method, lookback window, as-of time, price-adjustment convention and data coverage. The model interprets tool results; it does not invent a volatility value.
+
+Evaluate correlated holdings, sector concentration, existing and pending exposure, available cash, reserve requirements, drawdown/loss limits and near-term event risk. A high-confidence case may receive less capital or no allocation if portfolio downside is excessive. Missing or stale material risk inputs defer added exposure. Do not change policy thresholds in response to model prose.
+
 ## Investment selection and tools
 
 Use the Orchestrator's policy-eligible `p_final` and revised opportunity/downside record in [budget management](budget-management.md). Final confidence scales the position ceiling; a separate stressed-loss budget caps volatile exposure. Never substitute `p_initial` after debate. A favorable expected payoff can support a lower-confidence trade without implying a larger safe investment.
@@ -49,11 +55,11 @@ Rank supported additions under the configured policy and build one coherent port
 
 An agent's `ACCEPT` is a recommendation. Deterministic validators recompute quantities and constraints, reserve cash atomically, and authorize submission. They may reject or defer an otherwise accepted proposal. Only the execution service holds broker credentials.
 
-## Existing-position priority
+## Holding management and portfolio-wide pass
 
-Review all holdings before optional entry debates. The Allocator may decide a researched hold, reduction, or close directly using the holding case and available initial forecast; those actions do not require an entry debate. Candidate reinforcements remain unapproved until their debate and investment review complete.
+Every analyzed holding report has a scheduled debate. Pass its completed outcome to the Manager even when additional investment was rejected: HOLD, REDUCE and CLOSE remain distinct from approval to add risk. Incomplete review/debate is explicitly deferred; it does not become a successful HOLD. Candidate reinforcements need supported final confidence, debate approval and investment/risk validation.
 
-After debate, run a final allocation pass across eligible additions and existing-position decisions. Preserve one action per stock and do not spend hypothetical exit proceeds. If an earlier holding action was already submitted, reconcile it and exclude incompatible later actions.
+Independent protections and deterministic policy-triggered risk reduction remain available during the research cycle; they do not wait for the scheduled debate. Reconcile any such action before the Manager's final portfolio-wide pass. Preserve one action per stock and do not spend hypothetical exit proceeds.
 
 ## Related pages
 
@@ -63,3 +69,4 @@ After debate, run a final allocation pass across eligible additions and existing
 - [Opportunity analysis](opportunity-analysis.md)
 - [Budget management](budget-management.md)
 - [Session workflow](session-workflow.md)
+

@@ -34,6 +34,10 @@ For an always-on paper pilot, deploy supervised processes on one small Linux hos
 
 Market-closed sessions may research/report, but submission checks broker clock, quotes, and permitted trading hours. A source/model failure never disables the order monitor.
 
+## Continuous-cycle workload
+
+The [continuous target](continuous-analysis.md) changes the cost model: add per-event specialist/tool calls and bounded cross-review exchanges throughout the cycle, then per-stock report/debate and one portfolio-wide Manager pass. The earlier 47-call fixture count below measures current v0.1 only. Reserve cycle close/report/debate costs, use idle wake-up rather than paid empty turns, and track research/decision backlog and decision latency separately. Source collection and protections continue independently of AI budget.
+
 ## Configuration to supply during implementation
 
 | Setting group | Planned configuration |

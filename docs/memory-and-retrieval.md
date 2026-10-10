@@ -41,6 +41,10 @@ Summaries, claims and lessons are model-derived interpretations, not new primary
 sources. Preserve their evidence lineage and prompt/model version. Updates append
 a version and supersession link; corrections do not erase what an earlier session saw.
 
+## Continuous research notebook
+
+[Continuous analysis](continuous-analysis.md) adds durable per-item assessments, cross-review messages, claim challenges, revisions and unresolved questions throughout X hours. Save cycle/task/event/role/parent-assessment IDs, evidence references, status and recorded time. Preserve the original assessment before collaboration; repeated agreement is not independent evidence. At closure freeze exact manifest membership before asynchronous report generation. Checkpoints recover item tasks; the notebook supplies reusable context across cycles.
+
 ## Write path
 
 1. Persist each search attempt, including failures and empty results.

@@ -14,6 +14,7 @@ The proposed build is Python/LangGraph with PostgreSQL, OpenRouter model calls, 
 
 | Page | Purpose |
 | --- | --- |
+| [Continuous analyst cycles](continuous-analysis.md) | X-hour news loops, analyst collaboration, report boundaries, every-stock debates and Portfolio Manager |
 | [Research workflow](research-workflow.md) | TradingAgents-style analyst tool loops, event follow-up, cutoff revisions and a CES example |
 | [Memory and retrieval](memory-and-retrieval.md) | Persistent checkpoints, evidence/event/thesis memory, SQL retrieval and outcome lessons |
 | [Selected provider plan](provider-plan.md) | Alpaca, yfinance and AgentReach responsibilities, boundaries and access checks |
@@ -27,7 +28,7 @@ The proposed build is Python/LangGraph with PostgreSQL, OpenRouter model calls, 
 
 ## Start here
 
-Read the architecture, analyst team, forecasts, opportunity analysis, position management, debate, Portfolio Allocator, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
+Read the architecture, analyst team, forecasts, opportunity analysis, position management, debate, Portfolio Manager, and budget management pages in that order. Use the implementation plan to choose the first development milestone.
 
 ## Pages
 
@@ -38,8 +39,8 @@ Read the architecture, analyst team, forecasts, opportunity analysis, position m
 | [Forecasts and confidence](forecasts-and-confidence.md) | Initial/revised confidence, outcome definitions, research decisions, and calibration |
 | [Opportunity analysis](opportunity-analysis.md) | Confidence, payoff, costs, uncertainty, and downside examined inside debate |
 | [Existing-position management](position-management.md) | Reinforce, reduce, close, hold, and thesis comparison |
-| [Entry and reinforcement debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and revised confidence |
-| [Portfolio Allocator](portfolio-allocator.md) | Agent assessment of confidence, position choice, investment, and tool boundaries |
+| [Stock report debate](new-entry-debate.md) | Bull/Bear roles, bounded rounds, verification, and revised confidence |
+| [Portfolio Manager](portfolio-allocator.md) | Agent assessment of confidence, position choice, investment, and tool boundaries |
 | [Budget management](budget-management.md) | Agent decisions, confidence/downside investment sizing, shared capital limits, and reservations |
 | [Session workflow](session-workflow.md) | Scheduling, portfolio reconciliation, action sequencing, and proposal contracts |
 | [Data and sources](data-and-sources.md) | Approved publications and X accounts, timestamps, deduplication, and memory |
@@ -54,13 +55,14 @@ Read the architecture, analyst team, forecasts, opportunity analysis, position m
 - Selected target: Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed bounded research; existing adapters remain unchanged until migration.
 - Next development focuses on evidence/event memory, retrieval, analyst tool loops and recoverable sessions; see the workflow and memory pages.
 
-- Four specialist analysts cover market, financial, company, and authorized social news.
+- Four specialist analysts continuously process market, financial, company and authorized social news within X-hour cycles, preserving original findings, collaboration and dissent.
+- At each deadline, freeze one report per analyzed stock and create a debate obligation for every report. Research continues in the next cycle while decision work completes.
 - Every open position requires fresh, recorded searches and an explicit coverage status.
 - Stock forecasts have an explicit horizon and outcome; model confidence is labeled uncalibrated until validated.
 - Existing positions can be reinforced, reduced, closed, or held unchanged.
 - The analyst team supplies initial confidence, payoff scenarios, and gaps directly to debate; no numerical prefilter selects proposals.
 - Bull/Bear directly assess the probability/payoff trade-off; the Orchestrator records revised confidence, scenarios, and a research verdict.
-- A separate Portfolio Allocator analyzes the revised confidence and chooses the action and investment.
+- A separate Portfolio Manager (the target name for the existing Allocator role) analyzes revised confidence, measured volatility, cash, pending commitments and portfolio risk, then chooses actions and investment.
 - Debate and Allocator judgments decide whether exposure is justified; final confidence scales investment within a stressed-loss budget; a shared budget ledger enforces cash reserves, pending commitments, and risk caps.
 - Risk limits and execution are deterministic services, with paper trading as the first target.
 
