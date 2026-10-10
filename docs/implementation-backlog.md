@@ -39,7 +39,19 @@ Run routine CI against deterministic fixtures and a real test PostgreSQL instanc
 
 ## Next concrete task
 
-Start **T0**: choose the prototype's authorized watchlist and X authors, validate the five access paths, and compare a pinned upstream analysis with the minimal custom role graph on the same sanitized evidence. Record dependency/runtime compatibility, source limitations, latency, token usage, and the exact adaptations needed.
+The custom research graph and terminal now exist. Start the refined **C0+C1**
+packages in [connector implementation](connector-implementation.md): typed source
+capabilities, timestamped quotes and content/version contracts, a source registry,
+and a bounded opt-in read-only probe. T0 real access still needs the authorized
+watchlist, X IDs/handles, publisher access and private provider credentials. Fixture
+tests can be implemented before those accounts are available.
+
+Then implement C2/C3 collection and C4 evidence/verification before improving agent
+research autonomy. C5 broker reconciliation precedes C6 paper intents/protection;
+use the [trading acceptance matrix](trading-connectors.md). The current shared-model,
+fixed-evidence agent implementation and remaining work are detailed in
+[agent runtime](agent-runtime.md). Upstream/model comparison remains an optional
+measured experiment, not a reason to discard the implemented custom graph.
 
 Use the model candidates and cost assumptions as experiments. Do not choose a framework or stronger model based only on a polished report or claimed profitability.
 

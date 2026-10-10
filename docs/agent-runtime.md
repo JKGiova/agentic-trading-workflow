@@ -2,6 +2,75 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
+## Current implementation: reviewed 2026-10-10
+
+The eight roles run as bounded model calls, not independent services. The current
+code has two compiled LangGraph graphs: analyst/synthesis and debate/judgment.
+`Workflow.run` sequences collection, holding reviews, the fair debate queue and
+allocation previews around those graphs. They are runnable, but real-model quality
+and source-account access have not been measured.
+
+| Role | Implemented now | Next improvement |
+| --- | --- | --- |
+| Market Analyst | Independent report per stock from the supplied bundle | Shared session briefing plus explicit stock relevance and official macro evidence |
+| Financial Analyst | Independent report; separate lead call synthesizes all four reports into initial scenarios/confidence | Cutoff-aware financial facts, earnings comparisons and distinct financial instructions |
+| Company Analyst | Independent report, with SEC metadata/IR summaries when collected | Read authorized disclosures and distinguish announcement, amendment and analyst interpretation |
+| Social Analyst | Report over supplied approved-author X evidence | Distinguish original claims, quotes, reposts and corroborated facts; track coverage gaps |
+| Bull and Bear | Independent opening, challenge, rebuttal and final calls: eight turns per stock | Typed material-claim challenges and bounded verification requests |
+| Orchestrator | Revised forecast, dissent and approve/defer/reject verdict; runtime checks references and unsupported approvals | Evidence-backed verification verdicts and explicit revision rationale |
+| Portfolio Allocator | Holding review before debates; separate per-stock post-debate action/notional proposal | One portfolio-wide plan with shared-capital and stress accounting |
+
+Reports are independent of other analysts' conclusions, but **all four currently
+receive the same mixed-category snippets**. Role identity and task text differ;
+specialist prompt templates, role-scoped inputs and per-role model selection are
+not implemented. All calls use one configured OpenRouter model. The Financial
+Analyst's lead stage is an additional call, not a ninth specialist role.
+
+The runtime currently gives models at most three evidence snippets per category,
+with text truncated to 700 characters each. The next input builder should select
+material events, preserve source/content limitations and supply bounded evidence
+excerpts with stable IDs. It must not hide an opposing item simply because newer
+duplicates consumed the snippet limit.
+
+Models do not invoke research tools today: deterministic code collects evidence
+first and passes JSON context. Unexpected model tool calls are rejected. Debate
+verification only rereads selected frozen records; it cannot retrieve a missing
+filing or substantiate a new external claim. Citation membership and schema checks
+do not establish factual correctness, analyst diversity or calibrated confidence.
+
+Stage outputs and input hashes are persisted, but graphs are compiled without a
+durable checkpointer. There is no automatic session crash-resume. Confidence/EV
+does not filter or rank the debate queue, and no role has a broker submission tool.
+
+### Next agent work, after connector contracts
+
+1. Version specialist prompts and construct role-specific views of one immutable
+   evidence bundle. Preserve shared definitions for cutoff, outcome, horizon and
+   price so initial/final confidence remains comparable.
+2. Introduce a typed `VerificationRequest`: claim/evidence IDs, missing fact,
+   permitted source, stock and cutoff. The runtime dispatches it through connector
+   permissions, page/cost limits and the required holding-research budget. Each
+   side may challenge at most three material claims; requests can return verified,
+   contradicted, unresolved or unavailable, with actual attempt IDs.
+3. Evidence first observed after a historical cutoff is not retroactively known.
+   If fresh retrieval expands the decision's information basis, create a new
+   bundle/forecast version and record the change instead of quietly modifying the
+   old case. Reprice and re-debate material changes before allocation.
+4. Produce one portfolio allocation plan after all completed judgments; apply
+   confidence/downside sizing and cash/exposure limits atomically in code. Model
+   proposals never reserve cash or submit orders directly.
+5. Add checkpointer/job recovery, then evaluate the same frozen cases with actual
+   configured models: unsupported claims, conflicting evidence, injection text,
+   unresolved verification, repair rate, latency and operating spend. Forecast
+   settlement/calibration remains a separate prospective milestone.
+
+The measured demo executes **47 model-stage calls** for three researched/debated
+stocks and two holding reviews. Those are deterministic fixtures, not 47 paid API
+calls. [Operating costs](deployment-and-costs.md) distinguishes the current call
+count from the proposed shared-briefing optimization.
+
+## Target runtime
+
 Implement one explicit LangGraph session graph. The eight roles are reusable agent definitions, not eight permanently running servers. Four independent analyst reports complete before the Financial Analyst's separate lead/synthesis stage. Construct each analyst's input from the frozen evidence and its assigned scope only; do not expose other analysts' conclusions until synthesis. Neither initial probability nor opportunity diagnostics select or order debate candidates.
 
 ## Proposed graph stages
@@ -75,3 +144,4 @@ Unknown submission retains the reservation. Partial fills convert the filled sha
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Persistence and contracts](persistence-and-contracts.md)
 - [Implementation backlog](implementation-backlog.md)
+

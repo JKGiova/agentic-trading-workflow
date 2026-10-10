@@ -16,6 +16,7 @@ The proposed build is Python/LangGraph with PostgreSQL, OpenRouter model calls, 
 | --- | --- |
 | [Implementation stack](implementation-stack.md) | Concrete packages, framework alternatives, model candidates, and planned modules |
 | [Connector implementation](connector-implementation.md) | News, approved X authors, SEC/IR, publisher search, quotes, and capability proofs |
+| [Trading connectors](trading-connectors.md) | Current read-only subset, planned broker interfaces, intent lifecycle, protection and acceptance tests |
 | [Agent runtime](agent-runtime.md) | Graph stages, typed tools, structured output, budgets, and side-effect recovery |
 | [Persistence and contracts](persistence-and-contracts.md) | Logical tables, contracts, indexes, leases, transactions, and idempotency |
 | [Deployment and costs](deployment-and-costs.md) | Worker topology, configuration, reference pricing, and workload-derived costs |

@@ -46,7 +46,7 @@ Market-closed sessions may research/report, but submission checks broker clock, 
 | Operating limits | LLM dollars/tokens, X returned-resource allowance, search credits, tool/verification counts, retry budget, maximum debates |
 | Audit | Prompt/schema/policy versions, retention, log settings and checkpoint pruning |
 
-Credentials stay in local environment/deployment secret storage, never committed or included in prompts. Validate required settings on startup and expose sanitized source capability/status, not secret values. Configuration schemas and a future `doctor` check are backlog items; no such command exists yet.
+Credentials stay in local environment/deployment secret storage, never committed or included in prompts. Typed policy/credentials and a local `--doctor` command now exist. A real source-capability probe and the full per-source operating-budget ledger remain planned; successful local configuration checks do not verify API access.
 
 ## Published reference prices
 
@@ -63,7 +63,20 @@ No trading commission, publisher fee, tax, credit-funding fee, data entitlement,
 
 ## Workload-derived model estimate
 
-An illustrative session with `N = 10` researched stocks, `H = 3` holdings, and `D = 3` debates:
+The **current** v0.1 graph uses four analysts and one lead per stock, one holding
+review per holding, and eight debate turns, one judgment and one allocation per
+debated stock:
+
+```text
+current baseline model calls = 5*N + H + 10*D
+```
+
+The 2026-10-10 demo run confirmed 47 stage calls for `N=3`, `H=2`, `D=3`. This is
+fixture execution, not paid-model usage or a measured provider bill. With `N=10`,
+`H=3`, `D=3`, the current baseline would be 83 calls before repairs/chat/verification.
+
+The following **proposed optimized** session shares a Market briefing and makes one
+portfolio-wide final allocation pass. These optimizations are not implemented:
 
 ```text
 shared Market call                      = 1

@@ -4,7 +4,7 @@
 
 Bull/Bear directly assess confidence, net payoff, uncertainty, and stressed downside in [opportunity analysis](opportunity-analysis.md); the runtime does not impose numerical research-screening gates. The [Portfolio Allocator agent](portfolio-allocator.md) chooses actions and investments only for eligible additions. Deterministic [budget tools](budget-management.md) compute the confidence ceiling from `p_final`, apply the revised stressed-loss budget, and intersect these with independent risk and broker limits. Passing confidence alone cannot authorize an order.
 
-The concrete prototype uses an Alpaca paper adapter, a durable reservation/order-intent ledger, a separate dispatcher, and an independent monitor. [Persistence and contracts](persistence-and-contracts.md) defines atomic reservations and stable client IDs; [the backlog](implementation-backlog.md) makes recovery checks a prerequisite for paper submission.
+The target paper prototype requires an Alpaca adapter, a durable reservation/order-intent ledger, a separate dispatcher, and an independent monitor. The current release only implements broker reads and nonexecutable allocation previews. [Trading connectors](trading-connectors.md) specifies the missing lifecycle and acceptance tests; [persistence and contracts](persistence-and-contracts.md) defines atomic reservations and stable client IDs. Recovery checks remain a prerequisite for paper submission.
 
 Configure risk rules independently of the model:
 
@@ -34,3 +34,4 @@ Treat all retrieved articles and posts as untrusted data. Embedded instructions 
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Budget management](budget-management.md)
 - [Validation](validation.md)
+

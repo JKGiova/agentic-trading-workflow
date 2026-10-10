@@ -2,11 +2,12 @@
 
 [Wiki home](README.md) · [CLI guide](cli.md) · [Codebase map](codebase-map.md)
 
-Reviewed **2026-10-09**. The full plan is retained; **v0.1 is the first runnable research-only release**, not a complete autonomous paper-trading deployment.
+Reviewed **2026-10-10**. The full plan is retained; **v0.1 is the first runnable research-only release**, not a complete autonomous paper-trading deployment.
 
 ## Implemented
 
 - Python package, dependency lock, private environment credentials, typed policy and CLI doctor.
+- Executable `start.sh`: uv/Python bootstrap, locked runtime installation and default demo launch.
 - Single-window Textual interface: open positions, selected position, chatbot and portfolio/performance.
 - Selection/focus shortcuts, scrolling, persistent chat and asynchronous research/chat.
 - Explicit synthetic offline demo, separate from provider-backed data.
@@ -25,11 +26,36 @@ Reviewed **2026-10-09**. The full plan is retained; **v0.1 is the first runnable
 
 ## Verification
 
-**68 local tests passed, over 94% line coverage.** One PostgreSQL integration test was skipped locally because no test URL was available; attempts to start local PostgreSQL were blocked by OS-user restrictions. Ruff and generated-map checks passed.
+At source commit `590d40d75264d7cfac2d028c8163791379828b8f`, **75 local tests passed,
+one PostgreSQL test skipped, 94.80% line coverage**. No local test database URL was
+available. Ruff, launcher syntax and generated-map checks passed; the launcher was
+also exercised in an actual terminal, with clean exit, and completed a demo session.
 
 Tests cover scenario consistency, weak/missing initial confidence reaching debate, removed-watchlist holdings, source failure, forged citations, fair queue rotation, holding priority, concurrency, immutable stages, timeouts, safe chat and layouts at 80×24, 120×36 and 160×48.
 
-[The first implementation CI run](https://github.com/JKGiova/agentic-trading-workflow/actions/runs/37987725147) passed on both Python 3.12 and 3.13 with isolated PostgreSQL 16: **69 tests passed, none skipped, 95.01% coverage**. The jobs also passed lint/format, map freshness, doctor and demo-session checks. [Subsequent runs](https://github.com/JKGiova/agentic-trading-workflow/actions) enforce the same 90% coverage minimum.
+[The latest verified implementation CI](https://github.com/JKGiova/agentic-trading-workflow/actions/runs/38030865729)
+passed on both Python 3.12 and 3.13 with isolated PostgreSQL 16: **76 tests passed,
+none skipped, approximately 95% coverage**. Jobs also passed lint/format, map
+freshness, launcher syntax, launcher doctor and launcher demo-session checks.
+CI uses the official PostgreSQL ECR Public mirror after a Docker Hub pull-limit
+failure. [Subsequent runs](https://github.com/JKGiova/agentic-trading-workflow/actions)
+enforce the same 90% coverage minimum.
+
+## Agent and connector maturity
+
+All eight roles and the intended confidence/debate/Allocator sequence exist.
+Current analyst calls use one model and the same mixed evidence snippets; independent
+calls do not yet have specialist prompts or scoped research tools. Debate verification
+only rereads frozen evidence. The Allocator proposes each stock independently, not
+one capital-reserving portfolio plan. Graph checkpoints and automatic resume are
+pending. See [agent runtime](agent-runtime.md) for the role-by-role review.
+
+News adapters exist but full Alpaca article content is discarded in favor of
+summaries, financial/company requests duplicate the feed, and collection has no
+independent durable worker. SEC is metadata-only, Tavily is discovery, and quote
+timestamps/feed metadata are discarded. These are explicit work packages in
+[connector implementation](connector-implementation.md), with the separate
+[trading connector specification](trading-connectors.md) defining future execution.
 
 No actual paid-provider access, entitlements, measured predictive performance or broker submissions were verified in this implementation session. HTTP fixtures validate expected adapter behavior; real-account access still requires T0.
 
@@ -53,5 +79,10 @@ The initial runtime uses flat modules, startup schema creation and conservative 
 
 ## Next milestone
 
-Configure Graphify and provider-backed research with selected stocks, approved X authors and keys; verify T0 without orders. Then implement durable collection/jobs and the reservation/intent/recovery pipeline before network trading. See the [retained backlog](implementation-backlog.md).
+Implement C0/C1 capability and evidence contracts with offline fixtures, then run
+opt-in T0 source/model/account reads when owner configuration is available. Continue
+with durable collection and typed bounded verification; C5/C6 broker reconciliation,
+shared-capital reservations, intents and protection remain prerequisites for paper
+submission. Graphify still requires the actual workspace handle. See the
+[retained backlog](implementation-backlog.md).
 
