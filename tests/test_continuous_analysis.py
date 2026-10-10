@@ -536,7 +536,10 @@ def test_postgres_continuous_memory_claims_and_cycle_cap(clock):
         test_parallel_task_claims_and_outbox_claims_are_unique(db, clock)
         test_cycle_budget_reservation_atomic_and_lineage_preserved(db)
         memory = AnalysisMemory(db)
-        cycle = memory.rows(cycles)[0]
+        # queue_summary in the outbox check already closed its cycle.
+        clock.now += timedelta(hours=3)
+        cycle = memory.open_cycle(clock(), 3, ["AAPL"], "fixed")
+        assert cycle["status"] == "OPEN"
         clock.now += timedelta(hours=3)
         assert memory.freeze(cycle["id"], clock())["status"] == "CLOSING"
     finally:
