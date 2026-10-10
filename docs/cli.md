@@ -8,14 +8,40 @@ submission method exists in this release.
 
 ## Install and try the complete offline workflow
 
-Use Python 3.12 or 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/):
+On macOS/Linux, clone the repository and run the Bash launcher:
 
 ```bash
 git clone https://github.com/JKGiova/agentic-trading-workflow.git
 cd agentic-trading-workflow
-uv sync --locked
-uv run tradebot --demo
+./start.sh
 ```
+
+The launcher finds an existing `uv` or installs it from [Astral's official
+installer](https://docs.astral.sh/uv/getting-started/installation/) into the ignored
+`.tradebot/tools` directory. Bootstrap requires `curl` or `wget` and internet access.
+It does not require sudo or modify shell profiles. `uv` creates `.venv`, downloads
+Python 3.12 if needed and installs runtime dependencies from `uv.lock`. Later runs
+reuse those installations; already-installed development tools are retained.
+To select the other tested Python version, use `TRADEBOT_PYTHON=3.13 ./start.sh`.
+If executable permissions were lost when downloading, use `bash start.sh`.
+
+No arguments means the explicit offline demo. Any supplied arguments are passed
+unchanged to `tradebot`; include `--demo` to stay in demo mode:
+
+```bash
+./start.sh --demo --doctor
+./start.sh --demo --once
+./start.sh --demo --auto
+./start.sh --init
+./start.sh --doctor
+./start.sh --config config.local.json
+```
+
+The last three commands use provider configuration. Configure credentials as
+described below before starting provider-backed research. Relative config/database
+paths resolve from the repository directory, even when invoking the script elsewhere.
+For manual setup with an existing Python 3.12/3.13 and `uv`, use `uv sync --locked`
+followed by `uv run tradebot --demo`.
 
 The demo labels every position, news item, confidence and response as synthetic.
 Its chatbot is a deterministic test double, not a paid AI model. Demo state is stored

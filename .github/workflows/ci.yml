@@ -26,6 +26,7 @@ jobs:
           --health-cmd "pg_isready -U tradebot_test -d tradebot_test"
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
+      TRADEBOT_PYTHON: ${{ matrix.python }}
       TRADEBOT_TEST_DATABASE_URL: postgresql+psycopg://tradebot_test:test_only_local_ci@localhost:5432/tradebot_test
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -38,6 +39,7 @@ jobs:
       - run: uv run ruff format --check src tests tools
       - run: uv run pytest --cov=tradebot --cov-fail-under=90 --cov-report=term-missing
       - run: uv run python tools/export_code_map.py --check
-      - run: uv run tradebot --demo --doctor
-      - run: uv run tradebot --demo --once
+      - run: bash -n start.sh
+      - run: ./start.sh --demo --doctor
+      - run: ./start.sh --demo --once
 

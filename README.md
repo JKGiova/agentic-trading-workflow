@@ -7,9 +7,12 @@ A news-driven AI workflow for a selected group of stocks, with persistent eviden
 ## Run the terminal
 
 ```bash
-uv sync --locked
-uv run tradebot --demo
+./start.sh
 ```
+
+On macOS/Linux, the launcher installs `uv` if needed, Python 3.12 and the locked
+runtime dependencies, then opens the offline demo. Pass CLI options directly, e.g.
+`./start.sh --demo --once`. See the [CLI guide](docs/cli.md) for provider mode.
 
 One window: open positions, selected-position focus, research chatbot, portfolio/performance. `F1`–`F4` focus panes, `Ctrl+R` researches, `Ctrl+U` refreshes and `Ctrl+Q` exits. The demo is explicitly synthetic; provider mode requires private credentials and configuration. See the [CLI guide](docs/cli.md) and [codebase map](docs/codebase-map.md).
 
