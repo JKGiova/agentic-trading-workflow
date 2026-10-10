@@ -3,11 +3,13 @@
 import asyncio
 import hashlib
 import secrets
+import uuid
 from datetime import timedelta
 
 import httpx
 
 from tradebot.analysis_memory import outbox
+from tradebot.contracts import utcnow
 
 
 def split_message(text, limit=3500):
@@ -98,7 +100,33 @@ class TelegramNotifier:
                         return self.chat_id
                 await asyncio.sleep(0.5)
 
-    async def deliver(self, now):
+    async def send_test(self):
+        if not self.token or not self.chat_id:
+            raise ValueError("Pair your private Telegram chat first")
+        now = utcnow()
+        last = self.memory.setting("telegram_test")
+        rows = self.memory.rows(outbox, outbox.c.id == last["id"]) if last else []
+        reuse = bool(
+            rows
+            and rows[0]["status"] == "PENDING"
+            and rows[0]["payload"].get("bot_fingerprint") == self.identity
+            and rows[0]["payload"].get("chat_id") == self.chat_id
+        )
+        notification_id = rows[0]["cycle"] if reuse else "telegram-test-" + str(uuid.uuid4())
+        if not reuse:
+            self.memory.queue_notification(
+                notification_id,
+                ["Telegram connected! This is a test message from Agentic Trading Workflow."],
+                now,
+                purpose="telegram_test",
+                bot_fingerprint=self.identity,
+                chat_id=self.chat_id,
+            )
+            self.memory.set_setting("telegram_test", {"id": notification_id + ":0000"})
+        await self.deliver(now, notification_id=notification_id)
+        return self.memory.rows(outbox, outbox.c.cycle == notification_id)[0]
+
+    async def deliver(self, now, notification_id=None):
         if not self.token or not self.chat_id:
             return
         pending = sorted(
@@ -108,6 +136,16 @@ class TelegramNotifier:
             key=lambda row: row["id"],
         )
         for row in pending:
+            if notification_id is not None and row["cycle"] != notification_id:
+                continue
+            if row["payload"].get("purpose") == "telegram_test":
+                if notification_id is None:
+                    continue
+                if (
+                    row["payload"].get("bot_fingerprint") != self.identity
+                    or row["payload"].get("chat_id") != self.chat_id
+                ):
+                    continue
             # Persist intent before send. A crash/timeout is UNKNOWN; never blindly resend.
             blocked = self.memory.rows(
                 outbox, outbox.c.cycle == row["cycle"], outbox.c.status.in_(["UNKNOWN", "FAILED"])

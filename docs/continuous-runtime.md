@@ -31,6 +31,10 @@ adding the supervisor does not add another investment manager.
 
 ## Run and configure
 
+For Telegram-only first-run setup, use `./start.sh`. Its onboarding asks for the
+bot token, pairs your private chat and sends a test without running the analysis
+team. Later launches reuse saved setup. See [onboarding](onboarding.md).
+
 First verify the full offline path without credentials:
 
 ```bash
@@ -55,7 +59,8 @@ chosen stocks. For example, the instrument shape is
 example, not an investment recommendation. Configure official `ir_feeds`, CIKs,
 `article_domains` and approved X author IDs/handles when those sources are available.
 
-Copy `.env.example` to the private `.env` and supply:
+Use onboarding for Telegram or supply its token manually in `.env`. Supply the
+NVIDIA key in the private `.env` when enabling research:
 
 ```dotenv
 TRADEBOT_NVIDIA_API_KEY=your_private_key

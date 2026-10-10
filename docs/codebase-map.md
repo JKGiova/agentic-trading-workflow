@@ -15,66 +15,77 @@ flowchart TD
     M5["contracts"]
     M6["models"]
     M7["news_sources"]
-    M8["research"]
-    M9["risk"]
-    M10["service"]
-    M11["settings"]
-    M12["storage"]
-    M13["supervisor"]
-    M14["telegram"]
-    M15["terminal"]
-    M16["workflow"]
+    M8["onboarding"]
+    M9["research"]
+    M10["risk"]
+    M11["service"]
+    M12["settings"]
+    M13["setup_terminal"]
+    M14["storage"]
+    M15["supervisor"]
+    M16["telegram"]
+    M17["terminal"]
+    M18["workflow"]
     M1 --> M5
-    M1 --> M12
+    M1 --> M14
     M2 --> M1
     M2 --> M5
     M3 --> M5
-    M3 --> M11
+    M3 --> M12
     M4 --> M1
-    M4 --> M10
+    M4 --> M8
     M4 --> M11
     M4 --> M12
+    M4 --> M13
     M4 --> M14
-    M4 --> M15
+    M4 --> M16
+    M4 --> M17
     M6 --> M2
     M6 --> M5
-    M6 --> M11
     M6 --> M12
+    M6 --> M14
     M7 --> M5
-    M7 --> M8
-    M7 --> M11
+    M7 --> M9
+    M7 --> M12
+    M8 --> M1
     M8 --> M5
-    M8 --> M11
+    M8 --> M12
+    M8 --> M14
+    M8 --> M16
     M9 --> M5
-    M9 --> M11
-    M10 --> M1
-    M10 --> M3
+    M9 --> M12
     M10 --> M5
-    M10 --> M6
-    M10 --> M7
-    M10 --> M8
-    M10 --> M11
     M10 --> M12
-    M10 --> M13
-    M10 --> M14
-    M10 --> M16
+    M11 --> M1
+    M11 --> M3
     M11 --> M5
+    M11 --> M6
+    M11 --> M7
+    M11 --> M9
+    M11 --> M12
+    M11 --> M14
+    M11 --> M15
+    M11 --> M16
+    M11 --> M18
     M12 --> M5
-    M13 --> M1
-    M13 --> M2
-    M13 --> M5
-    M13 --> M6
-    M13 --> M11
-    M13 --> M12
-    M13 --> M14
-    M14 --> M1
-    M15 --> M10
+    M13 --> M8
+    M14 --> M5
+    M15 --> M1
+    M15 --> M2
+    M15 --> M5
+    M15 --> M6
+    M15 --> M12
+    M15 --> M14
+    M15 --> M16
+    M16 --> M1
     M16 --> M5
-    M16 --> M9
-    M16 --> M11
-    M16 --> M12
+    M17 --> M11
+    M18 --> M5
+    M18 --> M10
+    M18 --> M12
+    M18 --> M14
 ```
 
 The CLI drives application services. Workflow uses model/retrieval adapters and deterministic risk previews; storage persists research and read-only snapshots. The broker adapter has no submission method.
 
-[Machine-readable map](codebase-map.json) contains 17 modules, 49 import edges and 215 definitions.
+[Machine-readable map](codebase-map.json) contains 19 modules, 58 import edges and 247 definitions.

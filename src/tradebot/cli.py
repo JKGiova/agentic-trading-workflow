@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import sys
 from pathlib import Path
 
 from tradebot.service import TradeService, demo_policy
@@ -28,6 +29,12 @@ def parser() -> argparse.ArgumentParser:
         "--auto", action="store_true", help="Schedule sessions every configured X hours"
     )
     result.add_argument("--init", action="store_true", help="Create a nonsecret config template")
+    result.add_argument("--session", action="store_true", help="Open bounded research terminal")
+    setup = result.add_mutually_exclusive_group()
+    setup.add_argument("--onboard", action="store_true", help="Open Telegram setup again")
+    setup.add_argument(
+        "--telegram-test", action="store_true", help="Send one test to the saved private chat"
+    )
     result.add_argument(
         "--supervisor", action="store_true", help="Continuous four-analyst research team"
     )
@@ -54,6 +61,35 @@ def main(argv=None) -> int:
         )
         return 0
     try:
+        run_flags = (
+            args.demo,
+            args.doctor,
+            args.once,
+            args.auto,
+            args.supervisor,
+            args.headless,
+            args.telegram_pair,
+            args.session,
+        )
+        if (args.onboard or args.telegram_test) and any(run_flags):
+            raise ValueError("Telegram setup cannot be combined with research commands")
+        if args.onboard or args.telegram_test or not any(run_flags):
+            from tradebot.onboarding import SetupController, test_status
+            from tradebot.setup_terminal import SetupTerminal
+
+            if not args.telegram_test and not sys.stdin.isatty():
+                print("Open onboarding in an interactive terminal, or use --telegram-test.")
+                return 1
+            controller = SetupController(args.database)
+            try:
+                if args.telegram_test:
+                    result = asyncio.run(controller.test())
+                    print(test_status(result))
+                    return 0 if result["status"] == "SENT" else 1
+                SetupTerminal(controller, force=args.onboard).run()
+                return 0
+            finally:
+                controller.close()
         policy = demo_policy() if args.demo else Policy.read(args.config)
         credentials = Credentials()
         if args.headless and not args.supervisor:

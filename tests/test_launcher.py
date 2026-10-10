@@ -77,7 +77,7 @@ def test_existing_uv_defaults_and_argument_forwarding(launcher, args):
         "run",
         "--no-sync",
         "tradebot",
-        *(args or ("--demo",)),
+        *args,
     ]
     assert result.stdout == ""
 

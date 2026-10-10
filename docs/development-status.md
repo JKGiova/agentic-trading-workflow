@@ -2,12 +2,19 @@
 
 [Wiki home](README.md) · [Continuous runtime](continuous-runtime.md) · [Codebase map](codebase-map.md)
 
-Reviewed **2026-10-10**. **v0.2 implements the continuous research team.** Trading
+Reviewed **2026-10-10**. **v0.2.1 adds first-run Telegram onboarding to the continuous research team.** Trading
 orders remain disabled. Real NVIDIA/Telegram/source access has not been tested
 without owner credentials.
 
 ## Implemented in this release
 
+- Default launcher opens a single-window Telegram onboarding/home screen without
+  model or broker credentials. Token entry is masked, pairing uses a private
+  one-time code, and successful setup sends an isolated test message.
+- Atomic private token storage, saved/versioned setup steps, reconnect and explicit
+  standalone test commands. Setup state can retain completed steps when future
+  wallet/broker/configuration capabilities are added; those connections are not
+  requested or implemented in this release.
 - Default NVIDIA NIM / `deepseek-ai/deepseek-v4.1-flash` adapter for research and
   chat, with local structured-output validation, bounded repair, model identity
   checks and conservative token/billing accounting.
@@ -45,8 +52,8 @@ pairing/rate limits/unknown sends, CLI startup/shutdown and the four-pane termin
 A complete HTTP-fixture test crosses NVIDIA transport, all four agents, synthesis,
 report persistence and Telegram delivery. Tests isolate real owner secrets.
 
-Release verification locally: **126 passed, two PostgreSQL tests skipped without
-a test server; 96.39% statement coverage**. CI runs the PostgreSQL cases with its
+Release verification locally: **149 passed, two PostgreSQL tests skipped without
+a test server; 96.23% statement coverage**. CI runs the PostgreSQL cases with its
 database service; see the commit-specific Actions result for that outcome.
 
 CI runs Python 3.12/3.13, isolated PostgreSQL, lint/format, a 90% minimum coverage

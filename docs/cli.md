@@ -1,12 +1,13 @@
-# Terminal interface and running v0.1
+# Terminal interface and running v0.2.1
 
 [Wiki home](README.md) · [Codebase map](codebase-map.md)
 
-v0.1 is a runnable **research-only** release with an explicit offline demo. All owner
+The release provides first-run Telegram onboarding and **research-only** agent modes,
+including an explicit offline demo. All owner
 interaction is through one terminal window. There is no web UI, and no broker order
 submission method exists in this release.
 
-## Install and try the complete offline workflow
+## Install and connect Telegram
 
 On macOS/Linux, clone the repository and run the Bash launcher:
 
@@ -25,25 +26,34 @@ reuse those installations; already-installed development tools are retained.
 To select the other tested Python version, use `TRADEBOT_PYTHON=3.13 ./start.sh`.
 If executable permissions were lost when downloading, use `bash start.sh`.
 
-No arguments means the explicit offline demo. Any supplied arguments are passed
-unchanged to `tradebot`; include `--demo` to stay in demo mode:
+No arguments opens Telegram onboarding: hidden token entry, private-chat pairing
+and a test message. Later launches open the saved connection home. It requires no
+NVIDIA or broker credentials and no policy file. See [onboarding](onboarding.md)
+for secret storage, relaunch, cancellation and future wallet/configuration steps.
+Any supplied arguments are passed unchanged to `tradebot`; choose research modes
+explicitly:
 
 ```bash
+./start.sh --onboard
+./start.sh --telegram-test
 ./start.sh --demo --doctor
 ./start.sh --demo --once
 ./start.sh --demo --auto
 ./start.sh --init
-./start.sh --doctor
-./start.sh --config config.local.json
+./start.sh --supervisor --doctor
+./start.sh --supervisor --config config.local.json
+./start.sh --session --config config.local.json
 ```
 
-The last three commands use provider configuration. Configure credentials as
+The research commands without `--demo` use provider configuration. Configure credentials as
 described below before starting provider-backed research. Relative config/database
 paths resolve from the repository directory, even when invoking the script elsewhere.
 For manual setup with an existing Python 3.12/3.13 and `uv`, use `uv sync --locked`
 followed by `uv run tradebot --demo`.
 
-The demo labels every position, news item, confidence and response as synthetic.
+## Four-pane research terminal
+
+The explicit `--demo` labels every position, news item, confidence and response as synthetic.
 Its chatbot is a deterministic test double, not a paid AI model. Demo state is stored
 in `.tradebot/demo.db`, separate from provider-backed research state. No Docker is needed.
 
@@ -61,7 +71,8 @@ research run asynchronously, leaving selection and navigation responsive.
 
 The terminal refreshes account reads every 30 seconds. `--auto` schedules research
 every configured `session_hours` while the terminal remains open; the first session
-is manual. This is not yet a persistent background scheduler/collector daemon.
+is manual. Continuous collection and worker/report scheduling are available with
+`--supervisor`; see [continuous runtime](continuous-runtime.md).
 
 ```bash
 uv run tradebot --demo --doctor
@@ -76,7 +87,7 @@ uv run tradebot --init
 cp .env.example .env
 # Edit config.local.json and .env locally.
 uv run tradebot --doctor
-uv run tradebot
+uv run tradebot --session
 ```
 
 `--init` creates a nonsecret policy template and refuses to overwrite it. Add selected
@@ -138,7 +149,7 @@ are not implemented.
 SQLite/WAL is the local default. PostgreSQL uses the same initial SQLAlchemy schema:
 
 ```bash
-uv run tradebot --database 'postgresql+psycopg://USER:PASSWORD@HOST/DATABASE'
+uv run tradebot --session --database 'postgresql+psycopg://USER:PASSWORD@HOST/DATABASE'
 ```
 
 Use a dedicated database and private credential handling; the example URL is a

@@ -2,7 +2,7 @@
 
 A news-driven AI workflow for a selected group of stocks, with persistent evidence, mandatory position reviews, direct Bull/Bear debate, and a separate investment agent.
 
-**Status: v0.2 continuous research team.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
+**Status: v0.2.1 with first-run Telegram onboarding.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
 
 ## Run the terminal
 
@@ -11,8 +11,15 @@ A news-driven AI workflow for a selected group of stocks, with persistent eviden
 ```
 
 On macOS/Linux, the launcher installs `uv` if needed, Python 3.12 and the locked
-runtime dependencies, then opens the offline demo. Pass CLI options directly, e.g.
-`./start.sh --demo --once`. See the [CLI guide](docs/cli.md) for provider mode.
+runtime dependencies, then opens Telegram onboarding. Paste your BotFather token
+in the hidden field, pair your private chat using the displayed `/start` code, and
+receive a test message. Later launches reuse saved setup. This entry point runs
+independently of the model/research team. See the [onboarding guide](docs/onboarding.md).
+
+Use `./start.sh --demo` for the four-pane offline research demo, `--supervisor` for
+configured continuous research, and `--session` for the older bounded terminal.
+Pass `--onboard` to edit setup or `--telegram-test` to send one standalone test.
+See the [CLI guide](docs/cli.md) for provider configuration.
 
 One window: open positions, selected-position focus, research chatbot, portfolio/performance. `F1`–`F4` focus panes, `Ctrl+R` researches, `Ctrl+U` refreshes and `Ctrl+Q` exits. The demo is explicitly synthetic; provider mode requires private credentials and configuration. See the [CLI guide](docs/cli.md) and [codebase map](docs/codebase-map.md).
 

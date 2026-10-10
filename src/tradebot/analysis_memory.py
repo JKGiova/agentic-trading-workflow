@@ -449,19 +449,26 @@ class AnalysisMemory:
 
     def queue_summary(self, cid, parts, now):
         with self.store.transaction() as conn:
-            for index, text in enumerate(parts):
-                self.store._ensure(
-                    conn,
-                    outbox,
-                    {
-                        "id": f"{cid}:{index:04d}",
-                        "cycle": cid,
-                        "status": "PENDING",
-                        "retry_at": now.isoformat(),
-                        "payload": {"text": text, "attempts": 0},
-                    },
-                )
+            self._queue_parts(conn, cid, parts, now)
             conn.execute(update(cycles).where(cycles.c.id == cid).values(status="CLOSED"))
+
+    def queue_notification(self, notification_id, parts, now, **details):
+        with self.store.transaction() as conn:
+            self._queue_parts(conn, notification_id, parts, now, **details)
+
+    def _queue_parts(self, conn, cid, parts, now, **details):
+        for index, text in enumerate(parts):
+            self.store._ensure(
+                conn,
+                outbox,
+                {
+                    "id": f"{cid}:{index:04d}",
+                    "cycle": cid,
+                    "status": "PENDING",
+                    "retry_at": now.isoformat(),
+                    "payload": {"text": text, "attempts": 0, **details},
+                },
+            )
 
     def delivery_result(self, row, status, now, **details):
         with self.store.transaction() as conn:

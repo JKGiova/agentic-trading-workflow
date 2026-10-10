@@ -42,7 +42,6 @@ printf 'Installing/checking locked dependencies (Python %s)...\n' "${TRADEBOT_PY
 "$uv_bin" sync --locked --no-dev --inexact --python "${TRADEBOT_PYTHON:-3.12}" >&2
 
 if [[ $# -eq 0 ]]; then
-    printf 'Starting the synthetic offline demo. Ctrl+Q exits.\n' >&2
-    set -- --demo
+    printf 'Opening Telegram setup. Ctrl+Q exits.\n' >&2
 fi
 exec "$uv_bin" run --no-sync tradebot "$@"

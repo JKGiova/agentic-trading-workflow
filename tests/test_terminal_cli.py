@@ -127,7 +127,7 @@ def test_cli_init_doctor_and_one_session(tmp_path, monkeypatch, capsys):
 def test_cli_missing_config_is_handled(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     assert main([]) == 1
-    assert "Startup/session failed" in capsys.readouterr().out
+    assert "interactive terminal" in capsys.readouterr().out
 
 
 def test_continuous_cli_demo_and_doctor(tmp_path, monkeypatch, capsys):

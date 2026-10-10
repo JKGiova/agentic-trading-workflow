@@ -92,7 +92,11 @@ class Policy(Contract):
 
 
 class Credentials(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="TRADEBOT_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="TRADEBOT_",
+        env_file=(".env", ".tradebot/credentials.env"),
+        extra="ignore",
+    )
     openrouter_api_key: SecretStr = SecretStr("")
     nvidia_api_key: SecretStr = SecretStr("")
     telegram_bot_token: SecretStr = SecretStr("")
