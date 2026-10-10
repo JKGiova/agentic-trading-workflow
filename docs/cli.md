@@ -1,10 +1,11 @@
-# Terminal interface and running v0.4.0
+# Terminal interface and running v0.5.0
 
 [Wiki home](README.md) · [Codebase map](codebase-map.md)
 
 The release provides first-run Telegram onboarding and **research-only** agent modes,
 including an explicit offline demo. All owner
-interaction is through one terminal window. There is no web UI, and no broker order
+interaction is through one terminal window, with an optional separate browser for
+owner-initiated X sign-in. There is no web dashboard, and no broker order
 submission method exists in this release.
 
 ## Install and connect Telegram
@@ -45,6 +46,11 @@ tradingworkflow
 `uv` replaces the old virtual environment; ignored configuration, credentials and
 research databases remain in place. Existing Telegram setup retains its saved interval and adds model/news credentials;
 older setups missing the interval still request it first.
+
+X onboarding now offers **Install browser** and **Sign in to X**. Browser binaries
+are downloaded only by the explicit install action, not by `uv sync`. Login captures
+the two required cookies into a masked input; **Save news access** persists them with
+approved source IDs. See [browser sign-in](browser-signin.md) for desktop requirements.
 
 With an existing Python 3.14 and no `uv`, the standard Python installation is
 also supported (dependency versions resolve from `pyproject.toml` rather than the lock):

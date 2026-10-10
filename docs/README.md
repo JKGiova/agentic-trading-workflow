@@ -4,7 +4,7 @@
 
 This is the versioned project wiki. Each page covers one part of the design; implementation milestones and current progress are tracked separately. All content is in English.
 
-**Status: v0.4.0 on Python 3.14, with onboarding-scheduled Telegram reports; orders disabled.** Start with [onboarding](onboarding.md), the [CLI guide](cli.md),
+**Status: v0.5.0 on Python 3.14, with browser sign-in and onboarding-scheduled Telegram reports; orders disabled.** Start with [onboarding](onboarding.md), the [CLI guide](cli.md),
 [development status](development-status.md) and [codebase map](codebase-map.md).
 The topic pages retain the full target; execution and prospective validation remain pending.
 
@@ -15,6 +15,7 @@ The proposed build is Python/LangGraph with PostgreSQL, NVIDIA NIM / DeepSeek V4
 | Page | Purpose |
 | --- | --- |
 | [First-run onboarding](onboarding.md) | Hidden token entry, private chat pairing, report interval, saved setup and isolated test messages |
+| [Browser sign-in](browser-signin.md) | Owner-controlled X login, isolated Chromium, masked cookie capture and installation |
 | [Continuous runtime guide](continuous-runtime.md) | Implemented supervisor, specialist tools/memory, launch, Telegram pairing and recovery |
 | [Continuous analyst cycles](continuous-analysis.md) | X-hour news loops, analyst collaboration, report boundaries, every-stock debates and Portfolio Manager |
 | [Agent control loop](agent-control-loop.md) | TradingAgents comparison, actual agent contracts, durable task loops and implementation slices |

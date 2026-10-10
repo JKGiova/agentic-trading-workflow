@@ -2,7 +2,7 @@
 
 A news-driven AI workflow for a selected group of stocks, with persistent evidence, mandatory position reviews, direct Bull/Bear debate, and a separate investment agent.
 
-**Status: v0.4.0 on Python 3.14, with provider onboarding and Agent Reach web/X research.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
+**Status: v0.5.0 on Python 3.14, with browser sign-in for X and Agent Reach web/X research.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
 
 ## Install and run
 
@@ -23,7 +23,9 @@ in Windows PowerShell use `.venv\Scripts\Activate.ps1`.
 in the hidden field, pair your private chat using the displayed `/start` code, and
 receive a test message, then choose the hours between reports and configure model/news
 credentials. NVIDIA NIM keys and X cookies use masked inputs; X/SEC and read-only
-Alpaca access are optional. You can defer credentials for Telegram-only testing. Decimal intervals
+Alpaca access are optional. In **News credentials**, choose **Install browser** once,
+then **Sign in to X** to capture cookies after your login; see the [browser guide](docs/browser-signin.md).
+You can defer credentials for Telegram-only testing. Decimal intervals
 are supported: `0.5` means every 30 minutes. Later launches reuse saved setup. This entry point runs
 independently of the model/research team. See the [onboarding guide](docs/onboarding.md).
 

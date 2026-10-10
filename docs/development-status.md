@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Continuous runtime](continuous-runtime.md) · [Codebase map](codebase-map.md)
 
-Reviewed **2026-10-10**. **v0.4.0 targets Python 3.14 and adds credential onboarding and Agent Reach web/X research.** Trading
+Reviewed **2026-10-10**. **v0.5.0 targets Python 3.14 and adds guided browser sign-in to existing credential onboarding and Agent Reach web/X research.** Trading
 orders remain disabled. Real NVIDIA/Telegram/X account access has not been tested
 without owner credentials.
 
@@ -36,6 +36,8 @@ without owner credentials.
   sources, and truthful missing/failed coverage.
 - New masked model/news setup screens, deferred Telegram-only setup, exact
   author/domain registration, private atomic key storage and metadata fingerprints.
+- Owner-initiated, isolated Chromium sign-in for X; optional browser installation,
+  masked cookie capture, explicit save, cancellation and timeout cleanup.
 - SQLite/PostgreSQL event versions and correction lineage, task leases,
   input/turn/tool checkpoints, retries/backoff, preserved questions/dissent and
   restart recovery with old-worker fencing.
@@ -67,12 +69,16 @@ A complete HTTP-fixture test crosses onboarding, saved scheduling, NVIDIA transp
 all four agents, synthesis, two consecutive reports and Telegram delivery. Tests
 isolate real owner secrets.
 
-Release verification locally on **Python 3.14.8**: **222 passed, two PostgreSQL tests
-skipped without a test server; 96.30% statement coverage**. CI runs the PostgreSQL cases with its
-database service; see the commit-specific Actions result for that outcome.
+Release verification locally on **Python 3.14.8**: **258 passed, three skipped;
+96.44% statement coverage**. Two skips require PostgreSQL; one requires real headed
+Chromium. This workspace's browser download returned an invalid archive, so the
+real-browser fixture is delegated to CI alongside its isolated PostgreSQL service.
+See the commit-specific Actions result for those outcomes.
 
 CI runs Python 3.14, isolated PostgreSQL, lint/format, a 90% minimum coverage
-gate, map freshness, installed-command checks and launcher checks. Offline tests
+gate, a real headed Chromium fixture under Xvfb, map freshness, installed-command
+checks and launcher checks. The browser fixture intercepts all navigation and does
+not authenticate a real account. Offline tests
 exercise the installed `tradingworkflow` executable for help, configuration checks
 and safe noninteractive first launch; CI also launches it after activating `.venv`.
 PostgreSQL tests exercise both the existing

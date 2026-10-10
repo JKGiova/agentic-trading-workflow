@@ -37,7 +37,12 @@ jobs:
       - run: uv sync --locked
       - run: uv run ruff check src tests tools
       - run: uv run ruff format --check src tests tools
-      - run: uv run pytest --cov=tradebot --cov-fail-under=90 --cov-report=term-missing
+      - name: Install Chromium for the offline browser fixture
+        run: uv run python -m playwright install --with-deps --no-shell chromium
+      - name: Test with PostgreSQL and headed Chromium under Xvfb
+        env:
+          TRADEBOT_TEST_BROWSER: '1'
+        run: xvfb-run -a uv run pytest --cov=tradebot --cov-fail-under=90 --cov-report=term-missing
       - run: uv run python tools/export_code_map.py --check
       - run: bash -n start.sh
       - name: Run the installed command from the activated environment

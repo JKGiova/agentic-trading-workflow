@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [CLI](cli.md) · [Continuous runtime](continuous-runtime.md)
 
-**Implemented in v0.4.0 on Python 3.14.** The default command opens a single terminal window for
+**Implemented in v0.5.0 on Python 3.14.** The default command opens a single terminal window for
 Telegram setup, report scheduling and provider credentials. It does not require a policy file, stock watchlist, NVIDIA key,
 broker credentials or running research agents.
 
@@ -25,9 +25,10 @@ On the first launch:
 6. Enter your NVIDIA NIM key in the masked model screen. OpenRouter is an optional
    alternative for policies explicitly configured to use it. **Configure later**
    lets you finish Telegram testing without a model key.
-7. Configure optional X cookies/approved IDs, allowed article hostnames, SEC contact
+7. Choose **Install browser** once and **Sign in to X** for guided cookie capture,
+   or paste exported cookies. Configure approved X IDs, allowed article hostnames, SEC contact
    identity and optional Alpaca read-only credentials in the news screen. See the
-   [Agent Reach connector guide](agentreach-connectors.md) for export and access details.
+   [browser sign-in guide](browser-signin.md) and [Agent Reach connector guide](agentreach-connectors.md).
 
 The token is checked through Telegram's `getMe` operation. Pairing accepts only the
 matching code in a private chat where the sender ID matches the chat ID. A new bot
@@ -39,7 +40,8 @@ Later launches open the Telegram connection home without asking for the token ag
 or sending messages automatically. **Send test message** makes an explicit test;
 **Change bot** reopens the token form; **Report interval** edits the saved schedule.
 **Model credentials** and **News credentials** edit provider access. Saved provider
-keys are never prefilled/revealed; blank fields retain them. Scroll the news screen
+keys are never prefilled/revealed; blank fields retain them. Browser sign-in stages
+captured cookies until you choose **Save news access**. Scroll the news screen
 or use Tab to reach optional fields; Enter saves the current form.
 Ctrl+Q or Exit cancels active setup and closes clients.
 
@@ -93,7 +95,8 @@ research commands keep their explicit configuration requirements and do not run 
 ## Credentials and state
 
 .env remains an optional manual configuration path. Model/X/Alpaca credentials are
-format-validated and saved without network calls or a paid model probe. Presence is
+format-validated and saved without provider probes or a paid model call. Explicit
+browser installation/login contacts the download service/X separately. Presence is
 shown as configured, never as verified account access. Missing/deferred keys still
 appear in doctor/startup checks when required by the chosen mode. SEC and X are
 optional in continuous research, and absent coverage is recorded. Source setup

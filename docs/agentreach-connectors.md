@@ -14,7 +14,7 @@ loop, evidence memory and report pipeline.
 | --- | --- | --- |
 | Primary news discovery | Locked yfinance `Ticker.get_news` and `Search` | No account/login |
 | Web page reading | Agent Reach 1.5.0 `WebChannel`, using Jina Reader | Public HTTPS pages; no publisher login or X cookies forwarded |
-| X search | Agent Reach-selected twitter-cli 0.8.6 `TwitterClient.fetch_search` | Explicit, manually exported `auth_token` and `ct0` cookies |
+| X search | Agent Reach-selected twitter-cli 0.8.6 `TwitterClient.fetch_search` | Explicit `auth_token` and `ct0` from browser sign-in or manual export |
 | Original disclosures | Existing SEC metadata and registered IR RSS | SEC contact identity and configured CIK/feed URLs |
 
 Agent Reach is pinned to
@@ -28,9 +28,10 @@ these pinned source dependencies. The package and lockfile agree on both revisio
 Agent Reach deliberately delegates X operations to upstream tools. Our adapter
 uses its selected `TwitterClient` directly with explicit credentials; it does not
 call the CLI authentication loader, which can otherwise inspect browser profiles
-when cookies are missing or invalid. No browser-profile harvesting, automatic login,
-post/like/follow operations, arbitrary shell commands or backend auto-switching are
-available to agents. Jina Reader supplies page text, not an interactive local browser
+when cookies are missing or invalid. Agents cannot harvest browser profiles, log in,
+post/like/follow, run arbitrary shell commands or auto-switch backends. The owner can
+explicitly launch an isolated browser through [onboarding](browser-signin.md).
+Jina Reader supplies page text, not an interactive local browser
 or authenticated publisher session. Video transcripts and Exa search remain future
 capabilities; yfinance supplies the current targeted search.
 
@@ -41,10 +42,11 @@ users retain Telegram and report scheduling and see only the added steps.
 
 For X:
 
-1. Log in to `x.com` yourself in your browser.
-2. Use Cookie-Editor to export **Header String**.
-3. Paste it in the masked **X cookies** field. Both `auth_token` and `ct0` are
-   required; unrelated exported cookies are discarded.
+1. Choose **Install browser** once, then **Sign in to X** in news onboarding.
+2. Complete login/verification in the dedicated browser. The app captures only
+   `auth_token` and `ct0`, closes the browser and populates the masked field.
+3. Alternatively, export **Header String** with Cookie-Editor and paste it in
+   **X cookies**. Unrelated exported cookies are discarded.
 4. Supply approved accounts as `numeric_id:handle`, separated by commas. Handles
    alone do not establish a verified identity. Example syntax: `123456:company`.
 5. Save. This validates and stores configuration; it does not prove live access.
@@ -58,7 +60,7 @@ conference announcements. Wildcards, full URLs and path expressions are rejected
 X and other news credentials are optional. **Configure later** records a deferred
 step without enabling missing access. Missing X access remains an explicit report
 gap. Blank fields retain saved credentials; reenter both X cookies to rotate them.
-If they expire, return to **News credentials** and replace them. Saving does not
+If they expire, return to **News credentials** and sign in again or replace them. Saving does not
 print keys, run paid model calls or contact the providers. Restart the research
 process to load changed credentials. Approved-author/domain changes are staged
 for the next cycle; restarts retain the open cycle's original source policy.

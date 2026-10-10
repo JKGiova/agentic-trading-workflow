@@ -1,5 +1,6 @@
 """First-run Telegram onboarding and connection home in one terminal window."""
 
+import asyncio
 from contextlib import suppress
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,6 +11,7 @@ from textual.message import Message
 from textual.widgets import Button, Collapsible, Footer, Input, Label, Static
 from textual.worker import WorkerCancelled, WorkerFailed
 
+from tradebot.browser_signin import install_browser, sign_in
 from tradebot.onboarding import SetupError, test_status
 
 
@@ -29,7 +31,7 @@ class SetupTerminal(App):
     #setup { width: 76; max-width: 100%; height: auto; max-height: 100%;
              border: round $primary; padding: 1 2; }
     #heading { text-style: bold; color: $accent; margin-bottom: 1; }
-    #intro, #status { height: auto; margin-bottom: 1; }
+    #intro, #status, #browser-status { height: auto; margin-bottom: 1; }
     #token-form { height: auto; }
     Label { margin-bottom: 0; }
     Input { margin-bottom: 1; }
@@ -46,6 +48,7 @@ class SetupTerminal(App):
         super().__init__()
         self.controller, self.force = controller, force
         self.busy = False
+        self.browser_worker = None
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="setup"):
@@ -102,8 +105,8 @@ class SetupTerminal(App):
                     yield Button("Configure later", id="skip-model")
             with Vertical(id="news-form"):
                 yield Static(
-                    "Agent Reach reads public web pages without login. For X, log in yourself "
-                    "and export cookies with Cookie-Editor → Header String. "
+                    "Agent Reach reads public web pages without login. For X, choose Sign in "
+                    "to X and log in in the separate browser, or paste exported cookies. "
                     "X and the providers below are optional. "
                     "Saved credentials are not live-verified.",
                     markup=False,
@@ -111,6 +114,11 @@ class SetupTerminal(App):
                 with Horizontal():
                     yield Button("Save news access", variant="primary", id="save-news")
                     yield Button("Configure later", id="skip-news")
+                with Horizontal():
+                    yield Button("Sign in to X", variant="primary", id="x-signin")
+                    yield Button("Install browser", id="install-browser")
+                    yield Button("Cancel", id="cancel-browser", disabled=True)
+                yield Static("", id="browser-status", markup=False)
                 yield Label("X cookies · auth_token and ct0")
                 yield SecretInput(password=True, id="x-cookies", placeholder="auth_token=…; ct0=…")
                 yield Label("Approved X accounts · numeric_id:handle, numeric_id:handle")
@@ -157,6 +165,7 @@ class SetupTerminal(App):
         self.status("Your token is hidden and saved privately on this computer.")
 
     def show_home(self):
+        self.query_one("#browser-status", Static).update("")
         pending = self.controller.pending_steps()
         if "report_schedule" in pending and "telegram" not in pending:
             self.show_schedule()
@@ -217,8 +226,12 @@ class SetupTerminal(App):
         for widget in self.query("Input, Button"):
             if widget.id != "exit":
                 widget.disabled = busy
+        self.query_one("#cancel-browser", Button).disabled = not (
+            busy and self.browser_worker is not None
+        )
 
     def show_access(self, step):
+        self.query_one("#browser-status", Static).update("")
         form = "model-form" if step == "model_access" else "news-form"
         self.query_one("#heading", Static).update(
             "Model access" if step == "model_access" else "News access"
@@ -265,6 +278,56 @@ class SetupTerminal(App):
     def change_news(self):
         if not self.busy:
             self.show_access("news_access")
+
+    @on(Button.Pressed, "#x-signin")
+    @on(Button.Pressed, "#install-browser")
+    def start_browser(self, event):
+        if not self.busy:
+            install = event.button.id == "install-browser"
+            self.browser_worker = self.browser_login(install)
+            self.set_busy(True)
+
+    def browser_status(self, text):
+        self.query_one("#browser-status", Static).update(text)
+        self.status(text)
+
+    @on(Button.Pressed, "#cancel-browser")
+    def cancel_browser(self):
+        if self.browser_worker is not None:
+            self.browser_worker.cancel()
+
+    @work(group="browser", exclusive=True, exit_on_error=False, description="X browser setup")
+    async def browser_login(self, install=False):
+        try:
+            if install:
+                self.browser_status("Downloading Chromium… You can cancel or exit while waiting.")
+                await install_browser()
+                self.browser_status(
+                    "Browser installed. Choose Sign in to X to connect your account."
+                )
+            else:
+                self.browser_status(
+                    "Log in to X in the opened browser, including any verification. "
+                    "Cookies will be captured automatically. You can cancel or close the browser."
+                )
+                cookies = await sign_in()
+                self.query_one("#x-cookies", Input).value = cookies.header()
+                self.browser_status(
+                    "X cookies captured; not saved yet. Set approved accounts, then choose "
+                    "Save news access. X search access has not been verified."
+                )
+        except asyncio.CancelledError:
+            self.browser_status("Browser setup cancelled. No new cookies were saved.")
+            raise
+        except SetupError as exc:
+            self.browser_status(str(exc))
+        except OSError, RuntimeError:
+            self.browser_status(
+                "Browser setup failed. Check your local browser installation and retry."
+            )
+        finally:
+            self.browser_worker = None
+            self.set_busy(False)
 
     @on(Button.Pressed, "#save-model")
     @on(Input.Submitted, "#nvidia_api_key")
