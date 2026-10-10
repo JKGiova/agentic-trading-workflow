@@ -14,7 +14,8 @@ jobs:
         python: ['3.12', '3.13']
     services:
       postgres:
-        image: postgres:16
+        # Official mirror avoids Docker Hub's anonymous pull limit on shared runners.
+        image: public.ecr.aws/docker/library/postgres:16
         env:
           POSTGRES_USER: tradebot_test
           POSTGRES_PASSWORD: test_only_local_ci
