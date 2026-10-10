@@ -58,6 +58,13 @@ Implement W0 then W1/W2, then W3/W4 as one restartable stock slice, then W5 and 
 
 ## Next concrete task
 
+Include the [NVIDIA NIM / DeepSeek V4.1 Flash migration](model-provider.md) in
+the provider-contract slice: explicit provider settings, research/chat wiring,
+private authentication, endpoint-specific payloads, usage/budget accounting,
+offline HTTP fixtures and a separate opt-in capability probe. The current
+OpenRouter adapter is not the selected target and must not be described as
+already migrated.
+
 The custom research graph and terminal now exist. Start the refined **C0+C1**
 packages in [connector implementation](connector-implementation.md): typed source
 capabilities, timestamped quotes and content/version contracts, a source registry,

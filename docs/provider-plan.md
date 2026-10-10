@@ -1,4 +1,4 @@
-# Selected providers: Alpaca, yfinance and AgentReach
+# Selected providers: NVIDIA NIM, Alpaca, yfinance and AgentReach
 
 [Wiki home](README.md) · [Research workflow](research-workflow.md) · [Memory](memory-and-retrieval.md)
 
@@ -6,8 +6,14 @@
 This supersedes the earlier Alpaca-news/official-X/Tavily default proposal.
 Existing adapters remain documented as implemented; provider migration is pending.
 
+The selected model service is now **NVIDIA NIM / DeepSeek V4.1 Flash**, replacing
+the OpenRouter baseline in the target. All initial roles and chat use
+`deepseek-ai/deepseek-v4.1-flash`; see [model provider](model-provider.md). The
+current runnable model client remains OpenRouter until its tested migration.
+
 | Component | Selected responsibility | Explicit boundary |
 | --- | --- | --- |
+| NVIDIA NIM | DeepSeek V4.1 Flash inference for analysts, debate, Orchestrator, Manager and chat | Model endpoint only; tool capability, quota and billing must be checked; memory/scheduling remain ours |
 | Alpaca | Account, holdings, pending orders, quotes/bars, clock/calendar; later paper execution | Broker-confirmed state and feed timestamps; agents cannot submit orders |
 | yfinance | Primary financial/company news and press-release discovery; shared macro searches | Yahoo sampling is not a complete news archive or guaranteed three-hour coverage |
 | AgentReach | Selected web-search, page-reading, approved-X and available video-transcript capabilities | Setup/routing ecosystem around underlying tools; not our graph, memory service or guaranteed data API |

@@ -89,6 +89,13 @@ The selected target now uses Alpaca for broker/market data, yfinance for primary
 
 ## Next milestone
 
+The owner selected NVIDIA NIM with `deepseek-ai/deepseek-v4.1-flash` for all
+initial roles and chat on 2026-10-10. The [model-provider plan](model-provider.md)
+supersedes the OpenRouter/Gemini target. This update changes documentation only:
+the runnable client, policy and `.env.example` still use OpenRouter. NVIDIA
+authentication, tool/JSON capabilities, quota and actual model quality have not
+been exercised.
+
 Start W0/W1 in the [workflow-first backlog](implementation-backlog.md): selected-provider contracts plus evidence/event memory. Implement C0/C1 capability and evidence contracts with offline fixtures, then run
 opt-in T0 source/model/account reads when owner configuration is available. Continue
 with durable collection and typed bounded verification; C5/C6 broker reconciliation,

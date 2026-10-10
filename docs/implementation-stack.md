@@ -16,7 +16,7 @@ Build a small Python application with an explicit LangGraph workflow and Postgre
 | --- | --- | --- |
 | Runtime | Python 3.12/3.13, virtual environment | One language for agents, data, risk, and evaluation; locked dependencies and CI |
 | Agent workflow | `langgraph`, `langgraph-checkpoint-postgres` | Explicit nodes/branches, shared frozen evidence, and persistent session checkpoints |
-| Model gateway | OpenRouter through a thin `httpx` client | Provider-independent paid model calls, bounded tool loops, JSON Schema output, usage logging |
+| Model provider | NVIDIA NIM / `deepseek-ai/deepseek-v4.1-flash` through a thin `httpx` client | Bounded model/tool loops, validated typed outputs and usage logging; migrate the current OpenRouter adapter |
 | Contracts | `pydantic`, `pydantic-settings` | Validate reports, scenarios, forecasts, allocation proposals, and configuration |
 | Business storage | PostgreSQL, `sqlalchemy` 2.x, `psycopg`, `alembic` | Evidence, jobs, queue, forecasts, reservations, orders, and versioned migrations |
 | Periodic triggers | APScheduler 3.x | One scheduler enqueues collection/session/settlement jobs; database deduplication controls execution |
@@ -44,13 +44,18 @@ Select one orchestration route. Framework memory does not replace the evidence/p
 
 ## Initial model experiment
 
-Start with one paid model across all roles to make the first comparison reproducible:
+The owner selected **NVIDIA NIM with DeepSeek V4.1 Flash** on 2026-10-10. Start
+with `deepseek-ai/deepseek-v4.1-flash` across every role and the chatbot, preserving
+distinct specialist instructions and source permissions. This supersedes the
+OpenRouter/Gemini baseline; the current runnable client still needs migration.
 
-- Baseline candidate: `google/gemini-2.5-flash` through OpenRouter.
-- Comparison candidate: `anthropic/claude-sonnet-4.6`, evaluated on the same evidence and contract tasks.
-- Later experiment: cheaper analyst/lead calls and a stronger debate/Orchestrator/Allocator model, recording each role's model.
-
-These are available research candidates, not a claim that either predicts stocks reliably. Verify endpoint tool-calling and structured-output support before enabling a model. Use `response_format: json_schema` where supported and require the needed parameters in provider routing; still validate locally. Record provider, model ID, prompt/schema versions, reasoning settings, retries, and billed usage. Do not silently switch models mid-experiment or convert fluent output into calibrated confidence.
+See [model provider](model-provider.md) for the endpoint, private credential and
+acceptance checks. Verify native tool calls and structured-output support on the
+exact endpoint; use JSON Schema constraints only where supported and validate
+locally. Record provider, requested/returned model, prompt/schema versions,
+reasoning settings, retries, token usage and the separate billing basis. Later
+model comparisons require an explicit experiment; confidence is not calibrated
+merely because the output is fluent.
 
 ## Proposed repository modules
 
@@ -72,7 +77,7 @@ The initial implementation currently uses flat modules; planned package splits, 
 ## Primary references
 
 - [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence) and [checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers)
-- [OpenRouter structured output](https://openrouter.ai/docs/guides/features/structured-outputs)
+- [NVIDIA NIM DeepSeek V4.1 Flash](https://build.nvidia.com/deepseek-ai/deepseek-v4.1-flash)
 - [Pydantic models](https://docs.pydantic.dev/latest/concepts/models/)
 - [SQLAlchemy](https://docs.sqlalchemy.org/), [Alembic](https://alembic.sqlalchemy.org/en/latest/tutorial.html), [Psycopg](https://www.psycopg.org/psycopg3/docs/)
 - [HTTPX timeouts](https://www.python-httpx.org/advanced/timeouts/), [feedparser](https://feedparser.readthedocs.io/en/latest/), [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)

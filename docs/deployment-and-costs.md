@@ -45,7 +45,7 @@ The [continuous target](continuous-analysis.md) changes the cost model: add per-
 | Runtime | Mode, database URL, exchange calendar/time zone, collection/decision intervals, session deadline |
 | Instruments | Selected stocks, eligibility, CIK/aliases, benchmark and forecast horizon |
 | Source access | Alpaca credentials/feed, pinned yfinance, selected AgentReach backends and private authentication, approved X IDs/domains, SEC user agent and IR registry; optional legacy X/Tavily/FRED credentials |
-| Models | OpenRouter credential, model per role/stage, endpoint capabilities, reasoning/token/concurrency settings |
+| Models | Private NVIDIA credential, NIM base URL, DeepSeek V4.1 Flash per role/stage, endpoint capabilities, reasoning/token/concurrency settings; current OpenRouter configuration awaits migration |
 | Financial limits | Investable capital, cash reserve, maximum exposure/positions/concentration, stressed-loss budget, daily-loss and liquidity/freshness limits |
 | Operating limits | LLM dollars/tokens, X returned-resource allowance, search credits, tool/verification counts, retry budget, maximum debates |
 | Audit | Prompt/schema/policy versions, retention, log settings and checkpoint pruning |
@@ -53,6 +53,14 @@ The [continuous target](continuous-analysis.md) changes the cost model: add per-
 Credentials stay in local environment/deployment secret storage, never committed or included in prompts. Typed policy/credentials and a local `--doctor` command now exist. A real source-capability probe and the full per-source operating-budget ledger remain planned; successful local configuration checks do not verify API access.
 
 ## Published reference prices
+
+**Model-selection update, 2026-10-10:** the target is now NVIDIA NIM / DeepSeek
+V4.1 Flash. NVIDIA lists a free prototype endpoint, but account quota, sustained
+capacity and production billing have not been verified. The Gemini/Sonnet rates
+and dollar estimates below are historical comparisons, not a budget for the
+selected model. Record actual token usage and the configured billing basis in
+the [NVIDIA capability probe](model-provider.md); do not infer unlimited free
+continuous operation or substitute DeepSeek-direct/partner rates.
 
 The following X/Tavily figures describe optional earlier connectors, not the selected AgentReach route. yfinance has no per-call library fee; this does not establish licensed content access or completeness. AgentReach backend search/page/proxy charges, transcript availability and authentication must be measured separately. Do not apply official X prices to a CLI backend or call all research free. See [provider plan](provider-plan.md).
 
@@ -68,6 +76,10 @@ The following X/Tavily figures describe optional earlier connectors, not the sel
 No trading commission, publisher fee, tax, credit-funding fee, data entitlement, or infrastructure cost is implicitly included in the token estimates.
 
 ## Workload-derived model estimate
+
+Call-count formulas remain useful workload references. The dollar table uses the
+older Gemini/Sonnet selection and must be recalculated for the selected NVIDIA
+endpoint after its quota and billing basis are known.
 
 The **current** v0.1 graph uses four analysts and one lead per stock, one holding
 review per holding, and eight debate turns, one judgment and one allocation per

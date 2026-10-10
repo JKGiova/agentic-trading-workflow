@@ -71,6 +71,10 @@ count from the proposed shared-briefing optimization.
 
 ## Target runtime
 
+Use [NVIDIA NIM / DeepSeek V4.1 Flash](model-provider.md) for all initial model
+roles and chat. This is the owner's selected target; the current OpenRouter client
+still requires the provider-contract migration and capability tests.
+
 The [agent control-loop blueprint](agent-control-loop.md) specifies how to turn
 the bounded specialist calls into on-demand, tool-using, recoverable agents and
 how that differs from TradingAgents' per-case graph.
@@ -141,7 +145,7 @@ Unknown submission retains the reservation. Partial fills convert the filled sha
 ## Primary references
 
 - [LangGraph checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers)
-- [OpenRouter structured outputs and endpoint support](https://openrouter.ai/docs/guides/features/structured-outputs)
+- [NVIDIA NIM model endpoint](https://build.nvidia.com/deepseek-ai/deepseek-v4.1-flash)
 - [Pydantic validation](https://docs.pydantic.dev/latest/concepts/models/)
 - [Alpaca order behavior](https://docs.alpaca.markets/us/docs/orders-at-alpaca)
 
