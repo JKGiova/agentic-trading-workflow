@@ -44,4 +44,4 @@ printf 'Installing/checking locked dependencies (Python %s)...\n' "${TRADEBOT_PY
 if [[ $# -eq 0 ]]; then
     printf 'Opening Telegram setup. Ctrl+Q exits.\n' >&2
 fi
-exec "$uv_bin" run --no-sync tradebot "$@"
+exec "$uv_bin" run --no-sync tradingworkflow "$@"

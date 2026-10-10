@@ -8,6 +8,9 @@ without owner credentials.
 
 ## Implemented in this release
 
+- Install with `uv sync --locked --no-dev --python 3.12`, activate `.venv`, and
+  launch with the packaged `tradingworkflow` command. The Bash launcher starts the
+  same entry point; `tradebot` remains a compatibility alias.
 - Default launcher opens a single-window Telegram onboarding/home screen without
   model or broker credentials. Token entry is masked, pairing uses a private
   one-time code, and successful setup sends an isolated test message.
@@ -52,12 +55,15 @@ pairing/rate limits/unknown sends, CLI startup/shutdown and the four-pane termin
 A complete HTTP-fixture test crosses NVIDIA transport, all four agents, synthesis,
 report persistence and Telegram delivery. Tests isolate real owner secrets.
 
-Release verification locally: **149 passed, two PostgreSQL tests skipped without
+Release verification locally: **152 passed, two PostgreSQL tests skipped without
 a test server; 96.23% statement coverage**. CI runs the PostgreSQL cases with its
 database service; see the commit-specific Actions result for that outcome.
 
 CI runs Python 3.12/3.13, isolated PostgreSQL, lint/format, a 90% minimum coverage
-gate, map freshness and launcher checks. PostgreSQL tests exercise both the existing
+gate, map freshness, installed-command checks and launcher checks. Offline tests
+exercise the installed `tradingworkflow` executable for help, configuration checks
+and safe noninteractive first launch; CI also launches it after activating `.venv`.
+PostgreSQL tests exercise both the existing
 ledger and concurrent research-task/outbox claims with cycle budget accounting.
 See [Actions](https://github.com/JKGiova/agentic-trading-workflow/actions) for the
 commit-specific outcome. Local PostgreSQL tests require an isolated test URL.

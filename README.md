@@ -4,19 +4,31 @@ A news-driven AI workflow for a selected group of stocks, with persistent eviden
 
 **Status: v0.2.1 with first-run Telegram onboarding.** Four analysts, a durable supervisor, NVIDIA NIM, Yahoo news discovery, peer review and periodic Telegram summaries are implemented, alongside the four-pane CLI and earlier bounded decision graphs. Live-provider access and prospective validation still require owner configuration.
 
-## Run the terminal
+## Install and run
 
 ```bash
-./start.sh
+git clone https://github.com/JKGiova/agentic-trading-workflow.git
+cd agentic-trading-workflow
+uv sync --locked --no-dev --python 3.12
+source .venv/bin/activate
+tradingworkflow
 ```
 
-On macOS/Linux, the launcher installs `uv` if needed, Python 3.12 and the locked
-runtime dependencies, then opens Telegram onboarding. Paste your BotFather token
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first if needed.
+It creates `.venv`, installs Python 3.12 if needed and installs the locked runtime
+dependencies. On macOS/Linux, activate the environment with the command above;
+in Windows PowerShell use `.venv\Scripts\Activate.ps1`.
+
+`tradingworkflow` opens Telegram onboarding on first run. Paste your BotFather token
 in the hidden field, pair your private chat using the displayed `/start` code, and
 receive a test message. Later launches reuse saved setup. This entry point runs
 independently of the model/research team. See the [onboarding guide](docs/onboarding.md).
 
-Use `./start.sh --demo` for the four-pane offline research demo, `--supervisor` for
+For later launches, `cd` into the repository, activate `.venv` and run
+`tradingworkflow`. `deactivate` exits the environment. The optional `./start.sh`
+launcher still installs dependencies and starts the same command automatically.
+
+Use `tradingworkflow --demo` for the four-pane offline research demo, `--supervisor` for
 configured continuous research, and `--session` for the older bounded terminal.
 Pass `--onboard` to edit setup or `--telegram-test` to send one standalone test.
 See the [CLI guide](docs/cli.md) for provider configuration.

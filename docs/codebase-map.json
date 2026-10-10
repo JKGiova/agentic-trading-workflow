@@ -1,12 +1,12 @@
 {
   "generator": "Python AST; not Graphify",
-  "source_digest": "e9308645c5561b521964825c4a0ba135b723aa094e6ca75e252195cce452b215",
+  "source_digest": "87d8c6efa5bc937182204d1d5a64dc68dd5353caf2e9bd3e8932c0bb6f584af1",
   "source_hashes": {
     "src/tradebot/__init__.py": "acc1eda1686153e76013a9e6c5f45e3c073ff48846bebeea80cdd02d5c0b3cb0",
     "src/tradebot/analysis_memory.py": "fd0170e7f88b59959306f2da19ded6400665ae64673a8d816332f78c2c7da3f4",
     "src/tradebot/analysts.py": "adbed55bd98e0bf6a7ffb020b351c5823508770c5af21f02d593f91e5a5554d7",
     "src/tradebot/broker.py": "6cee758208bf6dce8110055b57a29f3f33f7ab1d01fe44bb451378db9a67747c",
-    "src/tradebot/cli.py": "2ae829b4b6350b0cee7b9c73aee7d3f6fb8a84e44e7ca5f9e2ecbbc11ad2e1af",
+    "src/tradebot/cli.py": "900aaee3fec07bd66197abdc95d8ab43b777c8d91cc9ac1ae43b7c95a276a0fb",
     "src/tradebot/contracts.py": "a6dbd64b316389ebbbbe88837dc13a19d2af9ebf34ff22dea677d723b38a161e",
     "src/tradebot/models.py": "2410c996390604305754569d0801f627735b563b5985bea274352c367370f013",
     "src/tradebot/news_sources.py": "d39d3ade4cf6bb7eb2e1566358931077aa7290b6d13e22083fbd3e00d4797114",

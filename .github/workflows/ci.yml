@@ -40,6 +40,11 @@ jobs:
       - run: uv run pytest --cov=tradebot --cov-fail-under=90 --cov-report=term-missing
       - run: uv run python tools/export_code_map.py --check
       - run: bash -n start.sh
+      - name: Run the installed command from the activated environment
+        run: |
+          source .venv/bin/activate
+          tradingworkflow --help
+          tradingworkflow --demo --doctor
       - run: ./start.sh --demo --doctor
       - run: ./start.sh --demo --once
       - run: ./start.sh --demo --supervisor --once

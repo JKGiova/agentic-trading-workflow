@@ -127,7 +127,11 @@ def main(argv=None) -> int:
             )
             return 1 if missing else 0
         if missing:
-            print("Configuration incomplete: " + ", ".join(missing) + ". Run tradebot --doctor.")
+            print(
+                "Configuration incomplete: "
+                + ", ".join(missing)
+                + ". Run tradingworkflow --doctor."
+            )
             return 1
         directory = Path(".tradebot")
         directory.mkdir(exist_ok=True)

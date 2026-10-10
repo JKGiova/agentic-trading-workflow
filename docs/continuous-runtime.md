@@ -31,15 +31,16 @@ adding the supervisor does not add another investment manager.
 
 ## Run and configure
 
-For Telegram-only first-run setup, use `./start.sh`. Its onboarding asks for the
+After [installation and environment activation](cli.md#install-and-connect-telegram),
+use `tradingworkflow` for Telegram-only first-run setup. Its onboarding asks for the
 bot token, pairs your private chat and sends a test without running the analysis
 team. Later launches reuse saved setup. See [onboarding](onboarding.md).
 
 First verify the full offline path without credentials:
 
 ```bash
-./start.sh --demo --supervisor --once
-./start.sh --demo --supervisor
+tradingworkflow --demo --supervisor --once
+tradingworkflow --demo --supervisor
 ```
 
 The first command advances an injected clock and closes a synthetic cycle immediately;
@@ -50,7 +51,7 @@ provider state use separate default databases.
 Create a private configuration, then edit its watchlist and limits:
 
 ```bash
-./start.sh --init
+tradingworkflow --init
 ```
 
 `config.local.json` is ignored by git. Its `instruments` array must contain the
@@ -76,11 +77,11 @@ orders. Source sampling is not a complete archive.
 Pair Telegram with an explicit one-time command in your private chat:
 
 ```bash
-./start.sh --telegram-pair
-./start.sh --supervisor --doctor
-./start.sh --supervisor
+tradingworkflow --telegram-pair
+tradingworkflow --supervisor --doctor
+tradingworkflow --supervisor
 # Optional supervised/background process:
-./start.sh --supervisor --headless
+tradingworkflow --supervisor --headless
 ```
 
 Pairing displays the bot link and `/start <one-time-code>`. Only an exact code from

@@ -9,47 +9,70 @@ submission method exists in this release.
 
 ## Install and connect Telegram
 
-On macOS/Linux, clone the repository and run the Bash launcher:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then clone the
+repository, install its locked runtime dependencies and activate the environment:
 
 ```bash
 git clone https://github.com/JKGiova/agentic-trading-workflow.git
 cd agentic-trading-workflow
-./start.sh
+uv sync --locked --no-dev --python 3.12
+source .venv/bin/activate
+tradingworkflow
 ```
 
-The launcher finds an existing `uv` or installs it from [Astral's official
-installer](https://docs.astral.sh/uv/getting-started/installation/) into the ignored
-`.tradebot/tools` directory. Bootstrap requires `curl` or `wget` and internet access.
-It does not require sudo or modify shell profiles. `uv` creates `.venv`, downloads
-Python 3.12 if needed and installs runtime dependencies from `uv.lock`. Later runs
-reuse those installations; already-installed development tools are retained.
-To select the other tested Python version, use `TRADEBOT_PYTHON=3.13 ./start.sh`.
-If executable permissions were lost when downloading, use `bash start.sh`.
+`uv sync` creates `.venv`, downloads Python 3.12 if needed and installs the package,
+including the `tradingworkflow` command, from `uv.lock`. Use `--python 3.13` to select
+the other tested Python version. Activation is `source .venv/bin/activate` on
+macOS/Linux and `.venv\Scripts\Activate.ps1` in Windows PowerShell.
+
+For each later terminal session, return to the repository, activate `.venv` and run
+`tradingworkflow`; no reinstall is needed. Use `deactivate` when finished. You can
+also run `uv run --no-sync tradingworkflow` without activating the environment.
+After pulling an update, rerun `uv sync --locked --no-dev` to refresh dependencies
+and installed commands. Keep commands in the repository so local configuration and
+state paths resolve consistently.
+
+With an existing Python 3.12/3.13 and no `uv`, the standard Python installation is
+also supported (dependency versions resolve from `pyproject.toml` rather than the lock):
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+tradingworkflow
+```
+
+The optional `./start.sh` Bash launcher installs `uv` if needed into the ignored
+`.tradebot/tools` directory, synchronizes the locked runtime dependencies and starts
+`tradingworkflow` automatically. Bootstrap requires `curl` or `wget` and internet
+access. It does not require sudo or modify shell profiles. Already-installed
+development tools are retained. To select Python 3.13 with the launcher, use
+`TRADEBOT_PYTHON=3.13 ./start.sh`. If executable permissions were lost when
+downloading, use `bash start.sh`. The older `tradebot` command remains an alias.
 
 No arguments opens Telegram onboarding: hidden token entry, private-chat pairing
 and a test message. Later launches open the saved connection home. It requires no
 NVIDIA or broker credentials and no policy file. See [onboarding](onboarding.md)
 for secret storage, relaunch, cancellation and future wallet/configuration steps.
-Any supplied arguments are passed unchanged to `tradebot`; choose research modes
-explicitly:
+Choose research modes explicitly; `./start.sh` forwards these same arguments:
 
 ```bash
-./start.sh --onboard
-./start.sh --telegram-test
-./start.sh --demo --doctor
-./start.sh --demo --once
-./start.sh --demo --auto
-./start.sh --init
-./start.sh --supervisor --doctor
-./start.sh --supervisor --config config.local.json
-./start.sh --session --config config.local.json
+tradingworkflow --help
+tradingworkflow --onboard
+tradingworkflow --telegram-test
+tradingworkflow --demo --doctor
+tradingworkflow --demo --once
+tradingworkflow --demo --auto
+tradingworkflow --init
+tradingworkflow --supervisor --doctor
+tradingworkflow --supervisor --config config.local.json
+tradingworkflow --session --config config.local.json
 ```
 
 The research commands without `--demo` use provider configuration. Configure credentials as
 described below before starting provider-backed research. Relative config/database
-paths resolve from the repository directory, even when invoking the script elsewhere.
-For manual setup with an existing Python 3.12/3.13 and `uv`, use `uv sync --locked`
-followed by `uv run tradebot --demo`.
+paths resolve from the current working directory; the optional Bash launcher always
+switches to the repository directory before starting the command.
 
 ## Four-pane research terminal
 
@@ -75,19 +98,19 @@ is manual. Continuous collection and worker/report scheduling are available with
 `--supervisor`; see [continuous runtime](continuous-runtime.md).
 
 ```bash
-uv run tradebot --demo --doctor
-uv run tradebot --demo --once
-uv run tradebot --demo --auto
+tradingworkflow --demo --doctor
+tradingworkflow --demo --once
+tradingworkflow --demo --auto
 ```
 
 ## Configure provider-backed research
 
 ```bash
-uv run tradebot --init
+tradingworkflow --init
 cp .env.example .env
 # Edit config.local.json and .env locally.
-uv run tradebot --doctor
-uv run tradebot --session
+tradingworkflow --doctor
+tradingworkflow --session
 ```
 
 `--init` creates a nonsecret policy template and refuses to overwrite it. Add selected
@@ -149,7 +172,7 @@ are not implemented.
 SQLite/WAL is the local default. PostgreSQL uses the same initial SQLAlchemy schema:
 
 ```bash
-uv run tradebot --session --database 'postgresql+psycopg://USER:PASSWORD@HOST/DATABASE'
+tradingworkflow --session --database 'postgresql+psycopg://USER:PASSWORD@HOST/DATABASE'
 ```
 
 Use a dedicated database and private credential handling; the example URL is a
@@ -193,7 +216,7 @@ and [the backlog](implementation-backlog.md) for the retained full plan.
 
 ## Continuous team and Telegram (v0.2)
 
-Use `./start.sh --supervisor` for the continuous team in the four-pane terminal,
+Use `tradingworkflow --supervisor` for the continuous team in the four-pane terminal,
 `--supervisor --headless` for background operation, and `--telegram-pair` for the
 private-chat pairing code. `--demo --supervisor --once` exercises a complete cycle
 with an injected clock. Provider `--supervisor --once` waits for a real cycle.

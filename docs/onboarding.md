@@ -7,8 +7,11 @@ Telegram setup. It does not require a policy file, stock watchlist, NVIDIA key,
 broker credentials or running research agents.
 
 ```bash
-./start.sh
+tradingworkflow
 ```
+
+Install the project and activate `.venv` first; see [installation](cli.md#install-and-connect-telegram).
+Run commands from the repository directory to reuse the same saved setup.
 
 On the first launch:
 
@@ -32,12 +35,12 @@ or sending messages automatically. **Send test message** makes an explicit test;
 
 | Command | Behavior |
 | --- | --- |
-| `./start.sh` | First-run setup or saved Telegram connection home |
-| `./start.sh --onboard` | Reopen the setup form with a masked saved token |
-| `./start.sh --telegram-test` | Send one standalone test to the saved paired chat; no TUI |
-| `./start.sh --demo` | Open the existing synthetic four-pane research terminal |
-| `./start.sh --supervisor` | Run configured continuous research in the four-pane terminal |
-| `./start.sh --session` | Open the older configured bounded-session research terminal |
+| `tradingworkflow` | First-run setup or saved Telegram connection home |
+| `tradingworkflow --onboard` | Reopen the setup form with a masked saved token |
+| `tradingworkflow --telegram-test` | Send one standalone test to the saved paired chat; no TUI |
+| `tradingworkflow --demo` | Open the existing synthetic four-pane research terminal |
+| `tradingworkflow --supervisor` | Run configured continuous research in the four-pane terminal |
+| `tradingworkflow --session` | Open the older configured bounded-session research terminal |
 
 Interactive setup needs a terminal, normally at least 80 columns by 24 rows.
 Redirected/noninteractive input returns an instruction instead of hanging for a token.

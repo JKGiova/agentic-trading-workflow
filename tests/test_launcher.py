@@ -76,7 +76,7 @@ def test_existing_uv_defaults_and_argument_forwarding(launcher, args):
         str(project),
         "run",
         "--no-sync",
-        "tradebot",
+        "tradingworkflow",
         *args,
     ]
     assert result.stdout == ""
@@ -87,7 +87,7 @@ def test_sync_failure_does_not_launch_app(launcher):
     executable(bin_dir / "uv", FAKE_UV)
     result = run(SYNC_EXIT="4")
     assert result.returncode == 4
-    assert "tradebot" not in Path(environment["LAUNCH_LOG"]).read_text().splitlines()
+    assert "tradingworkflow" not in Path(environment["LAUNCH_LOG"]).read_text().splitlines()
 
 
 @pytest.mark.parametrize("client", ["curl", "wget"])

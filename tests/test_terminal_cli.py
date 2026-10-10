@@ -1,5 +1,7 @@
 import asyncio
 import json
+import shutil
+import subprocess
 
 import pytest
 from textual.widgets import DataTable, Input, RichLog, Static
@@ -8,6 +10,31 @@ from tradebot.cli import main
 from tradebot.service import TradeService
 from tradebot.settings import Credentials
 from tradebot.terminal import TradingTerminal
+
+
+@pytest.mark.parametrize("args", [("--help",), ("--demo", "--doctor"), ()])
+def test_installed_tradingworkflow_command(tmp_path, args):
+    command = shutil.which("tradingworkflow")
+    assert command is not None, "Install the project into the active environment first"
+    result = subprocess.run(
+        [command, *args],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=15,
+        check=False,
+    )
+    assert result.returncode == (0 if args else 1), result.stderr
+    if args == ("--help",):
+        assert "usage: tradingworkflow" in result.stdout
+        assert "--onboard" in result.stdout and "--telegram-test" in result.stdout
+    elif args:
+        doctor = json.loads(result.stdout)
+        assert doctor["configuration_ok"] and doctor["mode"] == "demo"
+        assert not doctor["orders_enabled"] and not doctor["network_access_verified"]
+    else:
+        assert "Open onboarding in an interactive terminal" in result.stdout
+    assert not list(tmp_path.iterdir())
 
 
 @pytest.mark.parametrize("size", [(80, 24), (120, 36), (160, 48)])
