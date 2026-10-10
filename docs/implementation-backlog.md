@@ -37,6 +37,21 @@ T0-T6 can run without order submission. T7 requires a verified paper account and
 
 Run routine CI against deterministic fixtures and a real test PostgreSQL instance where concurrency matters. Provider integrations are separately enabled and charge-aware; never contact broker submission or funded providers merely by importing a test. Publish measured checks only after implementation exists.
 
+## Workflow-first packages: current priority
+
+The owner selected Alpaca, yfinance and AgentReach and prioritized understanding/developing memory and search. The following packages refine T0-T6/C0-C4; they do not bypass T7 execution prerequisites or declare older packages complete.
+
+| Package | Deliverable | Acceptance |
+| --- | --- | --- |
+| W0. Provider contracts | Pin selected backends; typed yfinance leads, AgentReach capabilities and Alpaca timestamps | Fixture parsing, tab/cache isolation, author/domain policy, failures versus sampled empty results; opt-in access checks separate |
+| W1. Research memory | Alembic evidence/event/claim/question versions and cutoff-aware SQL queries | Corrections immutable, event duplicates linked, future observations/summaries excluded; PostgreSQL transaction tests |
+| W2. Retrieval | Instrument/event/full-text context assembly and retrieval manifests | Relevant original disclosure and contradictions retained within budget; stale cache cannot satisfy fresh holding research |
+| W3. Analyst tools | Scoped search/read/transcript/social loops, durable requests and bounded budgets | CES-like lead deepened to available primary evidence; unavailable transcript/identity remains a gap; no arbitrary shell |
+| W4. Recoverable graph | Persistent checkpoint/thread ID, stage references, verification revisions | Crash before/after durable tool result resumes correctly; persisted result reused; cutoff advance reruns affected reasoning |
+| W5. Decisions and lessons | Position-thesis retrieval, portfolio-wide preview, outcome settlement and reflective hypotheses | Every holding reviewed; reinforcement debated; future lessons excluded; both confidence stages retained |
+
+Implement W0 then W1/W2, then W3/W4 as one restartable stock slice, then W5 and broader coverage. Optional embeddings follow measured lexical-retrieval evaluation. [Research workflow](research-workflow.md) gives the graph and example; [memory and retrieval](memory-and-retrieval.md) gives write/read paths and failure cases.
+
 ## Next concrete task
 
 The custom research graph and terminal now exist. Start the refined **C0+C1**

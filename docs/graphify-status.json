@@ -1,10 +1,12 @@
 {
   "provider": "Graphify MCP plugin",
   "repository": "JKGiova/agentic-trading-workflow",
-  "checked_at": "2026-10-09",
+  "checked_at": "2026-10-10",
   "status": "blocked_workspace_selection",
   "error_code": "no_workspace",
-  "attempted_tools": ["list_repositories", "list_workspaces", "graph_stats"],
+  "attempted_tools": [
+    "list_workspaces"
+  ],
   "workspace_handle": null,
   "indexed_commit": null,
   "export_available": false,

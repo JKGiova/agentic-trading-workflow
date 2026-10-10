@@ -15,6 +15,10 @@ Every analyst publishes a short shared-context briefing and a per-stock report w
 
 Social-only rumors cannot justify opening or reinforcing a position in the initial design.
 
+## Bounded research and reusable context
+
+Analysts start with yfinance leads and role-scoped stored history, then request targeted original sources through typed AgentReach-backed tools. A mentioned conference can trigger announcement/transcript research; the trigger is a material unanswered question, not a confidence admission threshold. Preserve independent reports and share retrieved evidence through a versioned event archive. See [research workflow](research-workflow.md) and [memory and retrieval](memory-and-retrieval.md).
+
 ## Team synthesis and initial confidence
 
 After all independent reports are complete, the designated Analyst Lead synthesizes one stock forecast on behalf of the analysis team. Propose the Financial Analyst as lead initially; this adds a stage, not another agent. It reconciles conflicting evidence without averaging votes or treating duplicate news as independent confirmation.
@@ -53,3 +57,4 @@ Prioritize research and review of holdings over optional new-entry debates when 
 - [Position management](position-management.md)
 - [Portfolio Allocator](portfolio-allocator.md)
 - [Data and sources](data-and-sources.md)
+

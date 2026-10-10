@@ -29,7 +29,7 @@ News collection and order monitoring run independently of AI sessions. Research 
 
 ## Read first
 
-The detailed plan lives in the **[project wiki](docs/README.md)**. Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
+The detailed plan lives in the **[project wiki](docs/README.md)**. The selected target uses Alpaca for broker/market data, yfinance for news leads, and AgentReach-backed tools for deeper research. Start with the [research workflow](docs/research-workflow.md), [persistent memory](docs/memory-and-retrieval.md), and [provider plan](docs/provider-plan.md); these refinements are planned, not installed. Start with the [concrete implementation stack](docs/implementation-stack.md) and [ordered backlog](docs/implementation-backlog.md) for the proposed Python/LangGraph build.
 
 | Document | Purpose |
 | --- | --- |

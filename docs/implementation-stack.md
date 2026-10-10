@@ -17,7 +17,10 @@ Build a small Python application with an explicit LangGraph workflow and Postgre
 | Business storage | PostgreSQL, `sqlalchemy` 2.x, `psycopg`, `alembic` | Evidence, jobs, queue, forecasts, reservations, orders, and versioned migrations |
 | Periodic triggers | APScheduler 3.x | One scheduler enqueues collection/session/settlement jobs; database deduplication controls execution |
 | APIs and feeds | `httpx`, `feedparser`, `beautifulsoup4` | Bounded API/RSS retrieval and parsing of authorized accessible content |
-| Broker/data | `alpaca-py`; direct news REST adapter | Paper account, holdings, calendar, quotes, orders, and order updates |
+| Broker/data | Existing Alpaca REST adapter; optional pinned `alpaca-py` transport | Paper account, holdings, timestamped quotes/bars, calendar and future order lifecycle |
+| News discovery | Pinned `yfinance` | Stock news/press-release leads and shared macro search, with local date/relevance checks |
+| Deeper research | Pinned AgentReach and selected underlying backends | Typed search/page/approved-X/transcript adapters; no arbitrary model-generated shell |
+| Persistent research memory | PostgreSQL full-text search, event/evidence tables; optional later `pgvector` | Instrument/event/time retrieval first; graph checkpoints remain separate |
 | Owner interface | `textual` | One four-pane terminal for positions, selection focus, research chat and portfolio/performance |
 | Evaluation | `pandas`, `numpy`, `scikit-learn` | Prospective forecast settlement, return/drawdown summaries, and calibration |
 | Verification | `pytest`, `pytest-asyncio`, `ruff` | Contract, temporal, recovery, reservation, and execution checks |

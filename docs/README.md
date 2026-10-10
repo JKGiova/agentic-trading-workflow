@@ -14,6 +14,9 @@ The proposed build is Python/LangGraph with PostgreSQL, OpenRouter model calls, 
 
 | Page | Purpose |
 | --- | --- |
+| [Research workflow](research-workflow.md) | TradingAgents-style analyst tool loops, event follow-up, cutoff revisions and a CES example |
+| [Memory and retrieval](memory-and-retrieval.md) | Persistent checkpoints, evidence/event/thesis memory, SQL retrieval and outcome lessons |
+| [Selected provider plan](provider-plan.md) | Alpaca, yfinance and AgentReach responsibilities, boundaries and access checks |
 | [Implementation stack](implementation-stack.md) | Concrete packages, framework alternatives, model candidates, and planned modules |
 | [Connector implementation](connector-implementation.md) | News, approved X authors, SEC/IR, publisher search, quotes, and capability proofs |
 | [Trading connectors](trading-connectors.md) | Current read-only subset, planned broker interfaces, intent lifecycle, protection and acceptance tests |
@@ -47,6 +50,9 @@ Read the architecture, analyst team, forecasts, opportunity analysis, position m
 | [Source research](research.md) | Recommended repositories, their gaps, and primary documentation |
 
 ## Current design decisions
+
+- Selected target: Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed bounded research; existing adapters remain unchanged until migration.
+- Next development focuses on evidence/event memory, retrieval, analyst tool loops and recoverable sessions; see the workflow and memory pages.
 
 - Four specialist analysts cover market, financial, company, and authorized social news.
 - Every open position requires fresh, recorded searches and an explicit coverage status.

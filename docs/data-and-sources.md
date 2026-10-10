@@ -2,7 +2,7 @@
 
 [Wiki home](README.md) · [Project overview](../README.md)
 
-Concrete provider APIs, access checks, quotas, timestamps, and the whitelist-query template are specified in [connector implementation](connector-implementation.md). The first proposal combines Alpaca/Benzinga, official X, SEC/IR, approved publisher feeds/search, and official macro sources; each still needs an access proof.
+Concrete provider APIs, access checks, quotas, timestamps, and the whitelist-query template are specified in [connector implementation](connector-implementation.md). The selected target combines yfinance news discovery, AgentReach-backed targeted research, SEC/IR and official macro sources, with Alpaca broker/market data. See [provider plan](provider-plan.md) for the provider migration and [memory and retrieval](memory-and-retrieval.md) for the durable event archive. Each enabled capability still needs an access proof.
 
 ### Financial publications
 
@@ -23,7 +23,7 @@ Maintain an explicit whitelist controlled by the project owners:
 - Approved topics or instruments where appropriate.
 - Source configuration version and operational status.
 
-Use the official X API with author filtering and incremental cursors. Recent Search covers the previous seven days; older historical coverage requires an appropriately authorized archive source or permitted retained data.
+Use the selected AgentReach-backed X capability behind a typed, author-validated adapter with incremental state. Verify the actual backend's supported time window, pagination and identity fields. Official X Recent Search remains an explicitly configured alternative with its own access and window limits; no backend can silently stand in for missing authorized coverage.
 
 Being on the whitelist makes an account eligible for collection. Claims still require evaluation and, where appropriate, corroboration. Source permissions, API access, and content-retention obligations must be reviewed before enabling a connector.
 
@@ -48,7 +48,7 @@ Each session receives three context layers:
 | Relevant history | Earlier disclosures, related events, contradictory evidence, and previous context for the instruments under review |
 | Position memory | Entry thesis, supporting evidence, invalidation conditions, review deadline, previous decisions, and execution outcomes |
 
-Persist these layers independently of the LLM conversation. Retrieve relevant history by instrument, event, and time; add semantic retrieval if simpler filters prove insufficient.
+Persist these layers independently of the LLM conversation. Add versioned event summaries, claims, open questions and settled outcome lessons through the [memory and retrieval plan](memory-and-retrieval.md). Retrieve relevant history by instrument, event, and time; add semantic retrieval if simpler filters prove insufficient.
 
 Distinguish a newly published event from an old article discovered late. Preserve corrections and historical versions subject to source rules. During evaluation, use only the version that was available at the simulated decision time.
 
@@ -59,3 +59,4 @@ Distinguish a newly published event from an old article discovered late. Preserv
 - [Connector implementation](connector-implementation.md)
 - [Persistence and contracts](persistence-and-contracts.md)
 - [Source research](research.md)
+

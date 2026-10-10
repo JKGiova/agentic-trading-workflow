@@ -56,7 +56,7 @@ Target Python 3.12/3.13 with LangGraph, Pydantic contracts, OpenRouter through H
 
 The [stack comparison](implementation-stack.md) also covers adapting existing repos, TypeScript/Mastra, and a later Temporal upgrade. Exact dependency versions and source access must be proven in T0; no runtime or connector is installed by this plan.
 
-News proposals combine Alpaca/Benzinga, authorized publisher feeds/search, SEC/IR, official macro sources, and the official X API with approved-author filtering. Alpaca is a proposed US-equities paper target, not a claim of account eligibility, source entitlement, or full market coverage.
+The selected provider target is Alpaca for broker/market data, yfinance for primary news/press-release leads, and AgentReach-backed tools for bounded page/search/approved-X/transcript research. SEC/IR and official macro evidence remain primary sources. Earlier Alpaca/Benzinga-news, Tavily and official-X defaults become explicit optional alternatives. See [provider plan](provider-plan.md), [research workflow](research-workflow.md), and [memory design](memory-and-retrieval.md). Alpaca is a proposed US-equities paper target, not a claim of account eligibility, source entitlement, or full market coverage.
 
 Implementation specifications:
 

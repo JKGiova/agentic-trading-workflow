@@ -27,20 +27,24 @@ Collection currently runs inside each session, not as an independent service.
 History comes from previously stored evidence, not a historical-provider backfill.
 Existing HTTP fixtures verify parsing/permissions; real entitlements are unverified.
 
+## Selected target and provider migration
+
+The owner selected **Alpaca broker/market data, yfinance primary news discovery, and AgentReach-backed targeted research**. See [provider plan](provider-plan.md) for exact responsibilities, backend pinning and access proofs. Existing runtime adapters above remain unchanged until implementation. Alpaca/Benzinga news, Tavily and official X below are retained as optional alternatives, not required defaults.
+
 ## Concrete provider mapping
 
 | Need | First connector | Access and limitation |
 | --- | --- | --- |
-| Stock-linked financial news | Alpaca News, supplied by Benzinga | REST history and news streaming; authenticate with entitled API credentials and verify accessible content |
-| Approved financial publications | Authorized RSS/licensed publisher feeds; Tavily for domain-restricted discovery | Alpaca does not supply Reuters/FT/WSJ access; search results do not grant full-article access |
+| Stock-linked financial/company news | yfinance news/press-release leads | Metadata/summary discovery; validate dates, sampling and stock relevance; full-text reading separate |
+| Approved publications and conference follow-up | AgentReach-selected search/page/transcript backends plus authorized feeds | Underlying tool/version and content limits recorded; source URLs and captions verified |
 | Company disclosures | SEC EDGAR submissions/facts plus per-company IR feeds/pages | EDGAR covers relevant US filers; IR endpoints and permitted content vary by company |
 | Market/macro news | Approved official central-bank/economic-release feeds and financial-news sources | Build a source registry; FRED/ALFRED can add structured macro context and vintages |
-| Approved X authors | Official X Recent Search | Whitelist author IDs, account-to-query mapping, pagination, and spending cap |
+| Approved X authors | AgentReach-backed typed X adapter | Verify author IDs/time, whitelist policy, actual supported windows, authentication, page and operating caps |
 | Prices, account, calendar, orders | Alpaca Trading/Market Data behind typed transport interfaces | Existing HTTP reads first; future paper execution stays separate from agents |
 
 No provider automatically satisfies all four analyst categories. Successful authentication does not prove sufficient coverage.
 
-## Alpaca news and market data
+## Alpaca market data and optional news adapter
 
 Implement `AlpacaNewsConnector` over `GET https://data.alpaca.markets/v1beta1/news`, using symbol/time filters, pagination, and available article content. Persist provider ID, source, URL, symbol mapping, creation/update times, and acquisition time. Treat absent article content as a limited evidence item, not a successfully read full article.
 
@@ -48,7 +52,7 @@ Start with REST polling/backfill; optionally add `wss://stream.data.alpaca.marke
 
 Use the broker clock/calendar for trading-session checks and the forecast's five-trading-day settlement date. Store quote source, exchange/feed, event time, and observed time. Alpaca Basic equity data is IEX coverage, not the consolidated market; its individual Algo Trader Plus plan lists $99/month with broader coverage. A Paper Only account's documented entitlement is IEX. Verify which feed is actually accessible; delayed or partial coverage cannot be labeled consolidated live pricing.
 
-## X whitelist and three-hour research
+## Optional official X adapter: whitelist and three-hour research
 
 Use `GET https://api.x.com/2/tweets/search/recent` with an app bearer credential. An example query template, populated only from configuration:
 
@@ -78,7 +82,7 @@ SEC's public data APIs require no API key. Use an identifying user agent, cachin
 
 Maintain company-specific IR URL/feed configuration rather than guessing endpoints. If an IR page has no reliable publication timestamp, record acquisition time and uncertainty. FRED/ALFRED is optional structured context; economic revisions require vintage-aware retrieval for replay.
 
-## Publisher discovery and permitted retrieval
+## Optional Tavily discovery and permitted retrieval
 
 Implement `PublicationSearchConnector` with Tavily Search restricted to approved domains. Request results and source URLs rather than relying on an API-generated answer. Resolve original publication dates where available, fetch only authorized accessible content, and record redirects/source identity.
 
@@ -88,7 +92,7 @@ Search date filters help discovery but do not implement an exact three-hour or p
 
 Each call produces request ID, provider, category/stock, query, requested window, observed time, evidence IDs, cursor/pages, completeness, status, retry count, and cost/usage. Use the existing complete-with-results, complete-no-new-results, degraded, and failed coverage states.
 
-The first access spike proves: one authorized news fetch, one stock-specific X lookup, one filing/IR lookup, one publisher lookup, and one quote/calendar retrieval. Save sanitized samples and negative cases. Missing paid access remains an explicit blocker for that source; do not substitute another platform while claiming X coverage.
+The selected-provider access spike proves: one Yahoo lead fetch, one stock-specific approved-X lookup via the selected backend, one filing/IR lookup, one registered article read, one available or unavailable transcript, and one Alpaca quote/calendar retrieval. Save sanitized samples and negative cases. Missing paid access remains an explicit blocker for that source; do not substitute another platform while claiming X coverage.
 
 ## Concrete implementation sequence
 
@@ -97,8 +101,8 @@ The following packages refine T0-T3 and T7; they do not mark those milestones co
 | Package | Deliverable | Acceptance check |
 | --- | --- | --- |
 | C0. Capabilities and identity | Versioned source registry, instrument/CIK aliases, publisher domains, X IDs/handles and account/feed capabilities; separate opt-in network probe | One small bounded read per enabled capability; 401/403/429, empty data and missing entitlement distinguished; sanitized local report; no orders |
-| C1. Evidence contracts | Provider item/version identity, many-to-many stock/category links, publication/update/observation timestamps, content level, scope and rights/retention metadata | One Benzinga item used by two analysts is one event/version; corrections remain immutable; full text, summary, search snippet and filing metadata never conflated |
-| C2. News and social adapters | Consume accessible Alpaca content; fetch once and route to financial/company views; X query batches; authorized publisher/IR retrieval; SEC documents/facts | Pagination exhaustion versus cap, future/date-only items, renamed authors, redirects, corrections, missing content, delayed publication and query limits covered by fixtures |
+| C1. Evidence contracts | Provider item/version identity, many-to-many stock/category links, publication/update/observation timestamps, content level, scope and rights/retention metadata | One source item used by two analysts is one event/version; corrections remain immutable; full text, summary, search snippet and filing metadata never conflated |
+| C2. News and social adapters | yfinance leads, selected AgentReach search/page/transcript/X adapters; authorized IR retrieval and SEC documents/facts; optional legacy providers | Pagination exhaustion versus cap, future/date-only items, renamed authors, redirects, corrections, missing content, delayed publication and query limits covered by fixtures |
 | C3. Durable collection | Alembic migrations, cursor and job transactions, per-source rate/cost reservations; independent collector workers | Crash after page write/before cursor advance resumes without losing items; overlap deduplicates; source outage does not stop other collectors or broker monitoring |
 | C4. Session evidence and verification | Holding-specific request matrix, bounded history/backlog, immutable bundle and analyst views; typed verification dispatch | Every holding has actual stock-relevant attempt IDs; empty is distinct from failed; fresh/unknown dates do not fabricate three-hour coverage; unresolved requests remain visible |
 | C5. Broker read/reconciliation | Typed quotes, asset eligibility, clock/calendar, account constraints, paginated orders/fills and snapshot generations | Feed identity/freshness retained; unknown commitments block additions; closed sessions, halts, manual broker changes and reconnect gaps reconciled |
@@ -140,8 +144,9 @@ durable cursors with a proposed five-minute polling interval and overlap. Pollin
 cadence is independent of X-hour AI sessions and measured against source budgets.
 Process both new publications and newly observed corrections to old items. Provider
 pagination tokens are recovery hints, not permanent cursors; expired tokens restart
-from a durable timestamp/ID watermark with overlap. Recent X search only covers
-seven days; older gaps stay recorded unless authorized archive access exists.
+from a durable timestamp/ID watermark with overlap. The optional official X Recent Search covers seven days; AgentReach-backed windows
+must be verified separately. Older gaps stay recorded unless authorized archive
+access exists.
 
 Session inputs contain the latest window, relevant history and unprocessed backlog
 without relabeling old news as newly published. A reused shared market briefing must
@@ -157,8 +162,9 @@ the same identity, with a conservative configured rate below its published ceili
 
 ### Operating spend and transport failures
 
-Reserve the maximum permitted returned-resource cost before each X page and the
-configured search credits before each Tavily request. Record actual usage where
+Reserve operating spend according to the actual selected backend before each call.
+For optional official X, reserve returned-resource cost per page; for optional Tavily,
+reserve configured search credits per request. Record actual usage where
 available; an ambiguous charge retains its conservative reservation. X's documented
 within-UTC-day billing deduplication is not the application's correctness mechanism.
 Use bounded queries, avoid unnecessary user expansions and version reference rates.

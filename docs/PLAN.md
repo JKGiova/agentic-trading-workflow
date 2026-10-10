@@ -38,12 +38,16 @@ The [ordered backlog](implementation-backlog.md) maps this roadmap into implemen
 
 The proposed route is [Python/LangGraph and PostgreSQL](implementation-stack.md), with [explicit connectors](connector-implementation.md), [typed tool boundaries](agent-runtime.md), and [a transactional business ledger](persistence-and-contracts.md). Compare actual usage with [cost assumptions](deployment-and-costs.md); public prices are not measured project costs.
 
+## Workflow-first refinement: 2026-10-10
+
+Provider responsibilities are selected: Alpaca broker/market data, yfinance news leads, AgentReach-backed targeted research. Prioritize the W0-W5 workflow/memory packages in the [backlog](implementation-backlog.md), using a recoverable one-stock conference-research example before broadening coverage. This refines T0-T6 and preserves all paper-execution prerequisites. See [research workflow](research-workflow.md) and [memory design](memory-and-retrieval.md).
+
 ## Open decisions
 
-- Initial selected stocks, exchanges, broker, and stock-level eligibility rules.
+- Initial selected stocks, exchanges, Alpaca account/feed capabilities and stock-level eligibility rules.
 - Decision interval X and sessions outside market hours.
 - Primary forecast horizon, benchmark, cost hurdle, and settlement-price definition.
-- Financial-news providers, primary sources, approved X accounts, and retention rights.
+- Selected yfinance/AgentReach versions/backends, primary sources, approved X accounts, access capabilities and retention rights.
 - LLM provider/model per role and total session cost/latency budget.
 - Maximum debates per session, fair queue policy, and bounded research/rebuttal budgets.
 - Investable capital, minimum cash reserve, debate queue/cost budget, maximum position weight, session deployment cap, and allocation tie-break policy.

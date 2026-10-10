@@ -40,7 +40,7 @@ Market-closed sessions may research/report, but submission checks broker clock, 
 | --- | --- |
 | Runtime | Mode, database URL, exchange calendar/time zone, collection/decision intervals, session deadline |
 | Instruments | Selected stocks, eligibility, CIK/aliases, benchmark and forecast horizon |
-| Source access | Alpaca credentials, X bearer credential and approved author IDs, Tavily key/domains, SEC identifying user agent, IR/RSS registry, optional FRED key |
+| Source access | Alpaca credentials/feed, pinned yfinance, selected AgentReach backends and private authentication, approved X IDs/domains, SEC user agent and IR registry; optional legacy X/Tavily/FRED credentials |
 | Models | OpenRouter credential, model per role/stage, endpoint capabilities, reasoning/token/concurrency settings |
 | Financial limits | Investable capital, cash reserve, maximum exposure/positions/concentration, stressed-loss budget, daily-loss and liquidity/freshness limits |
 | Operating limits | LLM dollars/tokens, X returned-resource allowance, search credits, tool/verification counts, retry budget, maximum debates |
@@ -49,6 +49,8 @@ Market-closed sessions may research/report, but submission checks broker clock, 
 Credentials stay in local environment/deployment secret storage, never committed or included in prompts. Typed policy/credentials and a local `--doctor` command now exist. A real source-capability probe and the full per-source operating-budget ledger remain planned; successful local configuration checks do not verify API access.
 
 ## Published reference prices
+
+The following X/Tavily figures describe optional earlier connectors, not the selected AgentReach route. yfinance has no per-call library fee; this does not establish licensed content access or completeness. AgentReach backend search/page/proxy charges, transcript availability and authentication must be measured separately. Do not apply official X prices to a CLI backend or call all research free. See [provider plan](provider-plan.md).
 
 | Service | Reference on review date | Caveat |
 | --- | --- | --- |

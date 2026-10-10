@@ -6,6 +6,8 @@ This is the proposed application data model. Implement it through versioned Alem
 
 ## Logical tables
 
+The [memory design](memory-and-retrieval.md) extends these contracts with event versions, evidence chunks, claims, unresolved questions, retrieval manifests and settled lessons. Each derived record has its own recorded-time cutoff; LangGraph checkpoints store references and resume state rather than replacing this ledger.
+
 | Tables | Key records and constraints |
 | --- | --- |
 | `instruments`, `source_configs` | Instrument identity, watchlist eligibility, CIK/aliases, author/publisher whitelist and policy version |
@@ -75,3 +77,4 @@ Prove: evidence deduplication/versioning, cutoff-safe retrieval, empty versus fa
 - [Budget management](budget-management.md)
 - [Validation](validation.md)
 - [Implementation backlog](implementation-backlog.md)
+

@@ -71,6 +71,8 @@ count from the proposed shared-briefing optimization.
 
 ## Target runtime
 
+Follow the [research workflow](research-workflow.md): analysts can request scoped news/search/page/transcript/social tools and retrieve [persistent event/position context](memory-and-retrieval.md). yfinance supplies leads, AgentReach-selected backends supply research capabilities, and Alpaca supplies broker/market data. Requests are validated and executed by code, with stored attempt IDs and bounded spend.
+
 Implement one explicit LangGraph session graph. The eight roles are reusable agent definitions, not eight permanently running servers. Four independent analyst reports complete before the Financial Analyst's separate lead/synthesis stage. Construct each analyst's input from the frozen evidence and its assigned scope only; do not expose other analysts' conclusions until synthesis. Neither initial probability nor opportunity diagnostics select or order debate candidates.
 
 ## Proposed graph stages
@@ -100,7 +102,7 @@ All tools accept schema-validated arguments, attach a request/session/stock ID, 
 | `lookup_market_context` | Market Analyst | Authorized macro/news adapters, shared briefing with per-stock relevance |
 | `lookup_stock_news` | Financial/Company Analysts | Approved provider/domain registry; category and stock scope enforced |
 | `get_company_filings`, `get_financial_facts` | Financial/Company Analysts | CIK/IR adapters and cutoff-aware facts |
-| `search_approved_x_posts` | Social Analyst | Official X connector, stable author-ID whitelist and cost/page cap |
+| `search_approved_x_posts` | Social Analyst | Selected AgentReach-backed X adapter, stable author-ID validation and cost/page cap; official X is optional |
 | `get_evidence`, `retrieve_history` | Analysts, debate, Orchestrator, Allocator | Permitted evidence IDs and stock/event/cutoff queries |
 | `request_verification` | Bull/Bear via Orchestrator | At most three challenges per side; runtime dispatches bounded analyst lookups |
 | `get_portfolio_snapshot`, `preview_allocation_limits` | Allocator | Read broker-confirmed state and call deterministic sizing |

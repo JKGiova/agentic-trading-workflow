@@ -17,6 +17,8 @@ If sessions are more than three hours apart, process the unhandled backlog since
 
 ## Decision-session workflow
 
+The selected target combines yfinance leads and AgentReach-backed bounded tool loops with Alpaca snapshots. [Research workflow](research-workflow.md) specifies the analyst loop, conference follow-up and versioned verification. [Memory and retrieval](memory-and-retrieval.md) separates event/thesis knowledge from graph checkpoints. Current code still uses prefetched snippets.
+
 1. Acquire a portfolio lock, create a session ID, and establish an evidence cutoff.
 2. Reconcile broker holdings, cash, fills, and pending orders; build the union of watchlist and held stocks.
 3. Collect new evidence and relevant history, including unprocessed backlog.
@@ -71,3 +73,4 @@ A proposal is not a confirmed fill. A successful debate does not authorize chang
 - [Agent runtime](agent-runtime.md)
 - [Deployment and costs](deployment-and-costs.md)
 - [Risk and execution](risk-and-execution.md)
+

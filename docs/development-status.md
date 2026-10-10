@@ -77,9 +77,15 @@ Graphify is connected, but listing workspaces/repositories and querying graph st
 
 The initial runtime uses flat modules, startup schema creation and conservative stress assumptions. It does not represent every proposed package, worker or table as completed.
 
+## Plan refinement: 2026-10-10
+
+Documentation refinement checks: all local Markdown links passed, the regenerated AST map is unchanged and current, Ruff passed, and the existing offline suite passed **75 tests with 1 PostgreSQL test skipped, 94.80% coverage**. The local database URL remains unavailable; new provider access and new workflow behavior were not exercised because this change is a plan only.
+
+The selected target now uses Alpaca for broker/market data, yfinance for primary news discovery and AgentReach-backed bounded research. [Research workflow](research-workflow.md) specifies specialist tool loops and conference follow-up; [memory design](memory-and-retrieval.md) specifies event/evidence/thesis storage, retrieval and checkpoints. These are documentation changes: yfinance and AgentReach are not installed, and current provider adapters/tool restrictions are unchanged.
+
 ## Next milestone
 
-Implement C0/C1 capability and evidence contracts with offline fixtures, then run
+Start W0/W1 in the [workflow-first backlog](implementation-backlog.md): selected-provider contracts plus evidence/event memory. Implement C0/C1 capability and evidence contracts with offline fixtures, then run
 opt-in T0 source/model/account reads when owner configuration is available. Continue
 with durable collection and typed bounded verification; C5/C6 broker reconciliation,
 shared-capital reservations, intents and protection remain prerequisites for paper
